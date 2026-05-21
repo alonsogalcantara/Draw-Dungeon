@@ -1,0 +1,516 @@
+import { game } from './gameState.svelte';
+import type { CharacterDef, DifficultyMode, PotionType, RoomCardInstance, RoomType, MonsterCard, BossCard, RoomCard } from './types';
+import { ROOM_CARDS } from '../data/roomCards';
+import { DUNGEON_FLOORS, DIFFICULTY_MODIFIERS, MAX_HP } from '../data/constants';
+import { rollAllDice, applyCurseEffect, calculateDamage, rollDungeonDie, isSkillCheckSuccess, isPoisonTriggered, isCurseTriggered } from './diceEngine';
+import { initCombat, processAttackPhase, performFeat as combatPerformFeat, processMonsterAttack, applyEffects, checkCombatEnd, processRerollCriticals } from './combatEngine';
+
+// Randomly shuffle array
+function shuffle<T>(array: T[]): T[] {
+  const newArray = [...array];
+  for (let i = newArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+  }
+  return newArray;
+}
+
+export function startNewGame(character: CharacterDef, difficulty: DifficultyMode) {
+  game.reset();
+  game.phase = 'playing';
+  game.selectedCharacter = character;
+  game.difficulty = difficulty;
+  
+  const mod = DIFFICULTY_MODIFIERS[difficulty];
+  
+  game.hp = character.startingStats.hp + mod.hp;
+  game.maxHp = MAX_HP; // Assuming max hp is 20 initially or constant
+  game.food = character.startingStats.food + mod.food;
+  game.gold = character.startingStats.gold + mod.gold;
+  game.armor = character.startingStats.armor;
+  game.xp = character.startingStats.xp;
+  
+  game.addLog(`Started game as ${character.name} on ${difficulty} difficulty.`, 'system');
+  
+  setupArea();
+}
+
+export function setupArea() {
+  const deck = shuffle(ROOM_CARDS.filter(c => c.type !== 'boss'));
+  
+  // Pick 8 cards for the 2x4 grid
+  const gridCards: RoomCard[] = deck.slice(0, 8);
+  const bossArea = DUNGEON_FLOORS[game.currentFloor - 1].bossArea;
+  const isBossArea = game.currentAreaInFloor === bossArea;
+  
+  if (isBossArea) {
+    const bosses = ROOM_CARDS.filter(c => c.type === 'boss');
+    const finalBoss = bosses.find(b => (b as BossCard).isFinal);
+    const regularBosses = shuffle(bosses.filter(b => !(b as BossCard).isFinal));
+    
+    // In actual game, you set up bosses facedown, here we just pick the boss for the floor
+    const bossToFace = game.currentFloor === 4 ? finalBoss : regularBosses[0];
+    if (bossToFace) {
+      gridCards[7] = bossToFace; // Put boss at exit
+    }
+  }
+
+  const newGrid: (RoomCardInstance | null)[][] = [
+    [null, null, null, null],
+    [null, null, null, null]
+  ];
+  
+  for (let r = 0; r < 2; r++) {
+    for (let c = 0; c < 4; c++) {
+      newGrid[r][c] = {
+        card: gridCards[r * 4 + c],
+        revealed: false,
+        resolved: false,
+        row: r,
+        col: c
+      };
+    }
+  }
+
+  game.roomGrid = newGrid;
+  game.playerRow = 0;
+  game.playerCol = 0;
+  
+  // Reveal and resolve start card
+  const startRoom = game.roomGrid[0][0]!;
+  startRoom.revealed = true;
+  game.addLog(`Entered Area ${game.currentArea} (Floor ${game.currentFloor})`, 'info');
+  
+  resolveRoom(startRoom);
+  if (game.phase === 'playing') {
+    revealAdjacentRooms();
+  }
+}
+
+export function revealAdjacentRooms() {
+  const r = game.playerRow;
+  const c = game.playerCol;
+  
+  const right = c + 1 < 4 ? game.roomGrid[r][c + 1] : null;
+  const down = r + 1 < 2 ? game.roomGrid[r + 1][c] : null;
+  
+  if (!game.blinded) {
+    if (right) right.revealed = true;
+    if (down) down.revealed = true;
+  }
+}
+
+export function moveToRoom(row: number, col: number) {
+  game.playerRow = row;
+  game.playerCol = col;
+  const room = game.roomGrid[row][col]!;
+  room.revealed = true;
+  resolveRoom(room);
+}
+
+export function resolveRoom(roomInstance: RoomCardInstance) {
+  const card = roomInstance.card;
+  game.addLog(`Encountered: ${card.name}`, 'info');
+  
+  if (card.type === 'monster' || card.type === 'boss') {
+    startCombat(card as MonsterCard | BossCard);
+  } else if (card.type === 'trap' || card.type === 'tomb') {
+    game.phase = 'skillCheck';
+    game.skillCheck = {
+      reason: card.name,
+      diceResults: [],
+      dungeonDieResult: 0,
+      success: null,
+      resolved: false
+    };
+    game.event = { type: card.type, card, resolved: false };
+  } else {
+    game.phase = 'event';
+    game.event = { type: card.type, card, resolved: false };
+  }
+}
+
+export function startCombat(enemy: MonsterCard | BossCard) {
+  game.phase = 'combat';
+  game.combat = initCombat(enemy, game.currentFloor);
+}
+
+export function rollCombatDice() {
+  if (!game.combat) return;
+  const rollResult = rollAllDice(game.characterDiceCount, game.poisoned, game.cursed);
+  let dice = rollResult.characterDice;
+  
+  if (game.cursed) {
+    dice = applyCurseEffect(dice);
+  }
+
+  // Handle poison die immediately if it triggers
+  if (rollResult.poisonDie && isPoisonTriggered(rollResult.poisonDie)) {
+    game.loseHp(1);
+    game.addLog('Poison triggered! Lost 1 HP', 'damage');
+  }
+  
+  // Handle curse die if it triggers
+  if (rollResult.curseDie && isCurseTriggered(rollResult.curseDie)) {
+    game.cursed = true; // Wait, if they are already cursed, another curse is ignored. But if it triggers from poison?
+    // Actually the curse die just affects this roll or adds a curse if they didn't have one
+  }
+  
+  game.combat.dungeonDieResult = rollResult.dungeonDie;
+  game.combat.poisonDieResult = rollResult.poisonDie;
+  game.combat.curseDieResult = rollResult.curseDie;
+  game.combat.diceResults = dice;
+  game.combat.phase = 'resolvingAttack';
+}
+
+export function rerollCritical(dieIndex: number) {
+  if (!game.combat) return;
+  game.combat.diceResults = processRerollCriticals(game.combat.diceResults, dieIndex);
+}
+
+export function performFeat(dieIndex: number, costType: 'xp' | 'hp') {
+  if (!game.combat) return;
+  
+  if (costType === 'xp' && game.xp < 1) return;
+  if (costType === 'hp' && game.hp < 2) return;
+  
+  const { dice, hpCost, xpCost } = combatPerformFeat(game.combat.diceResults, dieIndex, costType, false);
+  
+  game.combat.diceResults = dice;
+  if (hpCost > 0) game.loseHp(hpCost);
+  if (xpCost > 0) game.loseXp(xpCost);
+  
+  game.addLog(`Performed Feat! Lost ${hpCost > 0 ? hpCost + ' HP' : xpCost + ' XP'}`, 'combat');
+}
+
+export function applyPlayerDamage() {
+  if (!game.combat) return;
+  const { damage, updatedDice } = processAttackPhase(game.combat, game.combat.diceResults);
+  game.combat.diceResults = updatedDice;
+  
+  let finalDamage = damage;
+  if (game.combat.poisonPotionActive) {
+    finalDamage += 4;
+  }
+  
+  game.combat.enemyHp -= finalDamage;
+  game.combat.totalDamage = finalDamage;
+  game.addLog(`Dealt ${finalDamage} damage to ${game.combat.enemy.name}`, 'combat');
+  
+  const endState = checkCombatEnd(game.hp, game.combat.enemyHp, game.combat.bossPhase, game.combat.enemy);
+  
+  if (endState === 'victory') {
+    game.combat.phase = 'victory';
+    game.addLog(`Defeated ${game.combat.enemy.name}!`, 'info');
+  } else if (endState === 'nextPhase') {
+    game.combat.bossPhase = 2;
+    game.combat.enemyHp = (game.combat.enemy as BossCard).hp; // Need phase 2 hp logic actually, manual says Og's Remains has 2 phases but doesn't specify if hp resets. Let's assume it resets.
+    game.combat.phase = 'monsterAttack';
+  } else {
+    game.combat.phase = 'monsterAttack';
+  }
+}
+
+export function executeMonsterAttack() {
+  if (!game.combat) return;
+  
+  if (game.combat.frostPotionActive) {
+    game.combat.frostPotionActive = false;
+    game.addLog('Monster attack skipped due to Frost Potion', 'info');
+    game.combat.phase = 'rolling';
+    game.combat.turnCount++;
+    return;
+  }
+
+  const enemyDamage = game.combat.enemy.damage;
+  const { damage, pierced, miss } = processMonsterAttack(game.combat.dungeonDieResult, enemyDamage, game.armor + game.temporaryArmor);
+  
+  if (miss) {
+    game.addLog('Monster attack missed!', 'combat');
+  } else {
+    game.loseHp(damage);
+    game.addLog(`Monster hits for ${damage} damage!${pierced ? ' (Armor Pierced)' : ''}`, 'damage');
+    
+    // Apply effects
+    if (damage > 0) {
+      const effectUpdates = applyEffects(game.combat.enemy.effects, damage);
+      if (effectUpdates.cursed) game.cursed = true;
+      if (effectUpdates.poisoned) game.poisoned = true;
+      if (effectUpdates.blinded) game.blinded = true;
+      if (effectUpdates.weaken) game.loseXp(1);
+      if (effectUpdates.regeneration) game.combat.enemyHp += 2; // Assuming regen 2
+    }
+  }
+  
+  if (game.hp <= 0) {
+    game.combat.phase = 'defeat';
+    game.phase = 'gameOver';
+  } else {
+    game.combat.phase = 'rolling';
+    game.combat.turnCount++;
+  }
+}
+
+export function endCombat() {
+  if (!game.combat) return;
+  const enemy = game.combat.enemy;
+  
+  if (enemy.type === 'monster') {
+    const xpReward = enemy.xpRewardPerFloor[game.currentFloor - 1];
+    game.gainXp(xpReward);
+  } else if (enemy.type === 'boss') {
+    if ((enemy as BossCard).isFinal) {
+      game.phase = 'victory';
+      return;
+    }
+    game.gainXp(3); // General reward
+  }
+  
+  game.roomGrid[game.playerRow][game.playerCol]!.resolved = true;
+  game.combat = null;
+  game.phase = 'playing';
+  revealAdjacentRooms();
+}
+
+export function performSkillCheck(reason?: string) {
+  if (!game.skillCheck) return;
+  
+  const rollResult = rollAllDice(game.characterDiceCount, game.poisoned, game.cursed);
+  let dice = rollResult.characterDice;
+  
+  if (game.cursed) {
+    dice = applyCurseEffect(dice);
+  }
+  
+  game.skillCheck.dungeonDieResult = rollResult.dungeonDie;
+  game.skillCheck.diceResults = dice;
+  game.skillCheck.success = isSkillCheckSuccess(dice);
+  
+  if (rollResult.poisonDie && isPoisonTriggered(rollResult.poisonDie)) {
+    game.loseHp(1);
+  }
+}
+
+export function resolveSkillCheck() {
+  if (!game.skillCheck || !game.event) return;
+  
+  const card = game.event.card;
+  const isSuccess = game.skillCheck.success;
+  const dungeonDie = game.skillCheck.dungeonDieResult;
+  
+  if (card.type === 'trap') {
+    if (isSuccess) {
+      const reward = card.successRewards[dungeonDie] || card.successRewards[1];
+      reward.effects.forEach(e => {
+        if (e.stat === 'xp') game.gainXp(e.value);
+      });
+      game.addLog(`Evaded trap!`, 'info');
+    } else {
+      const penalty = card.failurePenalties[dungeonDie] || card.failurePenalties[1];
+      penalty.effects.forEach(e => {
+        if (e.stat === 'hp') game.loseHp(Math.abs(e.value));
+      });
+      if (penalty.statusEffect === 'poison') game.poisoned = true;
+      if (penalty.statusEffect === 'blindness') game.blinded = true;
+      game.addLog(`Triggered trap!`, 'damage');
+    }
+  } else if (card.type === 'treasure') {
+    game.gainGold(card.goldBase);
+    if (isSuccess) {
+      const reward = card.chestRewards[dungeonDie] || card.chestRewards[1];
+      if (reward.potion) addPotion(reward.potion);
+      reward.effects.forEach(e => {
+        if (e.stat === 'gold') game.gainGold(e.value);
+        if (e.stat === 'xp') game.gainXp(e.value);
+      });
+      game.addLog('Unlocked chest!', 'loot');
+    }
+  }
+  
+  game.roomGrid[game.playerRow][game.playerCol]!.resolved = true;
+  game.skillCheck = null;
+  game.event = null;
+  game.phase = 'playing';
+  revealAdjacentRooms();
+}
+
+export function usePotion(slotIndex: number) {
+  const potion = game.potions[slotIndex];
+  if (!potion) return;
+  
+  game.potions[slotIndex] = null;
+  game.addLog(`Used ${potion} potion`, 'info');
+  
+  if (potion === 'healing') {
+    game.gainHp(6);
+  } else if (potion === 'holy') {
+    game.cursed = false;
+    game.poisoned = false;
+    game.blinded = false;
+  } else if (potion === 'perception') {
+    game.blinded = false;
+    if (game.phase === 'skillCheck' && game.skillCheck) {
+      game.skillCheck.success = true;
+    }
+  } else if (potion === 'fire' && game.combat) {
+    game.combat.enemyHp -= 7;
+  } else if (potion === 'frost' && game.combat) {
+    game.combat.frostPotionActive = true;
+  } else if (potion === 'poison' && game.combat) {
+    game.combat.poisonPotionActive = true;
+  }
+}
+
+export function handleBonfire(actionIndex: number) {
+  if (!game.event || game.event.type !== 'bonfire') return;
+  const card = game.event.card;
+  if (card.type !== 'bonfire') return;
+  
+  const action = card.actions[actionIndex];
+  action.effect.forEach(e => {
+    if (e.stat === 'hp') game.gainHp(e.value);
+    if (e.stat === 'xp') game.gainXp(e.value);
+    if (e.stat === 'food') game.gainFood(e.value);
+  });
+  
+  game.skillUsed = false; // Refresh skills
+  game.addLog(`Rested at bonfire: ${action.label}`, 'info');
+  
+  game.roomGrid[game.playerRow][game.playerCol]!.resolved = true;
+  game.event = null;
+  game.phase = 'playing';
+  revealAdjacentRooms();
+}
+
+export function handleMerchant(action: 'buy' | 'sell', itemIndex: number) {
+  if (!game.event || game.event.card.type !== 'merchant') return;
+  const card = game.event.card;
+  const item = card.items[itemIndex];
+  
+  if (action === 'buy' && game.gold >= item.cost) {
+    game.loseGold(item.cost);
+    item.effect.forEach(e => {
+      if (e.stat === 'food') game.gainFood(e.value);
+      if (e.stat === 'armor') game.gainArmor(e.value);
+      if (e.stat === 'hp') game.gainHp(e.value);
+    });
+    // Check if it's a potion by name
+    if (item.name.toLowerCase().includes('potion')) {
+      const type = item.name.toLowerCase().replace(' potion', '') as PotionType;
+      addPotion(type);
+    }
+    game.addLog(`Bought ${item.name}`, 'loot');
+  }
+}
+
+export function handleShrine(offering: boolean) {
+  if (!game.event || game.event.card.type !== 'shrine') return;
+  
+  if (offering) {
+    if (game.gold >= 1) {
+      game.loseGold(1);
+    } else {
+      return;
+    }
+  }
+  
+  let roll = rollDungeonDie();
+  if (offering) roll = Math.min(6, roll + 1);
+  
+  const reward = game.event.card.outcomes[roll] || game.event.card.outcomes[1];
+  reward.effects.forEach(e => {
+    if (e.stat === 'hp') e.value > 0 ? game.gainHp(e.value) : game.loseHp(Math.abs(e.value));
+    if (e.stat === 'xp') game.gainXp(e.value);
+  });
+  if (reward.potion) addPotion(reward.potion);
+  
+  game.addLog(`Shrine outcome: ${reward.label}`, 'info');
+  
+  game.roomGrid[game.playerRow][game.playerCol]!.resolved = true;
+  game.event = null;
+  game.phase = 'playing';
+  revealAdjacentRooms();
+}
+
+export function handleTreasure() {
+    if (!game.event || game.event.card.type !== 'treasure') return;
+    const card = game.event.card;
+    
+    game.phase = 'skillCheck';
+    game.skillCheck = {
+      reason: card.name,
+      diceResults: [],
+      dungeonDieResult: 0,
+      success: null,
+      resolved: false
+    };
+}
+
+export function handleTomb(modifyDie: -1 | 0 | 1 = 0) {
+    // simplified tomb handling, just close event for now and proceed
+    if (!game.event) return;
+    game.roomGrid[game.playerRow][game.playerCol]!.resolved = true;
+    game.event = null;
+    game.phase = 'playing';
+    revealAdjacentRooms();
+}
+
+export function addPotion(type: PotionType) {
+  if (game.potions[0] === null) game.potions[0] = type;
+  else if (game.potions[1] === null) game.potions[1] = type;
+  else {
+    game.addLog(`Potion slots full! Dropped ${type} potion`, 'info');
+  }
+}
+
+export function removePotion(slotIndex: number) {
+  game.potions[slotIndex] = null;
+}
+
+export function delve() {
+  if (game.food >= 1) {
+    game.loseFood(1);
+    game.addLog('Ate 1 food ration', 'info');
+  } else {
+    game.loseHp(3);
+    game.addLog('Starving! Lost 3 HP', 'damage');
+  }
+  
+  if (game.hp <= 0) {
+    game.phase = 'gameOver';
+    return;
+  }
+  
+  game.currentArea++;
+  game.currentAreaInFloor++;
+  const floorData = DUNGEON_FLOORS[game.currentFloor - 1];
+  
+  if (game.currentAreaInFloor > floorData.areas) {
+    game.currentFloor++;
+    game.currentAreaInFloor = 1;
+  }
+  
+  game.temporaryArmor = 0; // reset temp armor
+  if (game.selectedCharacter && !game.skillUsed && game.selectedCharacter.skills.find(s => s.name === 'Tough')) {
+    game.temporaryArmor = 1; // Tough passive
+  }
+  if (game.selectedCharacter && !game.skillUsed && game.selectedCharacter.skills.find(s => s.name === 'Blessed')) {
+    game.cursed = false; game.poisoned = false; game.blinded = false;
+  }
+  
+  setupArea();
+}
+
+export function checkGameEnd() {
+  if (game.hp <= 0) game.phase = 'gameOver';
+}
+
+export function heal(amount: number) {
+    game.gainHp(amount);
+}
+export function takeDamage(amount: number) {
+    game.loseHp(amount);
+}
+export function gainXp(amount: number) {
+    game.gainXp(amount);
+}

@@ -1,0 +1,759 @@
+// ============================================================================
+// Mini Rogue - Room Card Definitions
+// ============================================================================
+
+import type {
+  MonsterCard,
+  BossCard,
+  TrapCard,
+  TreasureCard,
+  BonfireCard,
+  MerchantCard,
+  ShrineCard,
+  TombCard,
+  ItemCard,
+  RoomCard,
+} from '../game/types';
+
+// ============================================================================
+// MONSTER CARDS (12)
+// ============================================================================
+
+export const MONSTER_CARDS: MonsterCard[] = [
+  {
+    id: 'monster_skeletal_archer',
+    name: 'Skeletal Archer',
+    type: 'monster',
+    description:
+      'A reanimated skeleton clutching a rotting longbow. Its hollow eyes glow with a faint, malicious light as it draws back a bone-tipped arrow.',
+    hpPerFloor: [3, 5, 7, 10],
+    damage: 2,
+    effects: [],
+    xpRewardPerFloor: [1, 1, 2, 3],
+  },
+  {
+    id: 'monster_venomous_lurker',
+    name: 'Venomous Lurker',
+    type: 'monster',
+    description:
+      'A bloated arachnid the size of a hound, its fangs dripping with necrotic venom that blackens flesh on contact.',
+    hpPerFloor: [4, 6, 8, 11],
+    damage: 2,
+    effects: ['poison'],
+    xpRewardPerFloor: [1, 2, 2, 3],
+  },
+  {
+    id: 'monster_cursed_wraith',
+    name: 'Cursed Wraith',
+    type: 'monster',
+    description:
+      'The translucent shade of a murdered priest, its mouth frozen in an eternal scream. Where it passes, candles extinguish and iron rusts.',
+    hpPerFloor: [3, 5, 8, 11],
+    damage: 3,
+    effects: ['curse'],
+    xpRewardPerFloor: [1, 2, 2, 3],
+  },
+  {
+    id: 'monster_fungal_horror',
+    name: 'Fungal Horror',
+    type: 'monster',
+    description:
+      'Once a dwarven miner, now a shambling mass of luminescent fungi and rotting meat. Toxic spores cloud the air around it.',
+    hpPerFloor: [4, 6, 9, 12],
+    damage: 2,
+    effects: ['poison'],
+    xpRewardPerFloor: [1, 2, 2, 3],
+  },
+  {
+    id: 'monster_shadow_stalker',
+    name: 'Shadow Stalker',
+    type: 'monster',
+    description:
+      'A creature born from pure darkness, it slithers along walls and ceilings, striking from blind spots with razor-thin claws.',
+    hpPerFloor: [5, 7, 10, 13],
+    damage: 3,
+    effects: ['blindness'],
+    xpRewardPerFloor: [2, 2, 3, 3],
+  },
+  {
+    id: 'monster_corrupted_knight',
+    name: 'Corrupted Knight',
+    type: 'monster',
+    description:
+      'Once a holy paladin, this fallen warrior\'s armor has fused with demonic flesh. Its cursed blade cuts through steel as if it were parchment.',
+    hpPerFloor: [6, 8, 11, 14],
+    damage: 3,
+    effects: ['ignoreArmor'],
+    xpRewardPerFloor: [2, 2, 3, 3],
+  },
+  {
+    id: 'monster_bone_golem',
+    name: 'Bone Golem',
+    type: 'monster',
+    description:
+      'An abomination assembled from the skeletons of a hundred victims, bound together by dark sorcery. Each step shakes the dungeon floor.',
+    hpPerFloor: [7, 9, 12, 15],
+    damage: 4,
+    effects: ['weaken'],
+    xpRewardPerFloor: [2, 3, 3, 3],
+  },
+  {
+    id: 'monster_infernal_imp',
+    name: 'Infernal Imp',
+    type: 'monster',
+    description:
+      'A cackling fiend no larger than a child, wreathed in brimstone smoke. Its curses are far more dangerous than its claws.',
+    hpPerFloor: [3, 4, 6, 9],
+    damage: 2,
+    effects: ['curse'],
+    xpRewardPerFloor: [1, 1, 2, 2],
+  },
+  {
+    id: 'monster_plague_rat_swarm',
+    name: 'Plague Rat Swarm',
+    type: 'monster',
+    description:
+      'Hundreds of diseased rodents moving as one writhing mass, their collective hunger insatiable and their bites infectious.',
+    hpPerFloor: [4, 5, 7, 10],
+    damage: 1,
+    effects: ['poison', 'weaken'],
+    xpRewardPerFloor: [1, 2, 2, 3],
+  },
+  {
+    id: 'monster_tomb_guardian',
+    name: 'Tomb Guardian',
+    type: 'monster',
+    description:
+      'An ancient construct of stone and enchanted bronze, awakened to defend the burial chambers of forgotten kings. Its strikes bypass all mortal defenses.',
+    hpPerFloor: [6, 8, 11, 14],
+    damage: 3,
+    effects: ['ignoreArmor'],
+    xpRewardPerFloor: [2, 2, 3, 3],
+  },
+  {
+    id: 'monster_wailing_banshee',
+    name: 'Wailing Banshee',
+    type: 'monster',
+    description:
+      'The tortured spirit of a queen who was buried alive. Her shriek shatters resolve and saps the will to fight.',
+    hpPerFloor: [5, 7, 9, 12],
+    damage: 3,
+    effects: ['curse', 'weaken'],
+    xpRewardPerFloor: [2, 2, 3, 3],
+  },
+  {
+    id: 'monster_abyssal_crawler',
+    name: 'Abyssal Crawler',
+    type: 'monster',
+    description:
+      'A many-limbed horror that drags itself from cracks in the deepest stone. Its maw is a ring of serrated teeth that never stops spinning.',
+    hpPerFloor: [5, 7, 10, 13],
+    damage: 4,
+    effects: [],
+    xpRewardPerFloor: [2, 2, 3, 3],
+  },
+];
+
+// ============================================================================
+// BOSS CARDS (4)
+// ============================================================================
+
+export const BOSS_CARDS: BossCard[] = [
+  {
+    id: 'boss_gorgath',
+    name: 'Gorgath the Defiler',
+    type: 'boss',
+    description:
+      'A towering demon lord cloaked in chains of cursed iron. His very presence warps reality, and his strikes shatter both body and soul.',
+    hp: 15,
+    damage: 5,
+    effects: ['curse', 'ignoreArmor'],
+    phases: 1,
+    isFinal: false,
+  },
+  {
+    id: 'boss_queen_arachnia',
+    name: 'Queen Arachnia',
+    type: 'boss',
+    description:
+      'Mother of the spider-brood, her abdomen swollen with a thousand unborn horrors. Venomous silk lines her throne room, and her bite withers muscle and bone.',
+    hp: 18,
+    damage: 4,
+    effects: ['poison', 'weaken'],
+    phases: 1,
+    isFinal: false,
+  },
+  {
+    id: 'boss_dreadlord_morvain',
+    name: 'Dreadlord Morvain',
+    type: 'boss',
+    description:
+      'Once the dungeon\'s architect, Morvain sold his sight to the void in exchange for dominion over shadow. His blind eyes see everything, and his curses linger long after death.',
+    hp: 20,
+    damage: 5,
+    effects: ['curse', 'blindness'],
+    phases: 1,
+    isFinal: false,
+  },
+  {
+    id: 'boss_ogs_remains',
+    name: "Og's Remains",
+    type: 'boss',
+    description:
+      'The shattered skeleton of the primordial titan Og, reanimated by the blood-ruby lodged in its ribcage. It fights with the fury of a dead god, and defeating it once only awakens its true form.',
+    hp: 22,
+    damage: 6,
+    effects: ['curse', 'ignoreArmor', 'regeneration'],
+    phases: 2,
+    isFinal: true,
+  },
+];
+
+// ============================================================================
+// TRAP CARDS (6)
+// ============================================================================
+
+export const TRAP_CARDS: TrapCard[] = [
+  {
+    id: 'trap_spike_pit',
+    name: 'Spike Pit',
+    type: 'trap',
+    description:
+      'The floor gives way beneath your feet, revealing a pit of rusted iron spikes coated in ancient filth.',
+    successRewards: {
+      1: { label: 'Nimble dodge', effects: [{ stat: 'xp', value: 1 }] },
+      2: { label: 'Quick reflexes', effects: [{ stat: 'xp', value: 1 }] },
+      3: { label: 'Graceful leap', effects: [{ stat: 'xp', value: 2 }] },
+      4: { label: 'Perfect evasion', effects: [{ stat: 'xp', value: 2 }] },
+      5: { label: 'Found a handhold', effects: [{ stat: 'xp', value: 2 }, { stat: 'gold', value: 1 }] },
+      6: { label: 'Discovered a cache', effects: [{ stat: 'xp', value: 3 }, { stat: 'gold', value: 2 }] },
+    },
+    failurePenalties: {
+      1: { label: 'Scraped', effects: [{ stat: 'hp', value: -2 }] },
+      2: { label: 'Pierced', effects: [{ stat: 'hp', value: -2 }] },
+      3: { label: 'Impaled', effects: [{ stat: 'hp', value: -3 }] },
+      4: { label: 'Deep wounds', effects: [{ stat: 'hp', value: -3 }] },
+      5: { label: 'Brutally skewered', effects: [{ stat: 'hp', value: -4 }] },
+      6: { label: 'Nearly fatal', effects: [{ stat: 'hp', value: -5 }] },
+    },
+  },
+  {
+    id: 'trap_poison_dart_wall',
+    name: 'Poison Dart Wall',
+    type: 'trap',
+    description:
+      'Tiny holes line the corridor walls. A pressure plate clicks underfoot, and a hail of envenomed darts erupts from every direction.',
+    successRewards: {
+      1: { label: 'Sidestepped', effects: [{ stat: 'gold', value: 1 }] },
+      2: { label: 'Ducked under', effects: [{ stat: 'gold', value: 1 }] },
+      3: { label: 'Found antidote', effects: [{ stat: 'gold', value: 2 }] },
+      4: { label: 'Salvaged darts', effects: [{ stat: 'gold', value: 2 }], potion: 'poison' },
+      5: { label: 'Disarmed mechanism', effects: [{ stat: 'xp', value: 2 }] },
+      6: { label: 'Harvested venom', effects: [{ stat: 'xp', value: 2 }], potion: 'poison' },
+    },
+    failurePenalties: {
+      1: { label: 'Grazed', effects: [{ stat: 'hp', value: -1 }], statusEffect: 'poison' },
+      2: { label: 'Nicked', effects: [{ stat: 'hp', value: -1 }], statusEffect: 'poison' },
+      3: { label: 'Hit in arm', effects: [{ stat: 'hp', value: -2 }], statusEffect: 'poison' },
+      4: { label: 'Multiple hits', effects: [{ stat: 'hp', value: -2 }], statusEffect: 'poison' },
+      5: { label: 'Riddled with darts', effects: [{ stat: 'hp', value: -3 }], statusEffect: 'poison' },
+      6: { label: 'Overwhelmed', effects: [{ stat: 'hp', value: -4 }], statusEffect: 'poison' },
+    },
+  },
+  {
+    id: 'trap_crushing_ceiling',
+    name: 'Crushing Ceiling',
+    type: 'trap',
+    description:
+      'The ceiling groans and begins to descend. Ancient gears turn as the room slowly compresses into a stone coffin.',
+    successRewards: {
+      1: { label: 'Rolled clear', effects: [{ stat: 'xp', value: 1 }] },
+      2: { label: 'Found a niche', effects: [{ stat: 'xp', value: 1 }] },
+      3: { label: 'Braced it', effects: [{ stat: 'xp', value: 2 }] },
+      4: { label: 'Jammed the gears', effects: [{ stat: 'xp', value: 2 }, { stat: 'armor', value: 1 }] },
+      5: { label: 'Destroyed mechanism', effects: [{ stat: 'xp', value: 2 }, { stat: 'armor', value: 1 }] },
+      6: { label: 'Salvaged armor plates', effects: [{ stat: 'xp', value: 3 }, { stat: 'armor', value: 1 }] },
+    },
+    failurePenalties: {
+      1: { label: 'Bruised', effects: [{ stat: 'hp', value: -3 }] },
+      2: { label: 'Crushed arm', effects: [{ stat: 'hp', value: -3 }] },
+      3: { label: 'Pinned', effects: [{ stat: 'hp', value: -4 }] },
+      4: { label: 'Ribs cracked', effects: [{ stat: 'hp', value: -4 }] },
+      5: { label: 'Spine compressed', effects: [{ stat: 'hp', value: -5 }] },
+      6: { label: 'Nearly flattened', effects: [{ stat: 'hp', value: -6 }] },
+    },
+  },
+  {
+    id: 'trap_arcane_tripwire',
+    name: 'Arcane Tripwire',
+    type: 'trap',
+    description:
+      'An invisible thread of pure mana stretches across the corridor. Disturbing it unleashes a stored hex of terrible potency.',
+    successRewards: {
+      1: { label: 'Stepped over', effects: [{ stat: 'xp', value: 1 }] },
+      2: { label: 'Sensed the ward', effects: [{ stat: 'xp', value: 1 }, { stat: 'gold', value: 1 }] },
+      3: { label: 'Dispelled it', effects: [{ stat: 'xp', value: 2 }] },
+      4: { label: 'Absorbed residual mana', effects: [{ stat: 'xp', value: 2 }, { stat: 'gold', value: 1 }] },
+      5: { label: 'Unraveled the enchantment', effects: [{ stat: 'xp', value: 3 }] },
+      6: { label: 'Captured the spell', effects: [{ stat: 'xp', value: 3 }, { stat: 'gold', value: 2 }] },
+    },
+    failurePenalties: {
+      1: { label: 'Minor hex', effects: [{ stat: 'hp', value: -1 }], statusEffect: 'curse' },
+      2: { label: 'Cursed shock', effects: [{ stat: 'hp', value: -1 }], statusEffect: 'curse' },
+      3: { label: 'Arcane burn', effects: [{ stat: 'hp', value: -2 }], statusEffect: 'curse' },
+      4: { label: 'Soul scarred', effects: [{ stat: 'hp', value: -2 }], statusEffect: 'curse' },
+      5: { label: 'Deep curse', effects: [{ stat: 'hp', value: -3 }], statusEffect: 'curse' },
+      6: { label: 'Hex consumed', effects: [{ stat: 'hp', value: -4 }], statusEffect: 'curse' },
+    },
+  },
+  {
+    id: 'trap_flame_geyser',
+    name: 'Flame Geyser',
+    type: 'trap',
+    description:
+      'Volcanic vents hidden beneath cracked flagstones erupt with pillars of searing flame, filling the chamber with blinding fire.',
+    successRewards: {
+      1: { label: 'Dodged the flames', effects: [{ stat: 'gold', value: 1 }] },
+      2: { label: 'Shielded eyes', effects: [{ stat: 'gold', value: 2 }] },
+      3: { label: 'Found heat-forged gold', effects: [{ stat: 'gold', value: 2 }] },
+      4: { label: 'Collected magma stone', effects: [{ stat: 'gold', value: 3 }] },
+      5: { label: 'Harvested fire essence', effects: [{ stat: 'gold', value: 2 }], potion: 'fire' },
+      6: { label: 'Mastered the flames', effects: [{ stat: 'xp', value: 2 }, { stat: 'gold', value: 3 }] },
+    },
+    failurePenalties: {
+      1: { label: 'Singed', effects: [{ stat: 'hp', value: -2 }] },
+      2: { label: 'Burned', effects: [{ stat: 'hp', value: -2 }] },
+      3: { label: 'Scorched', effects: [{ stat: 'hp', value: -3 }] },
+      4: { label: 'Flash-blinded', effects: [{ stat: 'hp', value: -3 }], statusEffect: 'blindness' },
+      5: { label: 'Engulfed', effects: [{ stat: 'hp', value: -4 }], statusEffect: 'blindness' },
+      6: { label: 'Inferno', effects: [{ stat: 'hp', value: -5 }], statusEffect: 'blindness' },
+    },
+  },
+  {
+    id: 'trap_shadow_snare',
+    name: 'Shadow Snare',
+    type: 'trap',
+    description:
+      'Tendrils of living shadow erupt from the walls, wrapping around your limbs and draining your vitality with an icy, paralyzing grip.',
+    successRewards: {
+      1: { label: 'Wrenched free', effects: [{ stat: 'xp', value: 1 }] },
+      2: { label: 'Sliced the tendrils', effects: [{ stat: 'xp', value: 1 }, { stat: 'gold', value: 1 }] },
+      3: { label: 'Overpowered it', effects: [{ stat: 'xp', value: 2 }] },
+      4: { label: 'Banished the shadows', effects: [{ stat: 'xp', value: 2 }, { stat: 'gold', value: 1 }] },
+      5: { label: 'Absorbed shadow energy', effects: [{ stat: 'xp', value: 2 }, { stat: 'gold', value: 2 }] },
+      6: { label: 'Mastered the darkness', effects: [{ stat: 'xp', value: 3 }, { stat: 'gold', value: 2 }] },
+    },
+    failurePenalties: {
+      1: { label: 'Drained', effects: [{ stat: 'hp', value: -1 }], statusEffect: 'weaken' },
+      2: { label: 'Sapped', effects: [{ stat: 'hp', value: -1 }], statusEffect: 'weaken' },
+      3: { label: 'Entangled', effects: [{ stat: 'hp', value: -2 }], statusEffect: 'weaken' },
+      4: { label: 'Paralyzed', effects: [{ stat: 'hp', value: -2 }], statusEffect: 'weaken' },
+      5: { label: 'Life force drained', effects: [{ stat: 'hp', value: -3 }], statusEffect: 'weaken' },
+      6: { label: 'Nearly consumed', effects: [{ stat: 'hp', value: -4 }], statusEffect: 'weaken' },
+    },
+  },
+];
+
+// ============================================================================
+// TREASURE CARDS (4)
+// ============================================================================
+
+export const TREASURE_CARDS: TreasureCard[] = [
+  {
+    id: 'treasure_forgotten_stash',
+    name: 'Forgotten Stash',
+    type: 'treasure',
+    description:
+      'A crumbling alcove conceals a leather satchel, half-buried under rubble and bone dust. Something glints inside.',
+    goldBase: 1,
+    goldIfCombat: 3,
+    chestRewards: {
+      1: { label: 'Healing herbs', effects: [{ stat: 'hp', value: 3 }] },
+      2: { label: 'Small pouch', effects: [{ stat: 'gold', value: 2 }] },
+      3: { label: 'Herbal remedy', effects: [{ stat: 'hp', value: 2 }], potion: 'healing' },
+      4: { label: 'Vial of venom', effects: [{ stat: 'gold', value: 1 }], potion: 'poison' },
+      5: { label: 'Fire flask', effects: [{ stat: 'gold', value: 2 }], potion: 'fire' },
+      6: { label: 'Blessed water', effects: [{ stat: 'gold', value: 3 }], potion: 'holy' },
+    },
+  },
+  {
+    id: 'treasure_gilded_reliquary',
+    name: 'Gilded Reliquary',
+    type: 'treasure',
+    description:
+      'An ornate box of tarnished gold, adorned with faded runes. The lock is rusted but might yield to skill or force.',
+    goldBase: 1,
+    goldIfCombat: 4,
+    chestRewards: {
+      1: { label: 'Rusted chain mail', effects: [{ stat: 'armor', value: 1 }] },
+      2: { label: 'Steel gauntlets', effects: [{ stat: 'armor', value: 1 }] },
+      3: { label: 'Enchanted buckler', effects: [{ stat: 'armor', value: 1 }, { stat: 'gold', value: 1 }] },
+      4: { label: 'Battle manual', effects: [{ stat: 'xp', value: 3 }] },
+      5: { label: 'Frost crystal', effects: [{ stat: 'gold', value: 2 }], potion: 'frost' },
+      6: { label: 'Ancient relic', effects: [{ stat: 'armor', value: 1 }, { stat: 'xp', value: 2 }, { stat: 'gold', value: 2 }] },
+    },
+  },
+  {
+    id: 'treasure_dusty_coffer',
+    name: 'Dusty Coffer',
+    type: 'treasure',
+    description:
+      'A wooden chest bound in corroded copper sits in the corner, its keyhole shaped like a screaming face.',
+    goldBase: 1,
+    goldIfCombat: 3,
+    chestRewards: {
+      1: { label: 'Dried rations', effects: [{ stat: 'food', value: 1 }] },
+      2: { label: 'Meditation scroll', effects: [{ stat: 'xp', value: 2 }] },
+      3: { label: 'Bandages and salve', effects: [{ stat: 'hp', value: 4 }] },
+      4: { label: 'Training manual', effects: [{ stat: 'xp', value: 3 }] },
+      5: { label: 'Healing elixir', effects: [{ stat: 'hp', value: 3 }], potion: 'healing' },
+      6: { label: 'Scholar\'s trove', effects: [{ stat: 'xp', value: 3 }, { stat: 'hp', value: 3 }] },
+    },
+  },
+  {
+    id: 'treasure_cursed_reliquary',
+    name: 'Cursed Reliquary',
+    type: 'treasure',
+    description:
+      'A chest of obsidian and bone radiates a palpable malice. The rewards within are great, but so are the risks.',
+    goldBase: 1,
+    goldIfCombat: 4,
+    chestRewards: {
+      1: { label: 'Cursed coins', effects: [{ stat: 'gold', value: 3 }, { stat: 'hp', value: -2 }] },
+      2: { label: 'Dark knowledge', effects: [{ stat: 'xp', value: 3 }, { stat: 'hp', value: -1 }] },
+      3: { label: 'Demon-forged plate', effects: [{ stat: 'armor', value: 2 }] },
+      4: { label: 'Perception lens', effects: [{ stat: 'gold', value: 2 }], potion: 'perception' },
+      5: { label: 'Holy relic', effects: [{ stat: 'hp', value: 5 }], potion: 'holy' },
+      6: { label: 'Dragon\'s hoard', effects: [{ stat: 'gold', value: 5 }, { stat: 'xp', value: 2 }] },
+    },
+  },
+];
+
+// ============================================================================
+// BONFIRE CARDS (3)
+// ============================================================================
+
+export const BONFIRE_CARDS: BonfireCard[] = [
+  {
+    id: 'bonfire_ember_hearth',
+    name: 'Ember Hearth',
+    type: 'bonfire',
+    description:
+      'Warm coals still glow in this forgotten campsite. The remains of a bedroll and a rusted cook-pot suggest someone rested here recently.',
+    actions: [
+      {
+        label: 'Rest by the fire',
+        icon: '❤️',
+        effect: [{ stat: 'hp', value: 4 }],
+      },
+      {
+        label: 'Practice swordplay',
+        icon: '⚔️',
+        effect: [{ stat: 'xp', value: 2 }],
+      },
+      {
+        label: 'Forage for scraps',
+        icon: '🍖',
+        effect: [{ stat: 'food', value: 1 }],
+      },
+    ],
+  },
+  {
+    id: 'bonfire_sanctuary_fire',
+    name: 'Sanctuary Fire',
+    type: 'bonfire',
+    description:
+      'A sacred flame burns in a stone brazier, untouched by the corruption that taints the rest of the dungeon. Its warmth heals wounds of body and spirit.',
+    actions: [
+      {
+        label: 'Meditate by the flame',
+        icon: '🧘',
+        effect: [{ stat: 'hp', value: 2 }, { stat: 'xp', value: 1 }],
+      },
+      {
+        label: 'Heal wounds',
+        icon: '❤️',
+        effect: [{ stat: 'hp', value: 5 }],
+      },
+      {
+        label: 'Study the runes',
+        icon: '📖',
+        effect: [{ stat: 'xp', value: 2 }],
+      },
+      {
+        label: 'Sharpen your blade',
+        icon: '🗡️',
+        effect: [{ stat: 'armor', value: 1 }],
+      },
+    ],
+  },
+  {
+    id: 'bonfire_wayfarers_camp',
+    name: "Wayfarer's Camp",
+    type: 'bonfire',
+    description:
+      'A traveler\'s camp nestled in a defensible alcove. Dried meat hangs from a cord, and a well-maintained firepit offers warmth.',
+    actions: [
+      {
+        label: 'Eat and rest',
+        icon: '🍲',
+        effect: [{ stat: 'hp', value: 3 }, { stat: 'food', value: 1 }],
+      },
+      {
+        label: 'Train',
+        icon: '💪',
+        effect: [{ stat: 'xp', value: 2 }],
+      },
+      {
+        label: 'Tend wounds',
+        icon: '🩹',
+        effect: [{ stat: 'hp', value: 4 }],
+      },
+    ],
+  },
+];
+
+// ============================================================================
+// MERCHANT CARDS (3)
+// ============================================================================
+
+export const MERCHANT_CARDS: MerchantCard[] = [
+  {
+    id: 'merchant_hooded_peddler',
+    name: 'Hooded Peddler',
+    type: 'merchant',
+    description:
+      'A hunched figure draped in rags, their face hidden beneath a deep hood. They gesture toward wares spread on a moth-eaten blanket.',
+    items: [
+      { name: 'Healing Salve', cost: 2, effect: [{ stat: 'hp', value: 4 }], icon: '🧴' },
+      { name: 'Iron Rations', cost: 1, effect: [{ stat: 'food', value: 2 }], icon: '🍖' },
+      { name: 'Leather Armor', cost: 3, effect: [{ stat: 'armor', value: 1 }], icon: '🛡️' },
+      { name: 'Healing Potion', cost: 3, effect: [{ stat: 'potion_healing', value: 1 }], icon: '❤️' },
+    ],
+  },
+  {
+    id: 'merchant_goblin_broker',
+    name: 'Goblin Broker',
+    type: 'merchant',
+    description:
+      'A wiry goblin with gold-capped teeth and an unsettling grin. Despite appearances, his goods are surprisingly genuine.',
+    items: [
+      { name: 'Fire Bomb', cost: 4, effect: [{ stat: 'potion_fire', value: 1 }], icon: '🔥' },
+      { name: 'Frost Vial', cost: 4, effect: [{ stat: 'potion_frost', value: 1 }], icon: '❄️' },
+      { name: 'Trail Rations', cost: 1, effect: [{ stat: 'food', value: 1 }], icon: '🥩' },
+      { name: 'Reinforced Shield', cost: 4, effect: [{ stat: 'armor', value: 2 }], icon: '🛡️' },
+    ],
+  },
+  {
+    id: 'merchant_spectral_vendor',
+    name: 'Spectral Vendor',
+    type: 'merchant',
+    description:
+      'A translucent apparition floating before a ghostly market stall. It accepts only gold—mortal currency seems to amuse it.',
+    items: [
+      { name: 'Holy Water', cost: 3, effect: [{ stat: 'potion_holy', value: 1 }], icon: '☕' },
+      { name: 'Perception Lens', cost: 3, effect: [{ stat: 'potion_perception', value: 1 }], icon: '👁️' },
+      { name: 'Spectral Bandage', cost: 2, effect: [{ stat: 'hp', value: 5 }], icon: '🩹' },
+      { name: 'Tome of Knowledge', cost: 5, effect: [{ stat: 'xp', value: 3 }], icon: '📖' },
+      { name: 'Poison Vial', cost: 3, effect: [{ stat: 'potion_poison', value: 1 }], icon: '💀' },
+    ],
+  },
+];
+
+// ============================================================================
+// SHRINE CARDS (3)
+// ============================================================================
+
+export const SHRINE_CARDS: ShrineCard[] = [
+  {
+    id: 'shrine_altar_of_shadows',
+    name: 'Altar of Shadows',
+    type: 'shrine',
+    description:
+      'A black stone altar stained with ancient offerings. Dark energy pulses from within, promising power at a price.',
+    outcomes: {
+      1: { label: 'The shadows curse you', effects: [{ stat: 'hp', value: -3 }] },
+      2: { label: 'A whisper of power', effects: [{ stat: 'xp', value: 1 }] },
+      3: { label: 'Dark blessing', effects: [{ stat: 'xp', value: 2 }] },
+      4: { label: 'Shadow\'s gift', effects: [{ stat: 'hp', value: 3 }] },
+      5: { label: 'Empowered', effects: [{ stat: 'hp', value: 3 }, { stat: 'xp', value: 1 }] },
+      6: { label: 'Shadow pact', effects: [{ stat: 'xp', value: 3 }, { stat: 'gold', value: 2 }] },
+    },
+  },
+  {
+    id: 'shrine_forgotten_idol',
+    name: 'Forgotten Idol',
+    type: 'shrine',
+    description:
+      'A crumbling statue of a deity whose name has been lost to time. Offerings placed at its base sometimes vanish, replaced by gifts.',
+    outcomes: {
+      1: { label: 'The idol crumbles', effects: [{ stat: 'hp', value: -2 }, { stat: 'gold', value: -1 }] },
+      2: { label: 'Faint warmth', effects: [{ stat: 'hp', value: 2 }] },
+      3: { label: 'Minor blessing', effects: [{ stat: 'gold', value: 2 }] },
+      4: { label: 'Revitalized', effects: [{ stat: 'hp', value: 4 }] },
+      5: { label: 'Divine favor', effects: [{ stat: 'hp', value: 3 }], potion: 'healing' },
+      6: { label: 'Miraculous boon', effects: [{ stat: 'hp', value: 5 }, { stat: 'xp', value: 2 }] },
+    },
+  },
+  {
+    id: 'shrine_blood_fountain',
+    name: 'Blood Fountain',
+    type: 'shrine',
+    description:
+      'A fountain of dark crimson liquid bubbles from cracked stone. Those brave enough to drink may find restoration—or ruin.',
+    outcomes: {
+      1: { label: 'Tainted blood', effects: [{ stat: 'hp', value: -4 }] },
+      2: { label: 'Bitter taste', effects: [{ stat: 'food', value: 1 }] },
+      3: { label: 'Invigorating', effects: [{ stat: 'hp', value: 3 }] },
+      4: { label: 'Strengthened', effects: [{ stat: 'armor', value: 1 }] },
+      5: { label: 'Blood pact', effects: [{ stat: 'hp', value: 4 }, { stat: 'armor', value: 1 }] },
+      6: { label: 'Crimson ascension', effects: [{ stat: 'hp', value: 5 }, { stat: 'xp', value: 2 }, { stat: 'gold', value: 2 }] },
+    },
+  },
+];
+
+// ============================================================================
+// TOMB CARDS (3)
+// ============================================================================
+
+export const TOMB_CARDS: TombCard[] = [
+  {
+    id: 'tomb_ancient_sarcophagus',
+    name: 'Ancient Sarcophagus',
+    type: 'tomb',
+    description:
+      'A stone coffin carved with warnings in a dead language. The lid is ajar, and something glints within the darkness.',
+    outcomes: {
+      1: { label: 'Angry spirit', effects: [{ stat: 'hp', value: -3 }] },
+      2: { label: 'Dust and bones', effects: [{ stat: 'gold', value: 1 }] },
+      3: { label: 'Burial coins', effects: [{ stat: 'gold', value: 2 }] },
+      4: { label: 'Ancient scroll', effects: [{ stat: 'xp', value: 2 }] },
+      5: { label: 'Preserved elixir', effects: [{ stat: 'gold', value: 2 }], potion: 'healing' },
+      6: { label: 'Royal treasure', effects: [{ stat: 'gold', value: 4 }, { stat: 'xp', value: 2 }] },
+    },
+  },
+  {
+    id: 'tomb_forgotten_crypt',
+    name: 'Forgotten Crypt',
+    type: 'tomb',
+    description:
+      'Row upon row of niches hold crumbling remains. Some alcoves are sealed with wax; others have been pried open by desperate hands.',
+    outcomes: {
+      1: { label: 'Corpse gas', effects: [{ stat: 'hp', value: -2 }, { stat: 'food', value: -1 }] },
+      2: { label: 'Worthless trinkets', effects: [{ stat: 'gold', value: 1 }] },
+      3: { label: 'Silver pendant', effects: [{ stat: 'gold', value: 3 }] },
+      4: { label: 'Ritual text', effects: [{ stat: 'xp', value: 3 }] },
+      5: { label: 'Sacred oil', effects: [{ stat: 'hp', value: 3 }], potion: 'holy' },
+      6: { label: 'Tomb lord\'s hoard', effects: [{ stat: 'gold', value: 3 }, { stat: 'xp', value: 2 }, { stat: 'armor', value: 1 }] },
+    },
+  },
+  {
+    id: 'tomb_ossuary',
+    name: 'Ossuary of the Damned',
+    type: 'tomb',
+    description:
+      'Skulls are stacked floor to ceiling in meticulous rows, each inscribed with a name and a sin. The air hums with trapped souls.',
+    outcomes: {
+      1: { label: 'Soul drain', effects: [{ stat: 'xp', value: -2 }] },
+      2: { label: 'Whispered secrets', effects: [{ stat: 'xp', value: 1 }] },
+      3: { label: 'Bone charm', effects: [{ stat: 'armor', value: 1 }] },
+      4: { label: 'Forbidden knowledge', effects: [{ stat: 'xp', value: 3 }] },
+      5: { label: 'Spirit\'s gratitude', effects: [{ stat: 'hp', value: 4 }, { stat: 'xp', value: 1 }] },
+      6: { label: 'Necromancer\'s cache', effects: [{ stat: 'gold', value: 3 }, { stat: 'xp', value: 3 }] },
+    },
+  },
+];
+
+// ============================================================================
+// ITEM CARDS (6)
+// ============================================================================
+
+export const ITEM_CARDS: ItemCard[] = [
+  {
+    id: 'item_crow',
+    name: 'Crow',
+    type: 'item_room',
+    description:
+      'A ragged black bird perches on a broken beam, watching you with unsettling intelligence. Feed it, and it may prove a loyal companion.',
+    cost: { stat: 'food', value: 1 },
+    ignoreCost: {
+      label: 'The crow steals from you',
+      effects: [{ stat: 'gold', value: -1 }],
+    },
+    itemEffect: 'Perform a free Feat (reroll one die without XP or HP cost) once per area.',
+    uses: 2,
+    skillType: 'combat',
+  },
+  {
+    id: 'item_lantern',
+    name: 'Lantern',
+    type: 'item_room',
+    description:
+      'An oil lantern that still holds fuel, its flame casting a warm circle of light that defies the dungeon\'s gloom.',
+    cost: { stat: 'gold', value: 2 },
+    itemEffect: 'Reveal all facedown room cards in your current row.',
+    uses: 2,
+    skillType: 'exploration',
+  },
+  {
+    id: 'item_war_horn',
+    name: 'War Horn',
+    type: 'item_room',
+    description:
+      'A battered horn carved from a minotaur\'s horn. Its thunderous blast echoes through the dungeon and strikes fear into enemies.',
+    cost: { stat: 'gold', value: 1 },
+    itemEffect: 'Deal 3 damage to the enemy at the start of combat, before rolling dice.',
+    uses: 1,
+    skillType: 'combat',
+  },
+  {
+    id: 'item_ancient_codex',
+    name: 'Ancient Codex',
+    type: 'item_room',
+    description:
+      'A leather-bound tome scrawled with arcane formulae. Reading it fills your mind with knowledge—if you can decipher the script.',
+    cost: { stat: 'xp', value: 0 },
+    itemEffect: 'Gain 3 XP immediately upon acquiring this item.',
+    uses: 1,
+  },
+  {
+    id: 'item_herbal_pouch',
+    name: 'Herbal Pouch',
+    type: 'item_room',
+    description:
+      'A pouch of dried herbs and medicinal roots, carefully preserved. Their curative properties can neutralize even magical poisons.',
+    cost: { stat: 'gold', value: 1 },
+    itemEffect: 'Cure poison and heal 2 HP.',
+    uses: 2,
+  },
+  {
+    id: 'item_rusty_shield',
+    name: 'Rusty Shield',
+    type: 'item_room',
+    description:
+      'A battered shield covered in rust and dents. Despite its poor condition, it still turns blades when it matters most.',
+    cost: { stat: 'gold', value: 2 },
+    itemEffect: 'Gain +2 Armor for the next combat encounter.',
+    uses: 1,
+    skillType: 'combat',
+  },
+];
+
+// ============================================================================
+// COMBINED DECK
+// ============================================================================
+
+/**
+ * All room cards combined into one deck (excluding bosses).
+ * Bosses are placed separately on the dungeon mat.
+ */
+export const ROOM_CARDS: RoomCard[] = [
+  ...MONSTER_CARDS,
+  ...TRAP_CARDS,
+  ...TREASURE_CARDS,
+  ...BONFIRE_CARDS,
+  ...MERCHANT_CARDS,
+  ...SHRINE_CARDS,
+  ...TOMB_CARDS,
+  ...ITEM_CARDS,
+];
