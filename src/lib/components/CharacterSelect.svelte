@@ -195,7 +195,7 @@
 				<!-- Skills -->
 				<div class="mb-3 space-y-2">
 					<h3 class="text-xs font-semibold tracking-wider text-amber-400/60 uppercase">Skills</h3>
-					{#each char.skills as skill}
+					{#each char.skills as skill (skill.name)}
 						<div class="flex items-start gap-2">
 							<span class="badge mt-0.5 shrink-0 rounded px-1.5 py-0.5 text-[10px] font-medium {skillTypeBadge[skill.type]?.color ?? 'bg-stone-700 text-stone-300'}">
 								{skillTypeBadge[skill.type]?.label ?? skill.type}

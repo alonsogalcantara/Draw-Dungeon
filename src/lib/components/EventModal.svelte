@@ -58,7 +58,7 @@
 	}
 </script>
 
-{#snippet outcomesList(outcomes, title, highlightRoll = null)}
+{#snippet outcomesList(outcomes: any, title: string, highlightRoll: number | null = null)}
 	{#if outcomes}
 		<div class="mb-4 rounded-lg bg-stone-900/40 p-3 text-left">
 			<p class="mb-2 text-xs font-bold uppercase tracking-wider text-stone-500">{title}</p>
@@ -162,7 +162,7 @@
 					<div class="divider my-4 h-px bg-gradient-to-r from-transparent via-purple-700/40 to-transparent"></div>
 
 					{#if !event.rolled}
-						{@render outcomesList(event.card.outcomes, 'Possible Boons')}
+						{@render outcomesList((event.card as any).outcomes, 'Possible Boons')}
 						<p class="mb-4 text-xs text-stone-400">Roll the Dungeon die. Offer 1 Gold for +1 to the result.</p>
 						<div class="flex items-center justify-center gap-4">
 							<button class="btn btn-primary px-6 py-2" onclick={() => shrineRoll(false)}>
@@ -175,7 +175,7 @@
 							{/if}
 						</div>
 					{:else}
-						{@render outcomesList(event.card.outcomes, 'Boons', event.result)}
+						{@render outcomesList((event.card as any).outcomes, 'Boons', event.result)}
 						<div class="mb-4 flex flex-col items-center rounded-lg bg-stone-800/60 px-4 py-3">
 							<p class="mb-2 text-lg font-bold text-amber-300">Result:</p>
 							<div class="mb-2 scale-75">
@@ -207,7 +207,7 @@
 					{/if}
 
 					{#if !event.chestOpened}
-						{@render outcomesList(event.card.chestRewards, 'Possible Loot')}
+						{@render outcomesList((event.card as any).chestRewards, 'Possible Loot')}
 						<p class="mb-3 text-xs text-stone-400">Try to unlock the treasure chest?</p>
 						<button class="btn btn-primary px-6 py-2" onclick={treasureSkillCheck}>
 							🔓 Skill Check
@@ -216,7 +216,7 @@
 							Skip
 						</button>
 					{:else}
-						{@render outcomesList(event.card.chestRewards, 'Loot', event.dungeonResult)}
+						{@render outcomesList((event.card as any).chestRewards, 'Loot', event.dungeonResult)}
 						{#if event.chestReward}
 							<div class="mb-4 rounded-lg bg-emerald-900/20 px-4 py-2">
 								<p class="text-sm text-emerald-300">{event.chestReward}</p>
@@ -238,7 +238,7 @@
 					<div class="divider my-4 h-px bg-gradient-to-r from-transparent via-stone-600/40 to-transparent"></div>
 
 					{#if !event.rolled}
-						{@render outcomesList(event.card.outcomes, 'Possible Outcomes')}
+						{@render outcomesList((event.card as any).outcomes, 'Possible Outcomes')}
 						<p class="mb-3 text-xs text-stone-400">Perform a skill check to investigate.</p>
 						<button class="btn btn-primary px-6 py-2" onclick={tombSkillCheck}>
 							🎲 Skill Check
@@ -247,7 +247,7 @@
 							Leave
 						</button>
 					{:else if event.success && !event.modified}
-						{@render outcomesList(event.card.outcomes, 'Outcomes', event.dungeonResult)}
+						{@render outcomesList((event.card as any).outcomes, 'Outcomes', event.dungeonResult)}
 						<div class="mb-4 flex flex-col items-center">
 							<p class="mb-2 text-sm text-emerald-400">✅ Success!</p>
 							<div class="mb-2 scale-75">
@@ -267,7 +267,7 @@
 							</button>
 						</div>
 					{:else}
-						{@render outcomesList(event.card.outcomes, 'Outcomes', event.dungeonResult)}
+						{@render outcomesList((event.card as any).outcomes, 'Outcomes', event.dungeonResult)}
 						{#if !event.success}
 							<div class="mb-4 flex flex-col items-center">
 								<p class="mb-2 text-sm text-red-400">❌ Failed.</p>

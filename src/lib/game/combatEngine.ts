@@ -9,17 +9,23 @@ export function initCombat(enemy: MonsterCard | BossCard, floor: number, level: 
     hp = enemy.hp;
   }
   
-  // Scale dynamically based on level
   const scaledHp = hp + (level - 1) * 3;
+  let scaledEnemy: MonsterCard | BossCard;
   const scaledDamage = enemy.damage + (level - 1) * 1;
-  const scaledXp = (enemy.reward?.xp || 0) + (level - 1) * 1;
-  
-  const scaledEnemy = {
-    ...enemy,
-    damage: scaledDamage,
-    reward: enemy.reward ? { ...enemy.reward, xp: scaledXp } : undefined
-  } as MonsterCard | BossCard;
 
+  if (enemy.type === 'boss') {
+    scaledEnemy = {
+      ...enemy,
+      damage: scaledDamage,
+    } as BossCard;
+  } else {
+    const scaledXpReward = enemy.xpRewardPerFloor.map(xp => xp + (level - 1) * 1) as [number, number, number, number];
+    scaledEnemy = {
+      ...enemy,
+      damage: scaledDamage,
+      xpRewardPerFloor: scaledXpReward
+    } as MonsterCard;
+  }
   return {
     enemy: scaledEnemy,
     enemyHp: scaledHp,
