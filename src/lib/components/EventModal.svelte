@@ -13,6 +13,7 @@
 	} from '$lib/game/gameActions';
 	import type { RoomCard } from '$lib/game/types';
 	import DiceRoller from './DiceRoller.svelte';
+	import RoomCardDetail from './RoomCardDetail.svelte';
 
 	const event = $derived(game.event);
 	const eventType = $derived(event?.type ?? '');
@@ -75,17 +76,23 @@
 {/snippet}
 
 {#if event}
-	<div class="overlay overlay-event fixed inset-0 z-40 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-		<div class="mx-4 w-full max-w-xl rounded-2xl border border-amber-900/30 bg-stone-950/95 p-6 shadow-2xl">
+	<div class="overlay overlay-event fixed inset-0 z-40 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+		<div class="flex flex-col md:flex-row gap-6 w-full max-w-4xl max-h-[90vh]">
+			
+			<!-- Card Anatomy UI -->
+			<div class="flex-shrink-0 mx-auto md:mx-0">
+				<RoomCardDetail card={event.card} />
+			</div>
 
-			<!-- Bonfire -->
-			{#if eventType === 'bonfire'}
-				<div class="text-center">
-					<span class="text-5xl">🔥</span>
-					<h2 class="title-text mt-3 text-2xl">Bonfire</h2>
-					<p class="mt-2 text-sm text-stone-400">{event.card.name ?? 'A warm fire crackles before you. Rest a while...'}</p>
+			<!-- Interaction Panel -->
+			<div class="flex-1 overflow-y-auto rounded-2xl border border-amber-900/30 bg-stone-950/95 p-6 shadow-2xl">
+				<!-- Bonfire -->
+				{#if eventType === 'bonfire'}
+					<div class="text-center h-full flex flex-col justify-center">
+						<h2 class="title-text text-2xl text-amber-200">Rest & Recover</h2>
+						
+						<div class="divider my-4 h-px bg-gradient-to-r from-transparent via-orange-700/40 to-transparent"></div>
 
-					<div class="divider my-4 h-px bg-gradient-to-r from-transparent via-orange-700/40 to-transparent"></div>
 
 					<p class="mb-4 text-xs text-emerald-400/70">🔄 Skills refreshed</p>
 
@@ -106,17 +113,15 @@
 					</div>
 				</div>
 
-			<!-- Merchant -->
-			{:else if eventType === 'merchant'}
-				<div>
-					<div class="mb-4 text-center">
-						<span class="text-5xl">🏪</span>
-						<h2 class="title-text mt-3 text-2xl">Merchant</h2>
-						<p class="mt-1 text-sm text-stone-400">Browse wares and make trades</p>
-						<div class="mt-2 inline-flex items-center gap-1 rounded-full bg-yellow-900/30 px-3 py-1 text-sm font-bold text-yellow-300">
-							💰 {game.gold} Gold
+				<!-- Merchant -->
+				{:else if eventType === 'merchant'}
+					<div>
+						<div class="mb-4 text-center">
+							<h2 class="title-text text-2xl text-amber-200">Merchant's Wares</h2>
+							<div class="mt-3 inline-flex items-center gap-1 rounded-full bg-yellow-900/30 px-3 py-1 text-sm font-bold text-yellow-300">
+								💰 {game.gold} Gold
+							</div>
 						</div>
-					</div>
 
 					<div class="divider my-4 h-px bg-gradient-to-r from-transparent via-amber-700/40 to-transparent"></div>
 
@@ -331,7 +336,8 @@
 						Continue
 					</button>
 				</div>
-			{/if}
+				{/if}
+			</div>
 		</div>
 	</div>
 {/if}

@@ -374,6 +374,7 @@ export interface SkillCheckState {
   dungeonDie?: number | null;
   rolling?: boolean;
   outcome?: string;
+  card?: RoomCard;
 }
 
 // --- Events ---

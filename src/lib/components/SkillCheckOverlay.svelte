@@ -2,6 +2,7 @@
 	import { game } from '$lib/game/gameState.svelte';
 	import { performSkillCheck, resolveSkillCheck } from '$lib/game/gameActions';
 	import DiceRoller from './DiceRoller.svelte';
+	import RoomCardDetail from './RoomCardDetail.svelte';
 
 	const skillCheck = $derived(game.skillCheck);
 	const rolled = $derived(skillCheck?.rolled ?? false);
@@ -17,13 +18,21 @@
 </script>
 
 {#if skillCheck}
-	<div class="overlay overlay-skill fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-		<div class="mx-4 w-full max-w-lg rounded-2xl border border-amber-900/30 bg-stone-950/95 p-8 shadow-2xl">
-			<!-- Title -->
-			<div class="mb-6 text-center">
-				<h2 class="title-text mb-2 text-2xl tracking-wider">Skill Check</h2>
-				<p class="text-sm text-stone-400">{reason}</p>
-			</div>
+	<div class="overlay overlay-skill fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+		<div class="flex flex-col md:flex-row gap-6 w-full max-w-3xl">
+			
+			{#if skillCheck.card}
+				<div class="flex-shrink-0 mx-auto md:mx-0">
+					<RoomCardDetail card={skillCheck.card} />
+				</div>
+			{/if}
+
+			<div class="flex-1 rounded-2xl border border-amber-900/30 bg-stone-950/95 p-8 shadow-2xl flex flex-col justify-center">
+				<!-- Title -->
+				<div class="mb-6 text-center">
+					<h2 class="title-text mb-2 text-2xl tracking-wider">Skill Check</h2>
+					<p class="text-sm text-stone-400">{reason}</p>
+				</div>
 
 			{#if !rolled}
 				<!-- Pre-roll -->
@@ -76,7 +85,8 @@
 						Continue
 					</button>
 				</div>
-			{/if}
+				{/if}
+			</div>
 		</div>
 	</div>
 {/if}

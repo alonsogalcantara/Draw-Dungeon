@@ -12,6 +12,7 @@
 	} from '$lib/game/gameActions';
 	import { POTIONS } from '$lib/data/potions';
 	import DiceRoller from './DiceRoller.svelte';
+	import RoomCardDetail from './RoomCardDetail.svelte';
 
 	let showPotionMenu = $state(false);
 
@@ -132,29 +133,24 @@
 					{/if}
 				</div>
 
-				<!-- Enemy side -->
-				<div class="flex flex-col items-center gap-3 rounded-xl border border-red-900/30 bg-red-950/30 p-4">
-					<span class="text-3xl">{enemy?.type === 'boss' ? '💀' : '👹'}</span>
-					<h3 class="text-sm font-bold text-red-300">{enemy?.name ?? 'Monster'}</h3>
-					<div class="w-full">
-						<div class="mb-1 flex justify-between text-xs text-stone-400">
-							<span>HP</span>
-							<span>{combat?.enemyHp ?? 0}/{combat?.enemyMaxHp ?? 0}</span>
+				<!-- Enemy side (Card Anatomy) -->
+				<div class="flex flex-col items-center justify-center gap-3">
+					{#if enemy}
+						<RoomCardDetail card={enemy} />
+						
+						<!-- Live HP Bar overlay/below -->
+						<div class="w-full max-w-[280px] rounded-lg bg-stone-900/80 p-2 border border-red-900/30">
+							<div class="mb-1 flex justify-between text-xs font-bold text-stone-400">
+								<span>Current HP</span>
+								<span class="text-red-400">{combat?.enemyHp ?? 0} / {combat?.enemyMaxHp ?? 0}</span>
+							</div>
+							<div class="enemy-hp-bar h-2.5 overflow-hidden rounded-full bg-stone-950">
+								<div class="h-full rounded-full bg-gradient-to-r from-red-800 to-red-500 transition-all duration-500"
+									style="width: {enemyHpPercent}%"
+								></div>
+							</div>
 						</div>
-						<div class="enemy-hp-bar h-3 overflow-hidden rounded-full bg-stone-800">
-							<div class="h-full rounded-full bg-gradient-to-r from-red-800 to-red-600 transition-all duration-500"
-								style="width: {enemyHpPercent}%"
-							></div>
-						</div>
-					</div>
-					<div class="flex gap-2 text-xs">
-						<span class="text-red-400">⚔️ {enemy?.damage ?? 0}</span>
-						{#if enemy?.effects?.length}
-							{#each enemy.effects as eff}
-								<span class="rounded bg-red-900/40 px-1 text-red-300">{eff}</span>
-							{/each}
-						{/if}
-					</div>
+					{/if}
 				</div>
 			</div>
 

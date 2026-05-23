@@ -135,7 +135,8 @@ export function resolveRoom(roomInstance: RoomCardInstance) {
       diceResults: [],
       dungeonDieResult: 0,
       success: null,
-      resolved: false
+      resolved: false,
+      card
     };
     game.event = { type: card.type, card, resolved: false };
   } else {

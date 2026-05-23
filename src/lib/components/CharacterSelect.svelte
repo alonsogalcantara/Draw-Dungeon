@@ -5,7 +5,7 @@
 	import { CHARACTERS, ALL_SKILLS } from '$lib/data/characters';
 	import { MAX_HP, MAX_FOOD, MAX_GOLD, MAX_ARMOR } from '$lib/data/constants';
 	import { loadAllMetaProgress, clearMetaProgress, type MetaProgress } from '$lib/game/metaState';
-	import type { CharacterDef, DifficultyMode } from '$lib/game/types';
+	import type { CharacterDef, DifficultyMode, CampaignType } from '$lib/game/types';
 
 	let selectedChar = $state<CharacterDef | null>(null);
 	let difficulty = $state<DifficultyMode>('normal');
