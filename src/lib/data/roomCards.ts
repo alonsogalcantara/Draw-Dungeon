@@ -1,3 +1,6 @@
+export const getImageUrl = (campaign: string, type: string, imageName: string) =>
+  `/images/${type}s/${campaign}/${imageName}.png`;
+
 // ============================================================================
 // Mini Rogue - Room Card Definitions
 // ============================================================================
@@ -16,7 +19,7 @@ import type {
 } from '../game/types';
 
 // ============================================================================
-// MONSTER CARDS (12)
+// MONSTER CARDS
 // ============================================================================
 
 export const MONSTER_CARDS: MonsterCard[] = [
@@ -26,7 +29,7 @@ export const MONSTER_CARDS: MonsterCard[] = [
     type: 'monster',
     description:
       'A reanimated skeletal squad clutching rotting weapons. Their hollow eyes glow with a faint, malicious light as they advance in formation.',
-    image: '/images/monsters/tower/floor 1/Esqueletos Guardias.png',
+    image: getImageUrl('tower', 'monster', 'Esqueletos Guardias'),
     campaign: 'tower',
     floor: 1,
     hpPerFloor: [3, 5, 7, 10],
@@ -40,7 +43,7 @@ export const MONSTER_CARDS: MonsterCard[] = [
     type: 'monster',
     description:
       'The tortured spirit of a queen who was buried alive. Her shriek shatters resolve and saps the will to fight.',
-    image: '/images/monsters/tower/floor 1/Wailing Banshee.png',
+    image: getImageUrl('tower', 'monster', 'Wailing Banshee'),
     campaign: 'tower',
     floor: 1,
     hpPerFloor: [5, 7, 9, 12],
@@ -54,7 +57,7 @@ export const MONSTER_CARDS: MonsterCard[] = [
     type: 'monster',
     description:
       'A many-limbed horror that drags itself from cracks in the deepest stone. Its maw is a ring of serrated teeth that never stops spinning.',
-    image: '/images/monsters/tower/floor 1/Abyssal Crawler.png',
+    image: getImageUrl('tower', 'monster', 'Abyssal Crawler'),
     campaign: 'tower',
     floor: 1,
     hpPerFloor: [5, 7, 10, 13],
@@ -68,7 +71,7 @@ export const MONSTER_CARDS: MonsterCard[] = [
     type: 'monster',
     description:
       'An abomination assembled from the skeletons of a hundred victims, bound together by dark sorcery. Each step shakes the dungeon floor.',
-    image: '/images/monsters/tower/floor 1/Bone Golem.png',
+    image: getImageUrl('tower', 'monster', 'Bone Golem'),
     campaign: 'tower',
     floor: 1,
     hpPerFloor: [7, 9, 12, 15],
@@ -82,7 +85,7 @@ export const MONSTER_CARDS: MonsterCard[] = [
     type: 'monster',
     description:
       'A nearly invisible cube of acidic slime that dissolves organic matter on contact. It slowly glides forward, absorbing everything in its path.',
-    image: '/images/monsters/tower/floor 1/Gelatinous Cube.png',
+    image: getImageUrl('tower', 'monster', 'Gelatinous Cube'),
     campaign: 'tower',
     floor: 1,
     hpPerFloor: [4, 6, 8, 11],
@@ -96,7 +99,7 @@ export const MONSTER_CARDS: MonsterCard[] = [
     type: 'monster',
     description:
       'A vicious swarm of overgrown rodents with matted fur and yellowed fangs. Their bites carry terrible diseases.',
-    image: '/images/monsters/tower/floor 1/Giant Rats - Enjambres.png',
+    image: getImageUrl('tower', 'monster', 'Giant Rats - Enjambres'),
     campaign: 'tower',
     floor: 1,
     hpPerFloor: [3, 5, 8, 11],
@@ -110,7 +113,7 @@ export const MONSTER_CARDS: MonsterCard[] = [
     type: 'monster',
     description:
       'A raiding party of small, green-skinned humanoids armed with rusted blades and crude bows. They cackle wildly as they attack.',
-    image: '/images/monsters/tower/floor 1/Goblins Saqueadores.png',
+    image: getImageUrl('tower', 'monster', 'Goblins Saqueadores'),
     campaign: 'tower',
     floor: 1,
     hpPerFloor: [4, 6, 9, 12],
@@ -124,7 +127,7 @@ export const MONSTER_CARDS: MonsterCard[] = [
     type: 'monster',
     description:
       'Once a holy paladin, this fallen warrior\'s armor has fused with demonic flesh. Its cursed blade cuts through steel as if it were parchment.',
-    image: '/images/monsters/tower/floor 1/Caballeto Corrupto.png',
+    image: getImageUrl('tower', 'monster', 'Caballeto Corrupto'),
     campaign: 'tower',
     floor: 1,
     hpPerFloor: [6, 8, 11, 14],
@@ -138,7 +141,7 @@ export const MONSTER_CARDS: MonsterCard[] = [
     type: 'monster',
     description:
       'A reanimated skeletal squad clutching rotting weapons. Their hollow eyes glow with a faint, malicious light as they advance in formation.',
-    image: '/images/monsters/tower/floor 1/Guardian de la Tumba.png',
+    image: getImageUrl('tower', 'monster', 'Guardian de la Tumba'),
     campaign: 'tower',
     floor: 1,
     hpPerFloor: [6, 8, 11, 14],
@@ -152,7 +155,7 @@ export const MONSTER_CARDS: MonsterCard[] = [
     type: 'monster',
     description:
       'Hollow suits of armor animated by lingering magic. They stand perfectly still until an intruder triggers their defensive protocols.',
-    image: '/images/monsters/tower/floor 2/Armaduras Animadas.png',
+    image: getImageUrl('tower', 'monster', 'Armaduras Animadas'),
     campaign: 'tower',
     floor: 2,
     hpPerFloor: [5, 7, 10, 13],
@@ -166,7 +169,7 @@ export const MONSTER_CARDS: MonsterCard[] = [
     type: 'monster',
     description:
       'A shape-shifting predator perfectly disguised as a wooden chest. It waits patiently for greedy adventurers to approach before revealing its razor-sharp teeth.',
-    image: '/images/monsters/tower/floor 2/Mímico.png',
+    image: getImageUrl('tower', 'monster', 'Mímico'),
     campaign: 'tower',
     floor: 2,
     hpPerFloor: [6, 8, 11, 14],
@@ -180,6 +183,7 @@ export const MONSTER_CARDS: MonsterCard[] = [
     type: 'monster',
     description:
       'A cackling fiend no larger than a child, wreathed in brimstone smoke. Its curses are far more dangerous than its claws.',
+    floor: 2,
     hpPerFloor: [3, 4, 6, 9],
     damage: 2,
     effects: ['curse'],
@@ -621,6 +625,7 @@ export const SHRINE_CARDS: ShrineCard[] = [
     type: 'shrine',
     description:
       'A black stone altar stained with ancient offerings. Dark energy pulses from within, promising power at a price.',
+    image: getImageUrl('tower', 'shrine', 'Altar of Shadows'),
     outcomes: {
       1: { label: 'The shadows curse you', effects: [{ stat: 'hp', value: -3 }] },
       2: { label: 'A whisper of power', effects: [{ stat: 'xp', value: 1 }] },
@@ -688,6 +693,7 @@ export const TOMB_CARDS: TombCard[] = [
     type: 'tomb',
     description:
       'Row upon row of niches hold crumbling remains. Some alcoves are sealed with wax; others have been pried open by desperate hands.',
+    image: getImageUrl('tower', 'tomb', 'Forgotten Crypt'),
     outcomes: {
       1: { label: 'Corpse gas', effects: [{ stat: 'hp', value: -2 }, { stat: 'food', value: -1 }] },
       2: { label: 'Worthless trinkets', effects: [{ stat: 'gold', value: 1 }] },
@@ -715,7 +721,7 @@ export const TOMB_CARDS: TombCard[] = [
 ];
 
 // ============================================================================
-// ITEM CARDS (6)
+// ITEM CARDS
 // ============================================================================
 
 export const ITEM_CARDS: ItemCard[] = [

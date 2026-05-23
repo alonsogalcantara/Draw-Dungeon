@@ -165,6 +165,8 @@ export interface BossCard {
   name: string;
   type: 'boss';
   description: string;
+  image?: string;
+  campaign?: string;
   /** Total HP for the boss */
   hp: number;
   /** Base damage dealt per attack */
@@ -185,6 +187,8 @@ export interface TrapCard {
   name: string;
   type: 'trap';
   description: string;
+  image?: string;
+  campaign?: string;
   /** Rewards on successful skill check, keyed by dungeon die result 1-6 */
   successRewards: Record<number, Reward>;
   /** Penalties on failed skill check, keyed by dungeon die result 1-6 */
@@ -197,6 +201,8 @@ export interface TreasureCard {
   name: string;
   type: 'treasure';
   description: string;
+  image?: string;
+  campaign?: string;
   /** Gold gained if no combat/traps encountered this area */
   goldBase: number;
   /** Gold gained if combat/traps were encountered this area */
@@ -211,6 +217,8 @@ export interface BonfireCard {
   name: string;
   type: 'bonfire';
   description: string;
+  image?: string;
+  campaign?: string;
   /** Available rest actions (choose one) */
   actions: BonfireAction[];
 }
@@ -228,6 +236,8 @@ export interface MerchantCard {
   name: string;
   type: 'merchant';
   description: string;
+  image?: string;
+  campaign?: string;
   /** Items available for purchase */
   items: MerchantItem[];
 }
@@ -246,6 +256,8 @@ export interface ShrineCard {
   name: string;
   type: 'shrine';
   description: string;
+  image?: string;
+  campaign?: string;
   /** Outcomes keyed by dungeon die result 1-6 (can pay 1 gold for +1) */
   outcomes: Record<number, Reward>;
 }
@@ -256,6 +268,8 @@ export interface TombCard {
   name: string;
   type: 'tomb';
   description: string;
+  image?: string;
+  campaign?: string;
   /** Outcomes keyed by dungeon die result 1-6 (success allows +/-1 modification) */
   outcomes: Record<number, Reward>;
 }
@@ -266,6 +280,8 @@ export interface ItemCard {
   name: string;
   type: 'item_room';
   description: string;
+  image?: string;
+  campaign?: string;
   /** Cost to acquire the item (e.g., 1 food) */
   cost?: StatModifier;
   /** Penalty if you ignore/don't pay the cost */
