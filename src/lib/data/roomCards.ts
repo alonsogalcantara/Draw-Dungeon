@@ -192,6 +192,9 @@ export const MONSTER_CARDS: MonsterCard[] = [
     type: 'monster',
     description:
       'A many-limbed horror that drags itself from cracks in the deepest stone. Its maw is a ring of serrated teeth that never stops spinning.',
+    image: '/images/monsters/tower/floor 1/Abyssal Crawler.png',
+    campaign: 'tower',
+    floor: 1,
     hpPerFloor: [5, 7, 10, 13],
     damage: 4,
     effects: [],
