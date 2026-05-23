@@ -61,7 +61,7 @@
 						<div class="grid {gridClass} gap-4 sm:gap-6 justify-items-center w-full">
 						{#each { length: game.layoutSize } as _, row (row)}
 							{#each { length: game.layoutSize } as _, col (col)}
-								{@const instance = historyItem.grid[row]?.[col] ?? null}
+								{@const instance = isActive ? game.roomGrid[row]?.[col] ?? null : historyItem.grid[row]?.[col] ?? null}
 								<!-- Only show player position if this is the active grid -->
 								{@const isCurrent = isActive && row === game.playerRow && col === game.playerCol}
 								{@const available = isAvailable(isActive, row, col)}

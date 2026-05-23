@@ -77,15 +77,15 @@
 			 style="transform-style: preserve-3d; transform: {isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'};"
 		>
 			<!-- FRONT (Facedown Design) -->
-			<div class="absolute inset-0 w-full h-full" style="backface-visibility: hidden;">
-				<div class="absolute top-0 left-0 origin-top-left pointer-events-none" style="transform: scale({scale}); width: {baseWidth}px; height: 460px;">
+			<div class="absolute inset-0 w-full h-full flex items-center justify-center" style="backface-visibility: hidden;">
+				<div class="pointer-events-none" style="transform: scale({scale}); width: {baseWidth}px; height: 460px; transform-origin: center;">
 					<RoomCardDetail card={instance.card} facedown={true} />
 				</div>
 			</div>
 
 			<!-- BACK (Revealed Design) -->
-			<div class="absolute inset-0 w-full h-full" style="backface-visibility: hidden; transform: rotateY(180deg);">
-				<div class="absolute top-0 left-0 origin-top-left pointer-events-none" style="transform: scale({scale}); width: {baseWidth}px; height: 460px;">
+			<div class="absolute inset-0 w-full h-full flex items-center justify-center" style="backface-visibility: hidden; transform: rotateY(180deg);">
+				<div class="pointer-events-none" style="transform: scale({scale}); width: {baseWidth}px; height: 460px; transform-origin: center;">
 					<RoomCardDetail card={instance.card} facedown={false} />
 				</div>
 			</div>
