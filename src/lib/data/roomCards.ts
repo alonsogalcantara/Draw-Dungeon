@@ -262,8 +262,8 @@ export const BOSS_CARDS: BossCard[] = [
     id: 'boss_ogs_blood',
     name: "Og's Blood",
     type: 'boss',
-    image: getImageUrl('tower', 'boss', "Og's Blood"),
-    campaign: 'tower',
+    image: getImageUrl('dungeon', 'boss', "Og's Blood"),
+    campaign: 'dungeon',
     description:
       'The ancient blood of the primordial titan Og, coalesced into a terrifying physical form. It burns with the fury of a dead god, and defeating it once only awakens its true form.',
     hp: 30,
