@@ -47,7 +47,16 @@
 	};
 
 	function handleClick() {
-		if (isAvailable && !isCurrentPosition) {
+		if (game.phase === 'scouting' && isAvailable && !isCurrentPosition) {
+			if (instance && !instance.revealed) {
+				game.roomGrid[row][col]!.revealed = true;
+				game.addLog(`Scouted the room ahead.`, 'info');
+				game.phase = 'playing';
+			}
+			return;
+		}
+		
+		if (isAvailable && !isCurrentPosition && game.phase === 'playing') {
 			flipping = true;
 			moveToRoom(row, col);
 		}

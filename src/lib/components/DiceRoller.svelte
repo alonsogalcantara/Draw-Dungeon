@@ -1,10 +1,11 @@
 <script lang="ts">
 	import type { DieResult } from '$lib/game/types';
 
-	let { dice = [], dungeonDie = null, rolling = false }: {
+	let { dice = [], dungeonDie = null, rolling = false, onDieClick }: {
 		dice: DieResult[];
 		dungeonDie: number | null;
 		rolling: boolean;
+		onDieClick?: (index: number) => void;
 	} = $props();
 
 	function getDieIcon(value: number | string): string {
@@ -23,8 +24,11 @@
 
 <div class="flex flex-wrap items-center justify-center gap-3">
 	{#each dice as die, i (i)}
-		<div
+		<button
 			class="relative die flex h-16 w-16 items-center justify-center rounded-xl text-2xl font-bold shadow-lg transition-all duration-300"
+			class:cursor-pointer={onDieClick}
+			class:hover:scale-105={onDieClick && !rolling}
+			onclick={() => onDieClick && onDieClick(i)}
 			class:die-character={die.type === 'character'}
 			class:die-dungeon={die.type === 'dungeon'}
 			class:die-poison={die.type === 'poison'}
@@ -46,7 +50,7 @@
 			{#if die.type === 'character'}
 				<span class="absolute -bottom-1 -right-1 rounded bg-stone-900/80 px-1 py-0.5 text-[0.55rem] font-bold text-stone-300 border border-stone-700 backdrop-blur-sm">D{die.faces ?? 6}</span>
 			{/if}
-		</div>
+		</button>
 	{/each}
 
 	{#if dungeonDie !== null}

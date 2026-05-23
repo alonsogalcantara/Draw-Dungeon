@@ -5,7 +5,7 @@
 
 	// Determine which rooms are available to move to (right and below current position)
 	function isAvailable(isActive: boolean, row: number, col: number): boolean {
-		if (!isActive || game.phase !== 'playing') return false;
+		if (!isActive || (game.phase !== 'playing' && game.phase !== 'scouting')) return false;
 
 		const currentRoom = game.roomGrid[game.playerRow]?.[game.playerCol];
 		if (!currentRoom || !currentRoom.resolved) return false;

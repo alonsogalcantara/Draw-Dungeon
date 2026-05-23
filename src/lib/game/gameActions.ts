@@ -109,6 +109,8 @@ export function setupArea() {
   game.playerRow = 0;
   game.playerCol = 0;
   
+  game.skillUsed = false;
+  
   game.phase = 'delving';
   game.addLog(`${game.campaign === 'tower' ? 'Ascended' : 'Descended'} to Area ${game.currentArea} (Floor ${game.currentFloor})`, 'info');
 }
@@ -236,19 +238,25 @@ export function rerollCritical(dieIndex: number) {
   game.combat.diceResults = processRerollCriticals(game.combat.diceResults, dieIndex);
 }
 
-export function performFeat(dieIndex: number, costType: 'xp' | 'hp') {
+export function performFeat(dieIndex: number, costType: 'xp' | 'hp' | 'free') {
   if (!game.combat) return;
   
   if (costType === 'xp' && game.xp < 1) return;
   if (costType === 'hp' && game.hp < 2) return;
+  if (costType === 'free' && !game.freeFeatActive) return;
   
-  const { dice, hpCost, xpCost } = combatPerformFeat(game.combat.diceResults, dieIndex, costType, false);
+  const { dice, hpCost, xpCost } = combatPerformFeat(game.combat.diceResults, dieIndex, costType as any, costType === 'free');
   
   game.combat.diceResults = dice;
   if (hpCost > 0) game.loseHp(hpCost);
   if (xpCost > 0) game.loseXp(xpCost);
   
-  game.addLog(`Performed Feat! Lost ${hpCost > 0 ? hpCost + ' HP' : xpCost + ' XP'}`, 'combat');
+  if (costType === 'free') {
+    game.freeFeatActive = false;
+    game.addLog(`Performed Free Feat!`, 'combat');
+  } else {
+    game.addLog(`Performed Feat! Lost ${hpCost > 0 ? hpCost + ' HP' : xpCost + ' XP'}`, 'combat');
+  }
 }
 
 export function applyPlayerDamage() {
@@ -687,6 +695,7 @@ export function handleItemRoom(action: 'take' | 'ignore') {
       else return; // Cannot afford
     }
     game.item = card;
+    game.itemUsesLeft = card.uses;
     game.addLog(`Obtained item: ${card.name}`, 'loot');
   } else {
     if (card.ignoreCost) {
@@ -721,6 +730,47 @@ export function removePotion(slotIndex: number) {
   game.potions[slotIndex] = null;
 }
 
+import { SKILL_DICTIONARY } from './skills';
+import { ITEM_DICTIONARY } from './items';
+
+export function useCharacterSkill(skillName: string) {
+  if (game.skillUsed) {
+    game.addLog("Skill already used this area.", "system");
+    return;
+  }
+  const logic = SKILL_DICTIONARY[skillName];
+  if (logic) {
+    const success = logic();
+    if (success) {
+      game.skillUsed = true;
+    }
+  } else {
+    game.addLog(`Skill ${skillName} not implemented yet.`, 'system');
+  }
+}
+
+export function useEquippedItem() {
+  if (!game.item) return;
+  if (game.itemUsesLeft <= 0) {
+    game.addLog("This item has no uses left.", "system");
+    return;
+  }
+  
+  const logic = ITEM_DICTIONARY[game.item.id];
+  if (logic) {
+    const success = logic();
+    if (success) {
+      game.itemUsesLeft--;
+      if (game.itemUsesLeft <= 0) {
+        game.addLog(`${game.item.name} broke!`, 'info');
+        game.item = null;
+      }
+    }
+  } else {
+    game.addLog(`Item ${game.item.name} logic not implemented yet.`, 'system');
+  }
+}
+
 export function delve() {
   if (game.food >= 1) {
     game.loseFood(1);
@@ -745,10 +795,10 @@ export function delve() {
   }
   
   game.temporaryArmor = 0; // reset temp armor
-  if (game.selectedCharacter && !game.skillUsed && game.selectedCharacter.skills.find(s => s.name === 'Tough')) {
+  if (game.selectedCharacter && game.selectedCharacter.skills.find(s => s.name === 'Tough')) {
     game.temporaryArmor = 1; // Tough passive
   }
-  if (game.selectedCharacter && !game.skillUsed && game.selectedCharacter.skills.find(s => s.name === 'Blessed')) {
+  if (game.selectedCharacter && game.selectedCharacter.skills.find(s => s.name === 'Blessed')) {
     game.cursed = false; game.poisoned = false; game.blinded = false;
   }
   

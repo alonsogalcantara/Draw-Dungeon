@@ -59,6 +59,12 @@
 			.map((p, i) => ({ type: p, index: i, info: p ? POTIONS[p as keyof typeof POTIONS] : null }))
 			.filter((p) => p.info !== null)
 	);
+
+	function handleDieClick(index: number) {
+		if (game.freeFeatActive) {
+			performFeat(index, 'free' as any); // using any here to bypass the strict type momentarily
+		}
+	}
 </script>
 
 {#if combat}
@@ -106,7 +112,7 @@
 				<div class="flex flex-col items-center justify-center gap-4">
 					<span class="text-4xl">⚔️</span>
 					{#if phase !== 'monsterAttackResult'}
-						<DiceRoller {dice} {dungeonDie} {rolling} />
+						<DiceRoller {dice} {dungeonDie} {rolling} onDieClick={game.freeFeatActive ? handleDieClick : undefined} />
 						{#if totalDamage > 0 && phase === 'playerAttack' && !rolling}
 							<div class="text-center">
 								<span class="text-3xl font-black text-amber-300">{totalDamage}</span>
@@ -166,7 +172,13 @@
 							⚔️ Apply Damage
 						</button>
 
-						{#if game.xp > 0}
+						{#if game.freeFeatActive}
+							<div class="animate-pulse text-amber-400 font-bold text-sm w-full text-center mb-2">
+								✨ Click a die to reroll for free!
+							</div>
+						{/if}
+
+						{#if game.xp > 0 && !game.freeFeatActive}
 							<button class="btn btn-secondary px-4 py-2 text-sm" onclick={() => performFeat(0, 'xp')}>
 								⚡ Feat (-1 XP)
 							</button>

@@ -20,7 +20,9 @@ class GameState {
   food = $state(0);
   potions = $state<(PotionType | null)[]>([null, null]);
   item = $state<ItemCard | null>(null);
+  itemUsesLeft = $state(0);
   skillUsed = $state(false);
+  freeFeatActive = $state(false);
   cursed = $state(false);
   poisoned = $state(false);
   blinded = $state(false);
@@ -82,7 +84,9 @@ class GameState {
     this.food = 0;
     this.potions = [null, null];
     this.item = null;
+    this.itemUsesLeft = 0;
     this.skillUsed = false;
+    this.freeFeatActive = false;
     this.cursed = false;
     this.poisoned = false;
     this.blinded = false;

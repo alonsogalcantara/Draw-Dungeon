@@ -13,6 +13,8 @@ export type GamePhase =
   | 'skillCheck'
   | 'event'
   | 'delving'
+  | 'scouting'
+  | 'foresight'
   | 'gameOver'
   | 'victory';
 
