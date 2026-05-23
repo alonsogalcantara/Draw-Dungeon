@@ -11,6 +11,7 @@
 		performSkillCheck,
 		usePotion
 	} from '$lib/game/gameActions';
+	import type { RoomCard } from '$lib/game/types';
 
 	const event = $derived(game.event);
 	const eventType = $derived(event?.type ?? '');
@@ -251,6 +252,7 @@
 
 			<!-- Item Room -->
 			{:else if eventType === 'item_room'}
+				{@const itemCard = event.card as Extract<RoomCard, { type: 'item_room' }>}
 				<div class="text-center">
 					<span class="text-5xl">🔧</span>
 					<h2 class="title-text mt-3 text-2xl">Item Found</h2>
@@ -259,20 +261,20 @@
 						{#if event.card.description}
 							<p class="mt-2 text-sm text-stone-400">{event.card.description}</p>
 						{/if}
-						{#if event.card.cost}
-							<p class="mt-2 text-xs text-amber-500/60">Cost: {event.card.cost.value} {event.card.cost.stat}</p>
+						{#if itemCard.cost}
+							<p class="mt-2 text-xs text-amber-500/60">Cost: {itemCard.cost.value} {itemCard.cost.stat}</p>
 						{/if}
-						{#if event.card.ignoreCost}
-							<p class="mt-2 text-xs text-red-500/60">Ignore Penalty: {event.card.ignoreCost.label}</p>
+						{#if itemCard.ignoreCost}
+							<p class="mt-2 text-xs text-red-500/60">Ignore Penalty: {itemCard.ignoreCost.label}</p>
 						{/if}
 					</div>
 					<div class="mt-4 flex items-center justify-center gap-3">
 						<button
 							class="btn btn-primary px-6 py-2"
 							onclick={() => handleItemRoom('take')}
-							disabled={event.card.cost ? (event.card.cost.stat === 'gold' ? game.gold < event.card.cost.value : game.hp <= event.card.cost.value) : false}
+							disabled={itemCard.cost ? (itemCard.cost.stat === 'gold' ? game.gold < itemCard.cost.value : game.hp <= itemCard.cost.value) : false}
 						>
-							{event.card.cost ? 'Pay & Take' : 'Take Item'}
+							{itemCard.cost ? 'Pay & Take' : 'Take Item'}
 						</button>
 						<button class="btn btn-secondary px-6 py-2" onclick={() => handleItemRoom('ignore')}>
 							Ignore

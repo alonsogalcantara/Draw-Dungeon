@@ -35,10 +35,13 @@
 		{/if}
 	</div>
 
-	<!-- 3×3 Room Grid -->
-	<div class="dungeon-map grid grid-cols-3 grid-rows-3 gap-3">
-		{#each { length: 3 } as _, row}
-			{#each { length: 3 } as _, col}
+	<!-- Dynamic N×N Room Grid -->
+	<div 
+		class="dungeon-map grid gap-3"
+		style="grid-template-columns: repeat({game.layoutSize}, minmax(0, 1fr)); grid-template-rows: repeat({game.layoutSize}, minmax(0, 1fr));"
+	>
+		{#each { length: game.layoutSize } as _, row}
+			{#each { length: game.layoutSize } as _, col}
 				{@const instance = game.roomGrid[row]?.[col] ?? null}
 				{@const isCurrent = row === game.playerRow && col === game.playerCol}
 				{@const available = isAvailable(row, col)}

@@ -15,11 +15,12 @@ function shuffle<T>(array: T[]): T[] {
   return newArray;
 }
 
-export function startNewGame(character: CharacterDef, difficulty: DifficultyMode) {
+export function startNewGame(character: CharacterDef, difficulty: DifficultyMode, layoutSize: number = 3) {
   game.reset();
   game.phase = 'playing';
   game.selectedCharacter = character;
   game.difficulty = difficulty;
+  game.layoutSize = layoutSize;
   
   const mod = DIFFICULTY_MODIFIERS[difficulty];
   
@@ -38,8 +39,8 @@ export function startNewGame(character: CharacterDef, difficulty: DifficultyMode
 export function setupArea() {
   const deck = shuffle(ROOM_CARDS.filter(c => c.type !== 'boss'));
   
-  // Pick 9 cards for the 3x3 grid
-  const gridCards: RoomCard[] = deck.slice(0, 9);
+  const totalCards = game.layoutSize * game.layoutSize;
+  const gridCards: RoomCard[] = deck.slice(0, totalCards);
   const bossArea = DUNGEON_FLOORS[game.currentFloor - 1].bossArea;
   const isBossArea = game.currentAreaInFloor === bossArea;
   
@@ -51,20 +52,18 @@ export function setupArea() {
     // In actual game, you set up bosses facedown, here we just pick the boss for the floor
     const bossToFace = game.currentFloor === 4 ? finalBoss : regularBosses[0];
     if (bossToFace) {
-      gridCards[8] = bossToFace; // Put boss at exit
+      gridCards[totalCards - 1] = bossToFace; // Put boss at exit
     }
   }
 
-  const newGrid: (RoomCardInstance | null)[][] = [
-    [null, null, null],
-    [null, null, null],
-    [null, null, null]
-  ];
+  const newGrid: (RoomCardInstance | null)[][] = Array(game.layoutSize)
+    .fill(null)
+    .map(() => Array(game.layoutSize).fill(null));
   
-  for (let r = 0; r < 3; r++) {
-    for (let c = 0; c < 3; c++) {
+  for (let r = 0; r < game.layoutSize; r++) {
+    for (let c = 0; c < game.layoutSize; c++) {
       newGrid[r][c] = {
-        card: gridCards[r * 3 + c],
+        card: gridCards[r * game.layoutSize + c],
         revealed: false,
         resolved: false,
         row: r,
@@ -92,8 +91,8 @@ export function revealAdjacentRooms() {
   const r = game.playerRow;
   const c = game.playerCol;
   
-  const right = c + 1 < 3 ? game.roomGrid[r][c + 1] : null;
-  const down = r + 1 < 3 ? game.roomGrid[r + 1][c] : null;
+  const right = c + 1 < game.layoutSize ? game.roomGrid[r][c + 1] : null;
+  const down = r + 1 < game.layoutSize ? game.roomGrid[r + 1][c] : null;
   
   if (!game.blinded) {
     if (right) right.revealed = true;
@@ -367,7 +366,7 @@ export function resolveSkillCheck() {
     return;
   } else if (card.type === 'tomb') {
     game.event.rolled = true;
-    game.event.success = isSuccess;
+    game.event.success = isSuccess ?? false;
     game.event.dungeonResult = dungeonDie;
     
     if (!isSuccess) {
@@ -483,8 +482,9 @@ export function handleShrine(offering: boolean) {
     let roll = rollDungeonDie();
     if (offering) roll = Math.min(6, roll + 1);
     
-    const reward = game.event.card.outcomes[roll] || game.event.card.outcomes[1];
-    reward.effects.forEach(e => {
+    const card = game.event.card as Extract<RoomCard, { type: 'shrine' }>;
+    const reward = card.outcomes[roll] || card.outcomes[1];
+    reward.effects.forEach((e: any) => {
       if (e.stat === 'hp') e.value > 0 ? game.gainHp(e.value) : game.loseHp(Math.abs(e.value));
       if (e.stat === 'xp') game.gainXp(e.value);
     });
