@@ -228,6 +228,7 @@ export function executeMonsterAttack() {
     game.combat.frostPotionActive = false;
     game.addLog('Monster attack skipped due to Frost Potion', 'info');
     game.combat.phase = 'rolling';
+    game.combat.rolled = false;
     game.combat.turnCount++;
     return;
   }
@@ -270,6 +271,7 @@ export function executeMonsterAttack() {
     game.phase = 'gameOver';
   } else {
     game.combat.phase = 'rolling';
+    game.combat.rolled = false;
     game.combat.turnCount++;
   }
 }

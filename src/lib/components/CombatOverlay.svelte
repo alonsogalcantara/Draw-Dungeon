@@ -32,6 +32,8 @@
 
 	const phaseLabel = $derived(() => {
 		switch (phase) {
+			case 'rolling':
+			case 'resolvingAttack':
 			case 'playerAttack': return 'Your Attack';
 			case 'monsterAttack': return 'Monster Attack';
 			case 'victory': return 'Victory!';
@@ -61,7 +63,7 @@
 			<!-- Phase banner -->
 			<div class="mb-6 text-center">
 				<span class={['rounded-full px-6 py-2 text-sm font-bold tracking-widest uppercase',
-					phase === 'playerAttack' ? 'bg-amber-800/40 text-amber-300' : '',
+					(phase === 'playerAttack' || phase === 'rolling' || phase === 'resolvingAttack') ? 'bg-amber-800/40 text-amber-300' : '',
 					phase === 'monsterAttack' ? 'bg-red-800/40 text-red-300' : '',
 					phase === 'victory' ? 'bg-emerald-800/40 text-emerald-300' : '',
 					phase === 'defeat' ? 'bg-red-900/60 text-red-400' : ''
@@ -133,13 +135,13 @@
 
 			<!-- Action buttons -->
 			<div class="flex flex-wrap items-center justify-center gap-3">
-				{#if phase === 'playerAttack'}
+				{#if phase === 'playerAttack' || phase === 'rolling' || phase === 'resolvingAttack'}
 					{#if !combat.rolled}
-						<button class="btn btn-primary px-6 py-2" onclick={() => rollCombatDice()}>
+						<button class="btn btn-primary px-6 py-2" onclick={() => rollCombatDice()} disabled={rolling}>
 							🎲 Roll Attack
 						</button>
 					{:else}
-						<button class="btn btn-action px-6 py-2" onclick={() => applyPlayerDamage()}>
+						<button class="btn btn-action px-6 py-2" onclick={() => applyPlayerDamage()} disabled={rolling}>
 							⚔️ Apply Damage
 						</button>
 
