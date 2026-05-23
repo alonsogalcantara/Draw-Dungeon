@@ -580,6 +580,7 @@ export const BONFIRE_CARDS: BonfireCard[] = [
   {
     id: 'bonfire_wayfarers_camp',
     name: "Wayfarer's Camp",
+    image: getImageUrl('tower', 'bonfire', 'Wayfarers Camp'),
     type: 'bonfire',
     description:
       'A traveler\'s camp nestled in a defensible alcove. Dried meat hangs from a cord, and a well-maintained firepit offers warmth.',
