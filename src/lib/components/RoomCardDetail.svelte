@@ -2,7 +2,13 @@
 	import type { RoomCard, MonsterCard, BossCard, TrapCard, TreasureCard, ShrineCard } from '$lib/game/types';
 	import { game } from '$lib/game/gameState.svelte';
 
-	let { card, facedown = false }: { card: RoomCard | null; facedown?: boolean } = $props();
+	let { card, facedown = false, isScaled = false }: { card: RoomCard | null; facedown?: boolean; isScaled?: boolean } = $props();
+
+	// Calculate scaling dynamically if the card is not already pre-scaled
+	const scaleLevel = $derived(isScaled ? 0 : Math.max(0, game.level - 1));
+	const hpScale = $derived(scaleLevel * 3);
+	const dmgScale = $derived(scaleLevel * 1);
+	const xpScale = $derived(scaleLevel * 1);
 
 	// Computed properties based on card type
 	const roomIcons: Record<string, string> = {
@@ -110,17 +116,17 @@
 			<div class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 font-bold text-sm">
 				<div class="flex items-center gap-1 text-red-900">❤️ HP</div>
 				<div class="text-right text-stone-700">
-					{card.type === 'monster' ? (m as MonsterCard).hpPerFloor[Math.max(0, game.currentFloor - 1)] : (m as BossCard).hp}
+					{card.type === 'monster' ? ((m as MonsterCard).hpPerFloor[Math.max(0, game.currentFloor - 1)] + hpScale) : ((m as BossCard).hp + hpScale)}
 				</div>
 				<div class="flex items-center gap-1 text-red-900">⚔️ Dmg</div>
-				<div class="text-right text-stone-700">{m.damage}</div>
+				<div class="text-right text-stone-700">{m.damage + dmgScale}</div>
 				{#if m.effects && m.effects.length > 0}
 					<div class="flex items-center gap-1 text-purple-900">✨ Effects</div>
 					<div class="text-right text-stone-700 capitalize">{m.effects.join(', ')}</div>
 				{/if}
 				<div class="flex items-center gap-1 text-amber-900">⭐ Reward</div>
 				<div class="text-right text-stone-700">
-					{card.type === 'monster' ? (m as MonsterCard).xpRewardPerFloor[Math.max(0, game.currentFloor - 1)] + ' XP' : (((m as BossCard).reward?.xp ?? 0) + ' XP')}
+					{card.type === 'monster' ? (((m as MonsterCard).xpRewardPerFloor[Math.max(0, game.currentFloor - 1)] + xpScale) + ' XP') : ((((m as BossCard).reward?.xp ?? 0) + xpScale) + ' XP')}
 				</div>
 			</div>
 		{:else if card.type === 'trap'}

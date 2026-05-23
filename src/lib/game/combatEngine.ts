@@ -17,13 +17,16 @@ export function initCombat(enemy: MonsterCard | BossCard, floor: number, level: 
     scaledEnemy = {
       ...enemy,
       damage: scaledDamage,
+      hp: scaledHp,
     } as BossCard;
   } else {
     const scaledXpReward = enemy.xpRewardPerFloor.map(xp => xp + (level - 1) * 1) as [number, number, number, number];
+    const scaledHpPerFloor = enemy.hpPerFloor.map(h => h + (level - 1) * 3) as [number, number, number, number];
     scaledEnemy = {
       ...enemy,
       damage: scaledDamage,
-      xpRewardPerFloor: scaledXpReward
+      xpRewardPerFloor: scaledXpReward,
+      hpPerFloor: scaledHpPerFloor,
     } as MonsterCard;
   }
   return {
