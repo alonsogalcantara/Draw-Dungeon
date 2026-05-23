@@ -1,4 +1,5 @@
 import { type GamePhase, type CharacterDef, type DifficultyMode, type PotionType, type ItemCard, type RoomCardInstance, type CombatState, type SkillCheckState, type EventState, type LogEntry } from './types';
+import { saveMetaProgress } from './metaState';
 import { MAX_HP, MAX_ARMOR, MAX_GOLD, MAX_FOOD, XP_REQUIREMENTS_PER_LEVEL, POLYHEDRAL_DICE } from '../data/constants';
 
 class GameState {
@@ -126,10 +127,17 @@ class GameState {
       this.addLog(`Max Level! Converted ${this.xp} excess XP into HP.`, 'info');
       this.xp = 0;
     }
+    
+    if (this.selectedCharacter) {
+      saveMetaProgress(this.selectedCharacter.id, this.level, this.xp);
+    }
   }
 
   loseXp(amount: number) {
     this.xp = Math.max(0, this.xp - amount);
+    if (this.selectedCharacter) {
+      saveMetaProgress(this.selectedCharacter.id, this.level, this.xp);
+    }
   }
 
   gainGold(amount: number) {

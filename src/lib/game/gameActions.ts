@@ -1,5 +1,6 @@
 import { game } from './gameState.svelte';
 import type { CharacterDef, DifficultyMode, PotionType, RoomCardInstance, RoomType, MonsterCard, BossCard, RoomCard } from './types';
+import { loadMetaProgress } from './metaState';
 import { ROOM_CARDS } from '../data/roomCards';
 import { DUNGEON_FLOORS, DIFFICULTY_MODIFIERS, MAX_HP } from '../data/constants';
 import { rollAllDice, applyCurseEffect, calculateDamage, rollDungeonDie, isSkillCheckSuccess, isPoisonTriggered, isCurseTriggered } from './diceEngine';
@@ -30,6 +31,17 @@ export function startNewGame(character: CharacterDef, difficulty: DifficultyMode
   game.gold = character.startingStats.gold + mod.gold;
   game.armor = character.startingStats.armor;
   game.xp = character.startingStats.xp;
+  
+  const progress = loadMetaProgress(character.id);
+  if (progress) {
+    game.level = progress.level;
+    game.xp = progress.xp;
+    if (progress.level > 1) {
+      const hpBonus = (progress.level - 1) * 5;
+      game.maxHp += hpBonus;
+      game.hp += hpBonus;
+    }
+  }
   
   game.addLog(`Started game as ${character.name} on ${difficulty} difficulty.`, 'system');
   

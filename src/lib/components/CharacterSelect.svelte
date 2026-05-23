@@ -1,13 +1,20 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { game } from '$lib/game/gameState.svelte';
 	import { startNewGame } from '$lib/game/gameActions';
 	import { CHARACTERS, ALL_SKILLS } from '$lib/data/characters';
 	import { MAX_HP, MAX_FOOD, MAX_GOLD, MAX_ARMOR } from '$lib/data/constants';
+	import { loadAllMetaProgress, clearMetaProgress, type MetaProgress } from '$lib/game/metaState';
 	import type { CharacterDef, DifficultyMode } from '$lib/game/types';
 
 	let selectedChar = $state<CharacterDef | null>(null);
 	let difficulty = $state<DifficultyMode>('normal');
 	let layoutSize = $state<number>(3);
+	let metaProgress = $state<Record<string, MetaProgress>>({});
+
+	onMount(() => {
+		metaProgress = loadAllMetaProgress(CHARACTERS.map(c => c.id).concat('custom_champion'));
+	});
 
 	// Custom Champion State
 	let customHp = $state(5);
@@ -59,6 +66,12 @@
 		{ size: 5, label: '5x5', desc: 'Massive (25 rooms)' }
 	];
 
+	function handleResetProgress(charId: string, event: Event) {
+		event.stopPropagation();
+		clearMetaProgress(charId);
+		metaProgress = loadAllMetaProgress(CHARACTERS.map(c => c.id).concat('custom_champion'));
+	}
+
 	function handleBegin() {
 		if (selectedChar) {
 			let charToStart = selectedChar;
@@ -85,6 +98,15 @@
 	function handleBack() {
 		game.phase = 'title';
 	}
+
+	function handleWipeProgress() {
+		if (confirm('Are you sure you want to wipe all character progress? This cannot be undone.')) {
+			for (const char of CHARACTERS) {
+				clearMetaProgress(char.id);
+			}
+			metaProgress = loadAllMetaProgress(CHARACTERS.map(c => c.id).concat('custom_champion'));
+		}
+	}
 </script>
 
 <div class="flex min-h-screen flex-col items-center bg-gradient-to-b from-stone-950 via-stone-900 to-stone-950 px-4 py-8">
@@ -95,8 +117,15 @@
 		</button>
 	</div>
 
-	<!-- Title -->
-	<h1 class="title-text mb-2 text-4xl tracking-wider">Choose Your Champion</h1>
+	<!-- Title & Controls -->
+	<div class="mb-2 flex w-full max-w-6xl items-center justify-between">
+		<h1 class="title-text text-4xl tracking-wider">Choose Your Champion</h1>
+		{#if Object.keys(metaProgress).length > 0}
+			<button class="btn btn-secondary text-xs text-red-400 hover:bg-red-900/30 hover:text-red-300" onclick={handleWipeProgress}>
+				🗑️ Wipe Progress
+			</button>
+		{/if}
+	</div>
 	<div class="mb-8 h-px w-48 bg-gradient-to-r from-transparent via-amber-600/50 to-transparent"></div>
 
 	<!-- Character cards grid -->
@@ -109,15 +138,28 @@
 				onclick={() => (selectedChar = char)}
 			>
 				<!-- Header -->
-				<div class="mb-3 border-b border-amber-900/30 pb-3">
-					<h2 class="text-xl font-bold text-amber-100">{char.name}</h2>
-					<p class="text-sm tracking-wider text-amber-500/70 uppercase">{char.className}</p>
+				<div class="mb-3 border-b border-amber-900/30 pb-3 flex justify-between items-start">
+					<div>
+						<h2 class="text-xl font-bold text-amber-100">{char.name}</h2>
+						<p class="text-sm tracking-wider text-amber-500/70 uppercase mt-1">{char.className}</p>
+					</div>
+					{#if metaProgress[char.id]}
+						<button 
+							class="text-[10px] uppercase font-bold tracking-wider text-red-400 hover:text-red-300 border border-red-900/50 hover:bg-red-900/30 rounded px-2 py-1 transition-colors"
+							onclick={(e) => handleResetProgress(char.id, e)}
+						>
+							Reset
+						</button>
+					{/if}
 				</div>
 
 				<!-- Stats -->
 				<div class="mb-3 grid grid-cols-3 gap-2 text-center text-xs">
+					<div class="rounded bg-emerald-900/30 px-2 py-1 border border-emerald-900/50">
+						<span class="text-emerald-400 font-bold">Lv.</span> {metaProgress[char.id]?.level ?? 1}
+					</div>
 					<div class="rounded bg-red-900/30 px-2 py-1">
-						<span class="text-red-400">❤️</span> {char.startingStats.hp}
+						<span class="text-red-400">❤️</span> {char.startingStats.hp + ((metaProgress[char.id]?.level ?? 1) - 1) * 5}
 					</div>
 					<div class="rounded bg-amber-900/30 px-2 py-1">
 						<span class="text-amber-400">🍖</span> {char.startingStats.food}
@@ -164,7 +206,22 @@
 	{#if selectedChar?.id === 'custom_champion'}
 		<div class="mb-8 w-full max-w-4xl rounded-xl border-2 border-amber-500/50 bg-stone-900/80 p-6 shadow-xl backdrop-blur-sm">
 			<div class="mb-4 flex items-center justify-between border-b border-amber-900/30 pb-4">
-				<h3 class="text-xl font-bold text-amber-200">Forge Your Champion</h3>
+				<div class="flex items-center gap-3">
+					<h3 class="text-xl font-bold text-amber-200">
+						Forge Your Champion
+						{#if metaProgress['custom_champion']}
+							<span class="ml-2 text-sm text-emerald-400 font-bold">(Lv. {metaProgress['custom_champion'].level})</span>
+						{/if}
+					</h3>
+					{#if metaProgress['custom_champion']}
+						<button 
+							class="text-[10px] uppercase font-bold tracking-wider text-red-400 hover:text-red-300 border border-red-900/50 hover:bg-red-900/30 rounded px-2 py-1 transition-colors"
+							onclick={(e) => handleResetProgress('custom_champion', e)}
+						>
+							Reset
+						</button>
+					{/if}
+				</div>
 				<div class="rounded-full bg-stone-950 px-4 py-2 font-mono text-lg font-bold border border-amber-900/50">
 					Points Available: 
 					<span class={availablePoints > 0 ? 'text-amber-400' : availablePoints === 0 ? 'text-emerald-400' : 'text-red-400'}>
