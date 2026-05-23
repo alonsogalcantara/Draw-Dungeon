@@ -2,7 +2,7 @@
 	import { game } from '$lib/game/gameState.svelte';
 	import { usePotion } from '$lib/game/gameActions';
 	import { POTIONS } from '$lib/data/potions';
-	import { MAX_HP, MAX_XP, XP_THRESHOLDS } from '$lib/data/constants';
+	import { MAX_HP } from '$lib/data/constants';
 
 	let prevHp = $state(game.hp);
 	let shaking = $state(false);
@@ -16,7 +16,7 @@
 	});
 
 	const hpPercent = $derived(Math.max(0, (game.hp / game.maxHp) * 100));
-	const xpPercent = $derived(Math.max(0, (game.xp / MAX_XP) * 100));
+	const xpPercent = $derived(Math.max(0, (game.xp / game.maxXp) * 100));
 
 	function handleUsePotion(index: number) {
 		const potion = game.potions[index];
@@ -48,7 +48,7 @@
 			Lv. {game.level}
 		</span>
 		<span class="text-xs text-stone-400">
-			{game.characterDiceCount} 🎲 dice
+			{game.characterDiceCount} 🎲 D{game.characterDieFaces}
 		</span>
 	</div>
 
@@ -70,21 +70,13 @@
 	<div class="space-y-1">
 		<div class="flex justify-between text-xs">
 			<span class="font-semibold text-purple-400">⭐ XP</span>
-			<span class="text-stone-400">{game.xp}/{MAX_XP}</span>
+			<span class="text-stone-400">{game.xp}/{game.maxXp}</span>
 		</div>
 		<div class="stat-bar xp-bar relative h-4 overflow-hidden rounded-full bg-stone-800">
 			<div
 				class="h-full rounded-full bg-gradient-to-r from-purple-700 to-purple-500 transition-all duration-500"
 				style="width: {xpPercent}%"
 			></div>
-			<!-- Level threshold markers -->
-			{#each XP_THRESHOLDS as threshold}
-				{@const markerPos = (threshold.xpRequired / MAX_XP) * 100}
-				<div
-					class="absolute top-0 h-full w-0.5 bg-amber-400/40"
-					style="left: {markerPos}%"
-				></div>
-			{/each}
 		</div>
 	</div>
 

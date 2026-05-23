@@ -1,5 +1,5 @@
 import { type GamePhase, type CharacterDef, type DifficultyMode, type PotionType, type ItemCard, type RoomCardInstance, type CombatState, type SkillCheckState, type EventState, type LogEntry } from './types';
-import { MAX_HP, MAX_XP, MAX_ARMOR, MAX_GOLD, MAX_FOOD, XP_THRESHOLDS, POLYHEDRAL_DICE } from '../data/constants';
+import { MAX_HP, MAX_ARMOR, MAX_GOLD, MAX_FOOD, XP_REQUIREMENTS_PER_LEVEL, POLYHEDRAL_DICE } from '../data/constants';
 
 class GameState {
   // Meta
@@ -11,6 +11,7 @@ class GameState {
   selectedCharacter = $state<CharacterDef | null>(null);
   hp = $state(0);
   maxHp = $state(0);
+  level = $state(1);
   xp = $state(0);
   armor = $state(0);
   gold = $state(0);
@@ -24,16 +25,10 @@ class GameState {
   temporaryArmor = $state(0);
   
   // Derived
-  level = $derived.by(() => {
-    let lvl = 1;
-    for (const t of XP_THRESHOLDS) {
-      if (this.xp >= t.xpRequired) lvl = t.level;
-    }
-    return lvl;
-  });
+  maxXp = $derived(XP_REQUIREMENTS_PER_LEVEL[Math.min(this.level - 1, XP_REQUIREMENTS_PER_LEVEL.length - 1)] || 120);
   
   characterDieFaces = $derived(POLYHEDRAL_DICE[Math.min(this.level - 1, POLYHEDRAL_DICE.length - 1)]);
-  characterDiceCount = $derived(1); // One die that evolves over time
+  characterDiceCount = $derived(Math.min(3, this.level)); // Increases up to 3, then stops
   isDead = $derived(this.hp <= 0);
   
   // Dungeon
@@ -105,28 +100,26 @@ class GameState {
   }
 
   gainXp(amount: number) {
-    const oldLevel = this.level;
-    const oldXp = this.xp;
+    this.xp += amount;
     
-    // Add XP and cap it
-    this.xp = Math.min(this.xp + amount, MAX_XP);
-    const newLevel = this.level;
-    
-    // Calculate how much XP was actually gained vs how much "spilled over"
-    const actualXpGained = this.xp - oldXp;
-    const excessXp = amount - actualXpGained;
-    
-    if (excessXp > 0) {
-      this.gainHp(excessXp);
-      this.addLog(`Max XP! Converted ${excessXp} excess XP into HP.`, 'info');
+    // Level up while XP is greater than or equal to required XP for next level
+    while (this.xp >= this.maxXp && this.level < POLYHEDRAL_DICE.length) {
+      this.xp -= this.maxXp;
+      this.level += 1;
+      
+      this.maxHp += 5;
+      this.gainHp(5);
+      
+      const newDieCount = Math.min(3, this.level);
+      const newFaces = POLYHEDRAL_DICE[Math.min(this.level - 1, POLYHEDRAL_DICE.length - 1)];
+      this.addLog(`Leveled up to ${this.level}! Max HP +5, Rolling ${newDieCount}D${newFaces}`, 'info');
     }
     
-    // Level up bonuses
-    if (newLevel > oldLevel) {
-      const levelsGained = newLevel - oldLevel;
-      this.maxHp += levelsGained * 5;
-      this.gainHp(levelsGained * 5);
-      this.addLog(`Leveled up to ${newLevel}! Max HP +${levelsGained * 5}, Die evolved to D${POLYHEDRAL_DICE[Math.min(newLevel - 1, POLYHEDRAL_DICE.length - 1)]}`, 'info');
+    // If we are at max level, excess XP heals us
+    if (this.level >= POLYHEDRAL_DICE.length && this.xp > 0) {
+      this.gainHp(this.xp);
+      this.addLog(`Max Level! Converted ${this.xp} excess XP into HP.`, 'info');
+      this.xp = 0;
     }
   }
 

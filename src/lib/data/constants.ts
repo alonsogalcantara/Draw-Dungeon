@@ -23,7 +23,6 @@ export const TOTAL_AREAS = DUNGEON_FLOORS.reduce((sum, f) => sum + f.areas, 0);
 // --- Stat Limits ---
 
 export const MAX_HP = 20; // Starting max HP, can increase via leveling
-export const MAX_XP = 36;
 export const MAX_ARMOR = 5;
 export const MAX_GOLD = 15;
 export const MAX_FOOD = 6;
@@ -35,15 +34,8 @@ export const MAX_ITEMS = 1;
 // Level 2: XP 6-11 (2 character dice)
 // Level 3: XP 12+  (3 character dice)
 
-export const XP_THRESHOLDS = [
-  { level: 1, xpRequired: 0 },
-  { level: 2, xpRequired: 6 },
-  { level: 3, xpRequired: 12 },
-  { level: 4, xpRequired: 18 },
-  { level: 5, xpRequired: 24 },
-  { level: 6, xpRequired: 30 },
-  { level: 7, xpRequired: 36 },
-] as const;
+// XP needed to reach the NEXT level
+export const XP_REQUIREMENTS_PER_LEVEL = [20, 30, 45, 65, 90, 120] as const;
 
 export const MAX_LEVEL = 7;
 
