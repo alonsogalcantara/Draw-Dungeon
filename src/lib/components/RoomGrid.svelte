@@ -26,6 +26,12 @@
 		game.layoutSize === 4 ? 'grid-cols-4 grid-rows-4' : 
 		'grid-cols-5 grid-rows-5'
 	);
+
+	const maxWidthClass = $derived(
+		game.layoutSize === 3 ? 'max-w-3xl' : 
+		game.layoutSize === 4 ? 'max-w-4xl' : 
+		'max-w-5xl'
+	);
 </script>
 
 <div class="flex flex-col gap-4">
@@ -42,7 +48,7 @@
 	</div>
 
 	<!-- Dynamic N×N Room Grid -->
-	<div class="dungeon-map flex justify-center w-full px-2 sm:px-8">
+	<div class="dungeon-map flex justify-center w-full px-2 sm:px-8 {maxWidthClass} mx-auto">
 		<div class="grid {gridClass} gap-4 sm:gap-6 justify-items-center w-full">
 		{#each { length: game.layoutSize } as _, row (row)}
 			{#each { length: game.layoutSize } as _, col (col)}
