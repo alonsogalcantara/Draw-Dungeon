@@ -11,10 +11,10 @@ import type { DungeonFloor, DifficultyMode, DifficultyModifier } from '../game/t
 // Floor 4: 2 areas (boss on area 2)
 
 export const DUNGEON_FLOORS: DungeonFloor[] = [
-  { number: 1, areas: 2, bossArea: 2 },
-  { number: 2, areas: 2, bossArea: 2 },
-  { number: 3, areas: 3, bossArea: 3 },
-  { number: 4, areas: 2, bossArea: 2 },
+  { number: 1, areas: 2, bossArea: 2, dungeonName: 'The Sewers', towerName: 'Tower Entrance' },
+  { number: 2, areas: 2, bossArea: 2, dungeonName: 'The Dungeon', towerName: 'The Grand Hall' },
+  { number: 3, areas: 3, bossArea: 3, dungeonName: 'The Catacombs', towerName: 'The Belfry' },
+  { number: 4, areas: 2, bossArea: 2, dungeonName: 'The Sunken Keep', towerName: 'The Summit' },
 ];
 
 /** Total number of areas across all floors */

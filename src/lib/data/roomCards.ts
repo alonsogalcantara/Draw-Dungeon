@@ -211,6 +211,19 @@ export const BOSS_CARDS: BossCard[] = [
     isFinal: true,
     reward: { xp: 10, gold: 10 },
   },
+  {
+    id: 'boss_ogs_blood',
+    name: "Og's Blood",
+    type: 'boss',
+    description:
+      'The ancient blood of the primordial titan Og, coalesced into a terrifying physical form. It burns with the fury of a dead god, and defeating it once only awakens its true form.',
+    hp: 30,
+    damage: 8,
+    effects: ['curse', 'ignoreArmor', 'regeneration'],
+    phases: 2,
+    isFinal: true,
+    reward: { xp: 10, gold: 10 },
+  },
 ];
 
 // ============================================================================

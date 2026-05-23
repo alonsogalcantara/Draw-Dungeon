@@ -19,6 +19,9 @@ export type GamePhase =
 /** Difficulty modes affect starting stats */
 export type DifficultyMode = 'normal' | 'hard' | 'harder' | 'roguelike';
 
+/** Campaign types: descending vs ascending */
+export type CampaignType = 'dungeon' | 'tower';
+
 /** All room types found in the dungeon */
 export type RoomType =
   | 'monster'
@@ -418,6 +421,10 @@ export interface DungeonFloor {
   areas: number;
   /** Which area (1-indexed) within this floor has the boss */
   bossArea: number;
+  /** Name of the floor in Dungeon campaign */
+  dungeonName: string;
+  /** Name of the floor in Tower campaign */
+  towerName: string;
 }
 
 // --- Potion Definition ---

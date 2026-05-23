@@ -16,11 +16,12 @@ function shuffle<T>(array: T[]): T[] {
   return newArray;
 }
 
-export function startNewGame(character: CharacterDef, difficulty: DifficultyMode, layoutSize: number = 3) {
+export function startNewGame(character: CharacterDef, difficulty: DifficultyMode, campaignType: import('./types').CampaignType, layoutSize: number = 3) {
   game.reset();
   game.phase = 'playing';
   game.selectedCharacter = character;
   game.difficulty = difficulty;
+  game.campaign = campaignType;
   game.layoutSize = layoutSize;
   
   const mod = DIFFICULTY_MODIFIERS[difficulty];
@@ -43,7 +44,7 @@ export function startNewGame(character: CharacterDef, difficulty: DifficultyMode
     }
   }
   
-  game.addLog(`Started game as ${character.name} on ${difficulty} difficulty.`, 'system');
+  game.addLog(`Started game as ${character.name} on ${difficulty} difficulty in ${campaignType === 'tower' ? 'The Tower' : 'The Dungeon'}.`, 'system');
   
   setupArea();
 }
@@ -58,7 +59,8 @@ export function setupArea() {
   
   if (isBossArea) {
     const bosses = BOSS_CARDS;
-    const finalBoss = bosses.find(b => b.isFinal);
+    const finalBossId = game.campaign === 'tower' ? 'boss_ogs_blood' : 'boss_ogs_remains';
+    const finalBoss = bosses.find(b => b.id === finalBossId);
     const regularBosses = shuffle(bosses.filter(b => !b.isFinal));
     
     // In actual game, you set up bosses facedown, here we just pick the boss for the floor
@@ -91,7 +93,7 @@ export function setupArea() {
   // Reveal and resolve start card
   const startRoom = game.roomGrid[0][0]!;
   startRoom.revealed = true;
-  game.addLog(`Entered Area ${game.currentArea} (Floor ${game.currentFloor})`, 'info');
+  game.addLog(`${game.campaign === 'tower' ? 'Ascended' : 'Descended'} to Area ${game.currentArea} (Floor ${game.currentFloor})`, 'info');
   
   resolveRoom(startRoom);
   if (game.phase === 'playing') {

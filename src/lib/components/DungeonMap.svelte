@@ -7,24 +7,26 @@
 		DUNGEON_FLOORS.map((floor, fi) => ({
 			number: fi + 1,
 			areas: floor.areas,
-			bossArea: floor.bossArea
+			bossArea: floor.bossArea,
+			dungeonName: floor.dungeonName,
+			towerName: floor.towerName
 		}))
 	);
 </script>
 
 <div class="panel panel-map flex flex-col">
 	<h3 class="mb-3 border-b border-amber-900/30 pb-2 text-sm font-bold tracking-wider text-amber-400/70 uppercase">
-		The Dungeon
+		{game.campaign === 'tower' ? 'The Tower' : 'The Dungeon'}
 	</h3>
 
 	<div class="flex flex-1 flex-col gap-1 overflow-y-auto">
-		{#each floors as floor (floor.number)}
+		{#each (game.campaign === 'tower' ? [...floors].reverse() : floors) as floor (floor.number)}
 			<!-- Floor header -->
 			<div class={['floor-marker mb-1 flex items-center gap-2 text-xs font-bold tracking-wider uppercase',
 				game.currentFloor === floor.number ? 'text-amber-400' : 'text-stone-500'
 			].join(' ')}>
 				<span class="h-px flex-1 bg-stone-700/50"></span>
-				<span>Floor {floor.number}</span>
+				<span>Floor {floor.number}: {game.campaign === 'tower' ? floor.towerName : floor.dungeonName}</span>
 				<span class="h-px flex-1 bg-stone-700/50"></span>
 			</div>
 
@@ -68,7 +70,7 @@
 	<!-- Progress bar -->
 	<div class="mt-3 border-t border-stone-700/30 pt-2">
 		<div class="flex items-center justify-between text-xs text-stone-500">
-			<span>Progress</span>
+			<span>{game.campaign === 'tower' ? 'Ascension' : 'Descent'}</span>
 			<span class="text-amber-400/70">Floor {game.currentFloor}</span>
 		</div>
 	</div>

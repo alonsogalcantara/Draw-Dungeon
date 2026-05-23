@@ -1,4 +1,4 @@
-import { type GamePhase, type CharacterDef, type DifficultyMode, type PotionType, type ItemCard, type RoomCardInstance, type CombatState, type SkillCheckState, type EventState, type LogEntry } from './types';
+import { type GamePhase, type CampaignType, type CharacterDef, type DifficultyMode, type PotionType, type ItemCard, type RoomCardInstance, type CombatState, type SkillCheckState, type EventState, type LogEntry } from './types';
 import { saveMetaProgress } from './metaState';
 import { MAX_HP, MAX_ARMOR, MAX_GOLD, MAX_FOOD, XP_REQUIREMENTS_PER_LEVEL, POLYHEDRAL_DICE } from '../data/constants';
 
@@ -6,6 +6,7 @@ class GameState {
   // Meta
   phase = $state<GamePhase>('title');
   difficulty = $state<DifficultyMode>('normal');
+  campaign = $state<CampaignType>('dungeon');
   layoutSize = $state(3);
   
   // Character
