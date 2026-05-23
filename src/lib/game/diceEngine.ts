@@ -15,26 +15,57 @@ function randomInt(min: number, max: number): number {
 
 // --- Character Die ---
 
-/**
- * Roll a character die (d6).
- * Maps d6 result to face values: [Miss(0), 1, 2, 3, 5, 6]
- *
- * - Miss (0): No damage, set aside in combat
- * - 5 (Star): Success on skill checks
- * - 6 (Star + Critical): Success on skill checks, can reroll and add in combat
- */
-export function rollCharacterDie(): DieResult {
-  const faceIndex = randomInt(0, 5);
-  const value = CHARACTER_DIE_FACES[faceIndex];
+export function rollCharacterDie(faces: number = 6): DieResult {
+  // If it's the standard D6, we use the original mapping to preserve the exact Mini Rogue probabilities:
+  // [Miss(0), 1, 2, 3, 5, 6] (notice there is no 4)
+  if (faces === 6) {
+    const faceIndex = randomInt(0, 5);
+    const value = CHARACTER_DIE_FACES[faceIndex];
+
+    return {
+      type: 'character' as DieType,
+      value,
+      isStar: value >= 5,
+      isCritical: value === 6,
+      isMiss: value === 0,
+      setAside: false,
+      rerolled: false,
+      faces: 6
+    };
+  }
+
+  // For polyhedral dice (D8, D10, D12, D16, D18, D20), we use linear 1-N mapping
+  const roll = randomInt(1, faces);
+  
+  let value = roll;
+  let isMiss = false;
+  
+  // Rule: 1 is always a miss (0 value)
+  if (roll === 1) {
+    value = 0;
+    isMiss = true;
+  }
+  
+  // Rule: Success (Star) is the top 2 values for D8-D12, top 4 values for D16-D20
+  let isStar = false;
+  if (faces <= 12) {
+    isStar = roll >= faces - 1;
+  } else {
+    isStar = roll >= faces - 3;
+  }
+  
+  // Rule: Critical is always the max value
+  const isCritical = roll === faces;
 
   return {
     type: 'character' as DieType,
     value,
-    isStar: value >= 5,
-    isCritical: value === 6,
-    isMiss: value === 0,
+    isStar,
+    isCritical,
+    isMiss,
     setAside: false,
     rerolled: false,
+    faces
   };
 }
 
@@ -124,12 +155,13 @@ export interface DiceRollResult {
  */
 export function rollAllDice(
   characterDiceCount: number,
+  characterDieFaces: number,
   hasPoisonDie: boolean,
   hasCurseDie: boolean
 ): DiceRollResult {
   const characterDice: DieResult[] = [];
   for (let i = 0; i < characterDiceCount; i++) {
-    characterDice.push(rollCharacterDie());
+    characterDice.push(rollCharacterDie(characterDieFaces));
   }
 
   const dungeonDie = rollDungeonDie();
@@ -154,7 +186,7 @@ export function rollAllDice(
  * @returns New DieResult with updated values
  */
 export function rerollDie(die: DieResult): DieResult {
-  const newDie = rollCharacterDie();
+  const newDie = rollCharacterDie(die.faces ?? 6);
   return {
     ...newDie,
     rerolled: true,
@@ -188,15 +220,31 @@ export function applyCurseEffect(dice: DieResult[]): DieResult[] {
       newValue = 0;
     }
 
-    // Note: The character die face 4 doesn't exist, so value 5 - 1 = 4
-    // In the manual example, a roll of 5 (star) becomes 4 (fail)
-    // This is correct behavior.
+    const faces = die.faces ?? 6;
+
+    // For D6 with the missing '4', we must preserve the 5->4 mapping explicitly
+    // to maintain the original game feel.
+    if (faces === 6 && die.value === 5) {
+      newValue = 4;
+    }
+
+    // Determine new star/critical thresholds based on faces
+    let isStar = false;
+    let isCritical = newValue === faces;
+
+    if (faces === 6) {
+      isStar = newValue >= 5;
+    } else if (faces <= 12) {
+      isStar = newValue >= faces - 1;
+    } else {
+      isStar = newValue >= faces - 3;
+    }
 
     return {
       ...die,
       value: newValue,
-      isStar: newValue >= 5,
-      isCritical: newValue === 6,
+      isStar,
+      isCritical,
       isMiss: newValue === 0,
     };
   });
@@ -246,7 +294,7 @@ export function isSkillCheckSuccess(dice: DieResult[]): boolean {
 export function processCriticalHit(die: DieResult): DieResult {
   if (!die.isCritical || die.type !== 'character') return die;
 
-  const reroll = rollCharacterDie();
+  const reroll = rollCharacterDie(die.faces ?? 6);
 
   if (reroll.isMiss) {
     // Miss on critical reroll: die is set aside

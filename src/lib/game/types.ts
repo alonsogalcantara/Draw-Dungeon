@@ -96,6 +96,8 @@ export interface DieResult {
   setAside: boolean;
   /** True if this die was rerolled (via feat or critical) */
   rerolled: boolean;
+  /** The maximum value (faces) of this die (e.g. 6, 8, 10, 12, 16, 18, 20). Defaults to 6. */
+  faces?: number;
 }
 
 // --- Characters ---

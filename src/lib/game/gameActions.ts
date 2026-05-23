@@ -132,7 +132,7 @@ export function resolveRoom(roomInstance: RoomCardInstance) {
 
 export function startCombat(enemy: MonsterCard | BossCard) {
   game.phase = 'combat';
-  game.combat = initCombat(enemy, game.currentFloor);
+  game.combat = initCombat(enemy, game.currentFloor, game.level);
 }
 
 export function rollCombatDice() {
@@ -148,7 +148,7 @@ export function rollCombatDice() {
   setTimeout(() => {
     if (!game.combat) return;
     
-    const rollResult = rollAllDice(game.characterDiceCount, game.poisoned, game.cursed);
+    const rollResult = rollAllDice(game.characterDiceCount, game.characterDieFaces, game.poisoned, game.cursed);
     let dice = rollResult.characterDice;
     
     if (game.cursed) {
@@ -323,7 +323,7 @@ export function performSkillCheck(reason?: string) {
   setTimeout(() => {
     if (!game.skillCheck) return;
     
-    const rollResult = rollAllDice(game.characterDiceCount, game.poisoned, game.cursed);
+    const rollResult = rollAllDice(game.characterDiceCount, game.characterDieFaces, game.poisoned, game.cursed);
     let dice = rollResult.characterDice;
     
     if (game.cursed) {

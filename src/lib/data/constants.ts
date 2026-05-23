@@ -22,8 +22,8 @@ export const TOTAL_AREAS = DUNGEON_FLOORS.reduce((sum, f) => sum + f.areas, 0);
 
 // --- Stat Limits ---
 
-export const MAX_HP = 20;
-export const MAX_XP = 18;
+export const MAX_HP = 20; // Starting max HP, can increase via leveling
+export const MAX_XP = 36;
 export const MAX_ARMOR = 5;
 export const MAX_GOLD = 15;
 export const MAX_FOOD = 6;
@@ -39,9 +39,16 @@ export const XP_THRESHOLDS = [
   { level: 1, xpRequired: 0 },
   { level: 2, xpRequired: 6 },
   { level: 3, xpRequired: 12 },
+  { level: 4, xpRequired: 18 },
+  { level: 5, xpRequired: 24 },
+  { level: 6, xpRequired: 30 },
+  { level: 7, xpRequired: 36 },
 ] as const;
 
-export const MAX_LEVEL = 3;
+export const MAX_LEVEL = 7;
+
+/** Die faces available per level */
+export const POLYHEDRAL_DICE = [6, 8, 10, 12, 16, 18, 20] as const;
 
 // --- Dice ---
 

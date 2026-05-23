@@ -1,18 +1,29 @@
 import type { BossCard, CombatState, DieResult, EffectType, MonsterCard } from './types';
 import { rerollDie, processCriticalHit, setAsideMisses, calculateDamage } from './diceEngine';
 
-export function initCombat(enemy: MonsterCard | BossCard, floor: number): CombatState {
+export function initCombat(enemy: MonsterCard | BossCard, floor: number, level: number): CombatState {
   let hp = 0;
   if (enemy.type === 'monster') {
     hp = enemy.hpPerFloor[floor - 1] || enemy.hpPerFloor[enemy.hpPerFloor.length - 1];
   } else {
     hp = enemy.hp;
   }
+  
+  // Scale dynamically based on level
+  const scaledHp = hp + (level - 1) * 3;
+  const scaledDamage = enemy.damage + (level - 1) * 1;
+  const scaledXp = (enemy.reward?.xp || 0) + (level - 1) * 1;
+  
+  const scaledEnemy = {
+    ...enemy,
+    damage: scaledDamage,
+    reward: enemy.reward ? { ...enemy.reward, xp: scaledXp } : undefined
+  } as MonsterCard | BossCard;
 
   return {
-    enemy,
-    enemyHp: hp,
-    enemyMaxHp: hp,
+    enemy: scaledEnemy,
+    enemyHp: scaledHp,
+    enemyMaxHp: scaledHp,
     phase: 'rolling',
     diceResults: [],
     dungeonDieResult: 0,

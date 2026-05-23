@@ -1,5 +1,5 @@
 import { type GamePhase, type CharacterDef, type DifficultyMode, type PotionType, type ItemCard, type RoomCardInstance, type CombatState, type SkillCheckState, type EventState, type LogEntry } from './types';
-import { MAX_HP, MAX_XP, MAX_ARMOR, MAX_GOLD, MAX_FOOD } from '../data/constants';
+import { MAX_HP, MAX_XP, MAX_ARMOR, MAX_GOLD, MAX_FOOD, XP_THRESHOLDS, POLYHEDRAL_DICE } from '../data/constants';
 
 class GameState {
   // Meta
@@ -25,12 +25,15 @@ class GameState {
   
   // Derived
   level = $derived.by(() => {
-    if (this.xp >= 12) return 3;
-    if (this.xp >= 6) return 2;
-    return 1;
+    let lvl = 1;
+    for (const t of XP_THRESHOLDS) {
+      if (this.xp >= t.xpRequired) lvl = t.level;
+    }
+    return lvl;
   });
   
-  characterDiceCount = $derived(this.level);
+  characterDieFaces = $derived(POLYHEDRAL_DICE[Math.min(this.level - 1, POLYHEDRAL_DICE.length - 1)]);
+  characterDiceCount = $derived(1); // One die that evolves over time
   isDead = $derived(this.hp <= 0);
   
   // Dungeon
@@ -102,12 +105,28 @@ class GameState {
   }
 
   gainXp(amount: number) {
-    const space = MAX_XP - this.xp;
-    if (space < amount) {
-      this.xp = MAX_XP;
-      this.gainHp(amount - space);
-    } else {
-      this.xp += amount;
+    const oldLevel = this.level;
+    const oldXp = this.xp;
+    
+    // Add XP and cap it
+    this.xp = Math.min(this.xp + amount, MAX_XP);
+    const newLevel = this.level;
+    
+    // Calculate how much XP was actually gained vs how much "spilled over"
+    const actualXpGained = this.xp - oldXp;
+    const excessXp = amount - actualXpGained;
+    
+    if (excessXp > 0) {
+      this.gainHp(excessXp);
+      this.addLog(`Max XP! Converted ${excessXp} excess XP into HP.`, 'info');
+    }
+    
+    // Level up bonuses
+    if (newLevel > oldLevel) {
+      const levelsGained = newLevel - oldLevel;
+      this.maxHp += levelsGained * 5;
+      this.gainHp(levelsGained * 5);
+      this.addLog(`Leveled up to ${newLevel}! Max HP +${levelsGained * 5}, Die evolved to D${POLYHEDRAL_DICE[Math.min(newLevel - 1, POLYHEDRAL_DICE.length - 1)]}`, 'info');
     }
   }
 
