@@ -90,7 +90,7 @@ export const MONSTER_CARDS: MonsterCard[] = [
     effects: ['ignoreArmor'],
     xpRewardPerFloor: [2, 2, 3, 3],
   },
-    {
+  {
     id: 'monster_tomb_guardian',
     name: 'Tomb Guardian',
     type: 'monster',
