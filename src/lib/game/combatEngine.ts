@@ -68,12 +68,13 @@ export function performFeat(
 export function processMonsterAttack(
   dungeonDie: number,
   monsterDamage: number,
-  playerArmor: number
+  playerArmor: number,
+  ignoreArmorEffect: boolean = false
 ): { damage: number; pierced: boolean; miss: boolean } {
   if (dungeonDie === 1) {
     return { damage: 0, pierced: false, miss: true };
   } else if (dungeonDie >= 2 && dungeonDie <= 5) {
-    const damage = Math.max(0, monsterDamage - playerArmor);
+    const damage = Math.max(0, monsterDamage - (ignoreArmorEffect ? 0 : playerArmor));
     return { damage, pierced: false, miss: false };
   } else if (dungeonDie === 6) {
     return { damage: monsterDamage, pierced: true, miss: false };

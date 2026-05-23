@@ -6,6 +6,8 @@
 		handleShrine,
 		handleTreasure,
 		handleTomb,
+		handleItemRoom,
+		closeGenericEvent,
 		performSkillCheck,
 		usePotion
 	} from '$lib/game/gameActions';
@@ -16,6 +18,8 @@
 	function closeEvent() {
 		if (event?.resolve) {
 			event.resolve();
+		} else {
+			closeGenericEvent();
 		}
 	}
 
@@ -250,25 +254,30 @@
 				<div class="text-center">
 					<span class="text-5xl">🔧</span>
 					<h2 class="title-text mt-3 text-2xl">Item Found</h2>
-					{#if event.item}
-						<div class="card-item mx-auto mt-4 max-w-xs rounded-xl border border-amber-700/40 bg-stone-800/60 p-4">
-							<h3 class="text-lg font-bold text-amber-200">{event.item.name}</h3>
-							{#if event.item.description}
-								<p class="mt-2 text-sm text-stone-400">{event.item.description}</p>
-							{/if}
-							{#if event.item.cost}
-								<p class="mt-2 text-xs text-amber-500/60">Cost: {event.item.cost.value} {event.item.cost.stat}</p>
-							{/if}
-						</div>
-						<div class="mt-4 flex items-center justify-center gap-3">
-							<button class="btn btn-primary px-6 py-2" onclick={() => event.takeItem?.()}>
-								Take Item
-							</button>
-							<button class="btn btn-secondary px-6 py-2" onclick={closeEvent}>
-								Ignore
-							</button>
-						</div>
-					{/if}
+					<div class="card-item mx-auto mt-4 max-w-xs rounded-xl border border-amber-700/40 bg-stone-800/60 p-4">
+						<h3 class="text-lg font-bold text-amber-200">{event.card.name}</h3>
+						{#if event.card.description}
+							<p class="mt-2 text-sm text-stone-400">{event.card.description}</p>
+						{/if}
+						{#if event.card.cost}
+							<p class="mt-2 text-xs text-amber-500/60">Cost: {event.card.cost.value} {event.card.cost.stat}</p>
+						{/if}
+						{#if event.card.ignoreCost}
+							<p class="mt-2 text-xs text-red-500/60">Ignore Penalty: {event.card.ignoreCost.label}</p>
+						{/if}
+					</div>
+					<div class="mt-4 flex items-center justify-center gap-3">
+						<button
+							class="btn btn-primary px-6 py-2"
+							onclick={() => handleItemRoom('take')}
+							disabled={event.card.cost ? (event.card.cost.stat === 'gold' ? game.gold < event.card.cost.value : game.hp <= event.card.cost.value) : false}
+						>
+							{event.card.cost ? 'Pay & Take' : 'Take Item'}
+						</button>
+						<button class="btn btn-secondary px-6 py-2" onclick={() => handleItemRoom('ignore')}>
+							Ignore
+						</button>
+					</div>
 				</div>
 
 			<!-- Generic fallback -->

@@ -38,8 +38,8 @@ export function startNewGame(character: CharacterDef, difficulty: DifficultyMode
 export function setupArea() {
   const deck = shuffle(ROOM_CARDS.filter(c => c.type !== 'boss'));
   
-  // Pick 8 cards for the 2x4 grid
-  const gridCards: RoomCard[] = deck.slice(0, 8);
+  // Pick 9 cards for the 3x3 grid
+  const gridCards: RoomCard[] = deck.slice(0, 9);
   const bossArea = DUNGEON_FLOORS[game.currentFloor - 1].bossArea;
   const isBossArea = game.currentAreaInFloor === bossArea;
   
@@ -51,19 +51,20 @@ export function setupArea() {
     // In actual game, you set up bosses facedown, here we just pick the boss for the floor
     const bossToFace = game.currentFloor === 4 ? finalBoss : regularBosses[0];
     if (bossToFace) {
-      gridCards[7] = bossToFace; // Put boss at exit
+      gridCards[8] = bossToFace; // Put boss at exit
     }
   }
 
   const newGrid: (RoomCardInstance | null)[][] = [
-    [null, null, null, null],
-    [null, null, null, null]
+    [null, null, null],
+    [null, null, null],
+    [null, null, null]
   ];
   
-  for (let r = 0; r < 2; r++) {
-    for (let c = 0; c < 4; c++) {
+  for (let r = 0; r < 3; r++) {
+    for (let c = 0; c < 3; c++) {
       newGrid[r][c] = {
-        card: gridCards[r * 4 + c],
+        card: gridCards[r * 3 + c],
         revealed: false,
         resolved: false,
         row: r,
@@ -91,8 +92,8 @@ export function revealAdjacentRooms() {
   const r = game.playerRow;
   const c = game.playerCol;
   
-  const right = c + 1 < 4 ? game.roomGrid[r][c + 1] : null;
-  const down = r + 1 < 2 ? game.roomGrid[r + 1][c] : null;
+  const right = c + 1 < 3 ? game.roomGrid[r][c + 1] : null;
+  const down = r + 1 < 3 ? game.roomGrid[r + 1][c] : null;
   
   if (!game.blinded) {
     if (right) right.revealed = true;
@@ -114,7 +115,7 @@ export function resolveRoom(roomInstance: RoomCardInstance) {
   
   if (card.type === 'monster' || card.type === 'boss') {
     startCombat(card as MonsterCard | BossCard);
-  } else if (card.type === 'trap' || card.type === 'tomb') {
+  } else if (card.type === 'trap') {
     game.phase = 'skillCheck';
     game.skillCheck = {
       reason: card.name,
@@ -137,30 +138,40 @@ export function startCombat(enemy: MonsterCard | BossCard) {
 
 export function rollCombatDice() {
   if (!game.combat) return;
-  const rollResult = rollAllDice(game.characterDiceCount, game.poisoned, game.cursed);
-  let dice = rollResult.characterDice;
   
-  if (game.cursed) {
-    dice = applyCurseEffect(dice);
-  }
+  game.combat.diceResults = Array(game.characterDiceCount).fill({ type: 'character', value: 0 });
+  game.combat.dungeonDieResult = 1;
+  game.combat.rolling = true;
+  game.combat.rolled = true;
+  
+  setTimeout(() => {
+    if (!game.combat) return;
+    
+    const rollResult = rollAllDice(game.characterDiceCount, game.poisoned, game.cursed);
+    let dice = rollResult.characterDice;
+    
+    if (game.cursed) {
+      dice = applyCurseEffect(dice);
+    }
 
-  // Handle poison die immediately if it triggers
-  if (rollResult.poisonDie && isPoisonTriggered(rollResult.poisonDie)) {
-    game.loseHp(1);
-    game.addLog('Poison triggered! Lost 1 HP', 'damage');
-  }
-  
-  // Handle curse die if it triggers
-  if (rollResult.curseDie && isCurseTriggered(rollResult.curseDie)) {
-    game.cursed = true; // Wait, if they are already cursed, another curse is ignored. But if it triggers from poison?
-    // Actually the curse die just affects this roll or adds a curse if they didn't have one
-  }
-  
-  game.combat.dungeonDieResult = rollResult.dungeonDie;
-  game.combat.poisonDieResult = rollResult.poisonDie;
-  game.combat.curseDieResult = rollResult.curseDie;
-  game.combat.diceResults = dice;
-  game.combat.phase = 'resolvingAttack';
+    // Handle poison die immediately if it triggers
+    if (rollResult.poisonDie && isPoisonTriggered(rollResult.poisonDie)) {
+      game.loseHp(1);
+      game.addLog('Poison triggered! Lost 1 HP', 'damage');
+    }
+    
+    // Handle curse die if it triggers
+    if (rollResult.curseDie && isCurseTriggered(rollResult.curseDie)) {
+      game.cursed = true;
+    }
+    
+    game.combat.rolling = false;
+    game.combat.dungeonDieResult = rollResult.dungeonDie;
+    game.combat.poisonDieResult = rollResult.poisonDie;
+    game.combat.curseDieResult = rollResult.curseDie;
+    game.combat.diceResults = dice;
+    game.combat.phase = 'resolvingAttack';
+  }, 600);
 }
 
 export function rerollCritical(dieIndex: number) {
@@ -223,23 +234,36 @@ export function executeMonsterAttack() {
   }
 
   const enemyDamage = game.combat.enemy.damage;
-  const { damage, pierced, miss } = processMonsterAttack(game.combat.dungeonDieResult, enemyDamage, game.armor + game.temporaryArmor);
+  const ignoreArmorEffect = game.combat.enemy.effects.includes('ignoreArmor');
   
-  if (miss) {
-    game.addLog('Monster attack missed!', 'combat');
-  } else {
-    game.loseHp(damage);
-    game.addLog(`Monster hits for ${damage} damage!${pierced ? ' (Armor Pierced)' : ''}`, 'damage');
+  let currentDie = game.combat.dungeonDieResult;
+  while (true) {
+    const { damage, pierced, miss } = processMonsterAttack(currentDie, enemyDamage, game.armor + game.temporaryArmor, ignoreArmorEffect);
     
-    // Apply effects
-    if (damage > 0) {
-      const effectUpdates = applyEffects(game.combat.enemy.effects, damage);
-      if (effectUpdates.cursed) game.cursed = true;
-      if (effectUpdates.poisoned) game.poisoned = true;
-      if (effectUpdates.blinded) game.blinded = true;
-      if (effectUpdates.weaken) game.loseXp(1);
-      if (effectUpdates.regeneration) game.combat.enemyHp += 2; // Assuming regen 2
+    if (miss) {
+      game.addLog('Monster attack missed!', 'combat');
+      break;
+    } else {
+      game.loseHp(damage);
+      game.addLog(`Monster hits for ${damage} damage!${pierced || ignoreArmorEffect ? ' (Armor Pierced)' : ''}`, 'damage');
+      
+      // Apply effects
+      if (damage > 0 || ignoreArmorEffect) {
+        const effectUpdates = applyEffects(game.combat.enemy.effects, damage);
+        if (effectUpdates.cursed) game.cursed = true;
+        if (effectUpdates.poisoned) game.poisoned = true;
+        if (effectUpdates.blinded) game.blinded = true;
+        if (effectUpdates.weaken) game.loseXp(1);
+        if (effectUpdates.regeneration) game.combat.enemyHp += 2;
+      }
     }
+    
+    if (game.hp <= 0 || !pierced) {
+      break;
+    }
+    
+    currentDie = rollDungeonDie();
+    game.addLog(`Monster attacks again! (Rolled ${currentDie})`, 'combat');
   }
   
   if (game.hp <= 0) {
@@ -275,20 +299,30 @@ export function endCombat() {
 export function performSkillCheck(reason?: string) {
   if (!game.skillCheck) return;
   
-  const rollResult = rollAllDice(game.characterDiceCount, game.poisoned, game.cursed);
-  let dice = rollResult.characterDice;
+  game.skillCheck.diceResults = Array(game.characterDiceCount).fill({ type: 'character', value: 0 });
+  game.skillCheck.dungeonDieResult = 1;
+  game.skillCheck.rolling = true;
+  game.skillCheck.rolled = true;
   
-  if (game.cursed) {
-    dice = applyCurseEffect(dice);
-  }
-  
-  game.skillCheck.dungeonDieResult = rollResult.dungeonDie;
-  game.skillCheck.diceResults = dice;
-  game.skillCheck.success = isSkillCheckSuccess(dice);
-  
-  if (rollResult.poisonDie && isPoisonTriggered(rollResult.poisonDie)) {
-    game.loseHp(1);
-  }
+  setTimeout(() => {
+    if (!game.skillCheck) return;
+    
+    const rollResult = rollAllDice(game.characterDiceCount, game.poisoned, game.cursed);
+    let dice = rollResult.characterDice;
+    
+    if (game.cursed) {
+      dice = applyCurseEffect(dice);
+    }
+    
+    game.skillCheck.rolling = false;
+    game.skillCheck.dungeonDieResult = rollResult.dungeonDie;
+    game.skillCheck.diceResults = dice;
+    game.skillCheck.success = isSkillCheckSuccess(dice);
+    
+    if (rollResult.poisonDie && isPoisonTriggered(rollResult.poisonDie)) {
+      game.loseHp(1);
+    }
+  }, 600);
 }
 
 export function resolveSkillCheck() {
@@ -316,6 +350,7 @@ export function resolveSkillCheck() {
     }
   } else if (card.type === 'treasure') {
     game.gainGold(card.goldBase);
+    game.event.goldGained = card.goldBase;
     if (isSuccess) {
       const reward = card.chestRewards[dungeonDie] || card.chestRewards[1];
       if (reward.potion) addPotion(reward.potion);
@@ -324,7 +359,33 @@ export function resolveSkillCheck() {
         if (e.stat === 'xp') game.gainXp(e.value);
       });
       game.addLog('Unlocked chest!', 'loot');
+      game.event.chestReward = reward.label;
     }
+    game.event.chestOpened = true;
+    game.skillCheck = null;
+    game.phase = 'event';
+    return;
+  } else if (card.type === 'tomb') {
+    game.event.rolled = true;
+    game.event.success = isSuccess;
+    game.event.dungeonResult = dungeonDie;
+    
+    if (!isSuccess) {
+      const reward = card.outcomes[dungeonDie] || card.outcomes[1];
+      reward.effects.forEach(e => {
+        if (e.stat === 'hp') e.value > 0 ? game.gainHp(e.value) : game.loseHp(Math.abs(e.value));
+        if (e.stat === 'gold') game.gainGold(e.value);
+        if (e.stat === 'xp') game.gainXp(e.value);
+      });
+      if (reward.potion) addPotion(reward.potion);
+      game.addLog(`Tomb failure outcome: ${reward.label}`, 'damage');
+      game.event.outcome = reward.label;
+      game.event.modified = true;
+    }
+    
+    game.skillCheck = null;
+    game.phase = 'event';
+    return;
   }
   
   game.roomGrid[game.playerRow][game.playerCol]!.resolved = true;
@@ -414,22 +475,26 @@ export function handleShrine(offering: boolean) {
     }
   }
   
-  let roll = rollDungeonDie();
-  if (offering) roll = Math.min(6, roll + 1);
+  game.event.rolled = true;
   
-  const reward = game.event.card.outcomes[roll] || game.event.card.outcomes[1];
-  reward.effects.forEach(e => {
-    if (e.stat === 'hp') e.value > 0 ? game.gainHp(e.value) : game.loseHp(Math.abs(e.value));
-    if (e.stat === 'xp') game.gainXp(e.value);
-  });
-  if (reward.potion) addPotion(reward.potion);
-  
-  game.addLog(`Shrine outcome: ${reward.label}`, 'info');
-  
-  game.roomGrid[game.playerRow][game.playerCol]!.resolved = true;
-  game.event = null;
-  game.phase = 'playing';
-  revealAdjacentRooms();
+  setTimeout(() => {
+    if (!game.event) return;
+    
+    let roll = rollDungeonDie();
+    if (offering) roll = Math.min(6, roll + 1);
+    
+    const reward = game.event.card.outcomes[roll] || game.event.card.outcomes[1];
+    reward.effects.forEach(e => {
+      if (e.stat === 'hp') e.value > 0 ? game.gainHp(e.value) : game.loseHp(Math.abs(e.value));
+      if (e.stat === 'xp') game.gainXp(e.value);
+    });
+    if (reward.potion) addPotion(reward.potion);
+    
+    game.addLog(`Shrine outcome: ${reward.label}`, 'info');
+    
+    game.event.result = roll;
+    game.event.outcome = reward.label;
+  }, 600);
 }
 
 export function handleTreasure() {
@@ -446,13 +511,70 @@ export function handleTreasure() {
     };
 }
 
-export function handleTomb(modifyDie: -1 | 0 | 1 = 0) {
-    // simplified tomb handling, just close event for now and proceed
-    if (!game.event) return;
-    game.roomGrid[game.playerRow][game.playerCol]!.resolved = true;
-    game.event = null;
-    game.phase = 'playing';
-    revealAdjacentRooms();
+export function handleTomb(modifyDie?: -1 | 0 | 1) {
+    if (!game.event || game.event.card.type !== 'tomb') return;
+    const card = game.event.card;
+    
+    if (modifyDie === undefined) {
+      game.phase = 'skillCheck';
+      game.skillCheck = {
+        reason: card.name,
+        diceResults: [],
+        dungeonDieResult: 0,
+        success: null,
+        resolved: false
+      };
+      return;
+    }
+    
+    let result = (game.event.dungeonResult ?? 1) + modifyDie;
+    result = Math.max(1, Math.min(6, result));
+    game.event.modified = true;
+    game.event.dungeonResult = result;
+    
+    const reward = card.outcomes[result] || card.outcomes[1];
+    reward.effects.forEach(e => {
+      if (e.stat === 'hp') e.value > 0 ? game.gainHp(e.value) : game.loseHp(Math.abs(e.value));
+      if (e.stat === 'gold') game.gainGold(e.value);
+      if (e.stat === 'xp') game.gainXp(e.value);
+    });
+    if (reward.potion) addPotion(reward.potion);
+    
+    game.addLog(`Tomb outcome: ${reward.label}`, 'info');
+    game.event.outcome = reward.label;
+}
+
+export function handleItemRoom(action: 'take' | 'ignore') {
+  if (!game.event || game.event.card.type !== 'item_room') return;
+  const card = game.event.card;
+  
+  if (action === 'take') {
+    if (card.cost) {
+      if (card.cost.stat === 'gold' && game.gold >= card.cost.value) game.loseGold(card.cost.value);
+      else if (card.cost.stat === 'hp' && game.hp > card.cost.value) game.loseHp(card.cost.value);
+      else return; // Cannot afford
+    }
+    game.item = card;
+    game.addLog(`Obtained item: ${card.name}`, 'loot');
+  } else {
+    if (card.ignoreCost) {
+      card.ignoreCost.effects.forEach(e => {
+        if (e.stat === 'hp') game.loseHp(Math.abs(e.value));
+        if (e.stat === 'gold') game.loseGold(Math.abs(e.value));
+      });
+      game.addLog(`Ignored item penalty: ${card.ignoreCost.label}`, 'damage');
+    }
+  }
+  
+  closeGenericEvent();
+}
+
+export function closeGenericEvent() {
+  if (!game.event) return;
+  game.roomGrid[game.playerRow][game.playerCol]!.resolved = true;
+  game.event = null;
+  game.phase = 'playing';
+  revealAdjacentRooms();
 }
 
 export function addPotion(type: PotionType) {
