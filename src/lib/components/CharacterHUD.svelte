@@ -113,22 +113,24 @@
 	<!-- Potion slots -->
 	<div>
 		<h3 class="mb-2 text-xs font-semibold tracking-wider text-amber-400/60 uppercase">Potions</h3>
-		<div class="flex gap-2">
+		<div class="flex gap-3">
 			{#each game.potions as potion, i (i)}
 				{@const info = getPotionInfo(potion)}
 				<button
-					class={['potion-slot flex h-14 w-14 flex-col items-center justify-center rounded-full border-2 transition-all duration-200',
-						info ? 'border-amber-600/40 bg-amber-900/20 hover:bg-amber-800/30' : 'border-stone-700/30 bg-stone-800/30 cursor-default'
+					class={['flex shrink-0 flex-col items-center justify-center rounded-full transition-all duration-200',
+						info 
+						? 'h-14 w-14 border-2 border-amber-600/40 bg-amber-900/20 shadow-[0_0_10px_rgba(217,119,6,0.15)] hover:bg-amber-800/40 cursor-pointer' 
+						: 'h-14 w-14 border-2 border-dashed border-stone-700/50 bg-stone-900/30 cursor-default'
 					].join(' ')}
 					onclick={() => handleUsePotion(i)}
 					disabled={!info}
 					title={info ? `Use ${info.name}` : 'Empty slot'}
 				>
 					{#if info}
-						<span class="text-lg">{info.icon}</span>
-						<span class="text-[8px] text-stone-400">{info.name.split(' ')[0]}</span>
+						<span class="text-xl drop-shadow-md">{info.icon}</span>
+						<span class="mt-0.5 text-[9px] font-medium tracking-wide text-amber-200/80">{info.name.split(' ')[0]}</span>
 					{:else}
-						<span class="text-lg text-stone-700">◌</span>
+						<span class="text-lg text-stone-700/50">◌</span>
 					{/if}
 				</button>
 			{/each}
@@ -138,16 +140,22 @@
 	<!-- Item slot -->
 	<div>
 		<h3 class="mb-2 text-xs font-semibold tracking-wider text-amber-400/60 uppercase">Item</h3>
-		<div class="item-slot flex items-center gap-2 rounded-lg border-2 border-stone-700/30 bg-stone-800/30 p-2">
+		<div class="flex items-center gap-3 rounded-xl border border-stone-700/40 bg-stone-900/40 p-3 shadow-inner" title={game.item?.description ?? ''}>
 			{#if game.item}
-				<span class="text-lg">🔧</span>
-				<div>
-					<div class="text-xs font-semibold text-amber-200">{game.item.name}</div>
-					<div class="text-[10px] text-stone-500">{game.item.description ?? ''}</div>
+				<div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-amber-700/30 bg-stone-800 text-xl shadow-[0_0_8px_rgba(180,83,9,0.2)]">
+					🔧
+				</div>
+				<div class="min-w-0 flex-1">
+					<div class="truncate text-sm font-bold text-amber-200">{game.item.name}</div>
+					<div class="truncate text-[11px] text-stone-400">{game.item.description ?? ''}</div>
 				</div>
 			{:else}
-				<span class="text-lg text-stone-700">◻️</span>
-				<span class="text-xs text-stone-600 italic">No item</span>
+				<div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-dashed border-stone-700/50 bg-stone-800/30 text-xl text-stone-700">
+					◻️
+				</div>
+				<div class="min-w-0 flex-1">
+					<span class="text-xs font-medium italic text-stone-500">No item equipped</span>
+				</div>
 			{/if}
 		</div>
 	</div>
@@ -156,19 +164,19 @@
 	{#if game.cursed || game.poisoned || game.blinded}
 		<div>
 			<h3 class="mb-2 text-xs font-semibold tracking-wider text-red-400/60 uppercase">Effects</h3>
-			<div class="flex gap-2">
+			<div class="flex flex-wrap gap-2">
 				{#if game.cursed}
-					<span class="effect-curse animate-pulse rounded-lg bg-purple-900/40 px-2 py-1 text-sm" title="Cursed">
+					<span class="animate-pulse rounded-lg border border-purple-700/50 bg-purple-900/40 px-3 py-1.5 text-xs font-bold tracking-wide text-purple-200 shadow-[0_0_8px_rgba(147,51,234,0.2)]" title="Cursed">
 						🟪 Cursed
 					</span>
 				{/if}
 				{#if game.poisoned}
-					<span class="effect-poison animate-pulse rounded-lg bg-green-900/40 px-2 py-1 text-sm" title="Poisoned">
+					<span class="animate-pulse rounded-lg border border-green-700/50 bg-green-900/40 px-3 py-1.5 text-xs font-bold tracking-wide text-green-200 shadow-[0_0_8px_rgba(22,163,74,0.2)]" title="Poisoned">
 						🟩 Poison
 					</span>
 				{/if}
 				{#if game.blinded}
-					<span class="effect-blind animate-pulse rounded-lg bg-stone-700/40 px-2 py-1 text-sm" title="Blinded">
+					<span class="animate-pulse rounded-lg border border-stone-500/50 bg-stone-700/40 px-3 py-1.5 text-xs font-bold tracking-wide text-stone-300 shadow-[0_0_8px_rgba(120,113,108,0.2)]" title="Blinded">
 						👁️ Blind
 					</span>
 				{/if}

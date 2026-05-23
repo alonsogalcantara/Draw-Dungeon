@@ -6,8 +6,8 @@
 	const skillCheck = $derived(game.skillCheck);
 	const rolled = $derived(skillCheck?.rolled ?? false);
 	const success = $derived(skillCheck?.success ?? false);
-	const dice = $derived(skillCheck?.dice ?? []);
-	const dungeonDie = $derived(skillCheck?.dungeonDie ?? null);
+	const dice = $derived(skillCheck?.diceResults ?? []);
+	const dungeonDie = $derived(skillCheck?.dungeonDieResult ?? null);
 	const rolling = $derived(skillCheck?.rolling ?? false);
 	const reason = $derived(skillCheck?.reason ?? 'Test your skills');
 </script>

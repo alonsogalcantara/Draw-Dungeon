@@ -58,7 +58,7 @@
 </script>
 
 {#if event}
-	<div class="overlay overlay-event fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+	<div class="overlay overlay-event fixed inset-0 z-40 flex items-center justify-center bg-black/80 backdrop-blur-sm">
 		<div class="mx-4 w-full max-w-xl rounded-2xl border border-amber-900/30 bg-stone-950/95 p-6 shadow-2xl">
 
 			<!-- Bonfire -->
@@ -66,14 +66,14 @@
 				<div class="text-center">
 					<span class="text-5xl">🔥</span>
 					<h2 class="title-text mt-3 text-2xl">Bonfire</h2>
-					<p class="mt-2 text-sm text-stone-400">{event.cardName ?? 'A warm fire crackles before you. Rest a while...'}</p>
+					<p class="mt-2 text-sm text-stone-400">{event.card.name ?? 'A warm fire crackles before you. Rest a while...'}</p>
 
 					<div class="divider my-4 h-px bg-gradient-to-r from-transparent via-orange-700/40 to-transparent"></div>
 
 					<p class="mb-4 text-xs text-emerald-400/70">🔄 Skills refreshed</p>
 
 					<div class="grid gap-2">
-						{#each event.actions ?? [] as action, i}
+						{#each (event.card as any).actions ?? [] as action, i}
 							<button
 								class="btn btn-secondary w-full py-3 text-left"
 								onclick={() => selectBonfireAction(i)}
@@ -103,9 +103,9 @@
 
 					<div class="divider my-4 h-px bg-gradient-to-r from-transparent via-amber-700/40 to-transparent"></div>
 
-					{#if event.items?.length}
+					{#if (event.card as any).items?.length}
 						<div class="grid gap-2">
-							{#each event.items as item, i}
+							{#each (event.card as any).items as item, i}
 								<div class="flex items-center justify-between rounded-lg border border-stone-700/40 bg-stone-800/40 p-3">
 									<div>
 										<span class="mr-2 text-lg">{item.icon ?? '📦'}</span>
@@ -272,7 +272,7 @@
 						<button
 							class="btn btn-primary px-6 py-2"
 							onclick={() => handleItemRoom('take')}
-							disabled={itemCard.cost ? (itemCard.cost.stat === 'gold' ? game.gold < itemCard.cost.value : game.hp <= itemCard.cost.value) : false}
+							disabled={itemCard.cost ? (itemCard.cost.stat === 'gold' ? game.gold < itemCard.cost.value : itemCard.cost.stat === 'xp' ? game.xp < itemCard.cost.value : game.hp <= itemCard.cost.value) : false}
 						>
 							{itemCard.cost ? 'Pay & Take' : 'Take Item'}
 						</button>

@@ -283,12 +283,14 @@ export function endCombat() {
   if (enemy.type === 'monster') {
     const xpReward = enemy.xpRewardPerFloor[game.currentFloor - 1];
     game.gainXp(xpReward);
+    game.addLog(`Defeated ${enemy.name}! Gained ${xpReward} XP.`, 'loot');
   } else if (enemy.type === 'boss') {
     if ((enemy as BossCard).isFinal) {
       game.phase = 'victory';
       return;
     }
     game.gainXp(3); // General reward
+    game.addLog(`Defeated ${enemy.name}! Gained 3 XP.`, 'loot');
   }
   
   game.roomGrid[game.playerRow][game.playerCol]!.resolved = true;
@@ -327,73 +329,120 @@ export function performSkillCheck(reason?: string) {
 }
 
 export function resolveSkillCheck() {
-  if (!game.skillCheck || !game.event) return;
-  
-  const card = game.event.card;
-  const isSuccess = game.skillCheck.success;
-  const dungeonDie = game.skillCheck.dungeonDieResult;
-  
-  if (card.type === 'trap') {
-    if (isSuccess) {
-      const reward = card.successRewards[dungeonDie] || card.successRewards[1];
-      reward.effects.forEach(e => {
-        if (e.stat === 'xp') game.gainXp(e.value);
-      });
-      game.addLog(`Evaded trap!`, 'info');
-    } else {
-      const penalty = card.failurePenalties[dungeonDie] || card.failurePenalties[1];
-      penalty.effects.forEach(e => {
-        if (e.stat === 'hp') game.loseHp(Math.abs(e.value));
-      });
-      if (penalty.statusEffect === 'poison') game.poisoned = true;
-      if (penalty.statusEffect === 'blindness') game.blinded = true;
-      game.addLog(`Triggered trap!`, 'damage');
-    }
-  } else if (card.type === 'treasure') {
-    game.gainGold(card.goldBase);
-    game.event.goldGained = card.goldBase;
-    if (isSuccess) {
-      const reward = card.chestRewards[dungeonDie] || card.chestRewards[1];
-      if (reward.potion) addPotion(reward.potion);
-      reward.effects.forEach(e => {
-        if (e.stat === 'gold') game.gainGold(e.value);
-        if (e.stat === 'xp') game.gainXp(e.value);
-      });
-      game.addLog('Unlocked chest!', 'loot');
-      game.event.chestReward = reward.label;
-    }
-    game.event.chestOpened = true;
-    game.skillCheck = null;
-    game.phase = 'event';
+  if (!game.skillCheck) {
+    alert("Skill Check is null!");
     return;
-  } else if (card.type === 'tomb') {
-    game.event.rolled = true;
-    game.event.success = isSuccess ?? false;
-    game.event.dungeonResult = dungeonDie;
-    
-    if (!isSuccess) {
-      const reward = card.outcomes[dungeonDie] || card.outcomes[1];
-      reward.effects.forEach(e => {
-        if (e.stat === 'hp') e.value > 0 ? game.gainHp(e.value) : game.loseHp(Math.abs(e.value));
-        if (e.stat === 'gold') game.gainGold(e.value);
-        if (e.stat === 'xp') game.gainXp(e.value);
-      });
-      if (reward.potion) addPotion(reward.potion);
-      game.addLog(`Tomb failure outcome: ${reward.label}`, 'damage');
-      game.event.outcome = reward.label;
-      game.event.modified = true;
-    }
-    
+  }
+  if (!game.event) {
+    alert("Event is null! This is why it's getting stuck!");
+    // Force fallback execution for trap if event is missing but it's a trap
+    // We can't do much without the card, but we can unlock the game.
     game.skillCheck = null;
-    game.phase = 'event';
+    game.phase = 'playing';
+    game.roomGrid[game.playerRow][game.playerCol]!.resolved = true;
+    revealAdjacentRooms();
     return;
   }
   
-  game.roomGrid[game.playerRow][game.playerCol]!.resolved = true;
-  game.skillCheck = null;
-  game.event = null;
-  game.phase = 'playing';
-  revealAdjacentRooms();
+  try {
+    const card = game.event.card as any;
+    const isSuccess = game.skillCheck.success;
+    const dungeonDie = game.skillCheck.dungeonDieResult || 1;
+    
+    if (card.type === 'trap') {
+      if (isSuccess) {
+        const reward = card.successRewards[dungeonDie] || card.successRewards[1];
+        if (reward) {
+          reward.effects.forEach((e: any) => {
+            if (e.stat === 'xp') game.gainXp(e.value);
+            if (e.stat === 'gold') game.gainGold(e.value);
+            if (e.stat === 'hp') e.value > 0 ? game.gainHp(e.value) : game.loseHp(Math.abs(e.value));
+            if (e.stat === 'armor') game.gainArmor(e.value);
+          });
+          if (reward.potion) addPotion(reward.potion);
+          game.addLog(`Evaded trap!`, 'info');
+        }
+      } else {
+        const penalty = card.failurePenalties[dungeonDie] || card.failurePenalties[1];
+        if (penalty) {
+          penalty.effects.forEach((e: any) => {
+            if (e.stat === 'hp') game.loseHp(Math.abs(e.value));
+          });
+          if (penalty.statusEffect === 'poison') game.poisoned = true;
+          if (penalty.statusEffect === 'blindness') game.blinded = true;
+          game.addLog(`Triggered trap!`, 'damage');
+        }
+      }
+    } else if (card.type === 'treasure') {
+      game.gainGold(card.goldBase || 0);
+      game.event.goldGained = card.goldBase;
+      if (isSuccess) {
+        const reward = card.chestRewards[dungeonDie] || card.chestRewards[1];
+        if (reward) {
+          if (reward.potion) addPotion(reward.potion);
+          if (reward.effects) {
+            reward.effects.forEach((e: any) => {
+              if (e.stat === 'gold') game.gainGold(e.value);
+              if (e.stat === 'xp') game.gainXp(e.value);
+              if (e.stat === 'hp') e.value > 0 ? game.gainHp(e.value) : game.loseHp(Math.abs(e.value));
+              if (e.stat === 'armor') game.gainArmor(e.value);
+            });
+          }
+          game.addLog('Unlocked chest!', 'loot');
+          game.event.chestReward = reward.label;
+        }
+      }
+      game.event.chestOpened = true;
+      game.event = { ...game.event }; // Force Svelte reactivity update
+      game.skillCheck = null;
+      game.phase = 'event';
+      return;
+    } else if (card.type === 'tomb') {
+      game.event.rolled = true;
+      game.event.success = isSuccess ?? false;
+      game.event.dungeonResult = dungeonDie;
+      
+      if (!isSuccess) {
+        const reward = card.outcomes[dungeonDie] || card.outcomes[1];
+        if (reward) {
+          if (reward.effects) {
+            reward.effects.forEach((e: any) => {
+              if (e.stat === 'hp') e.value > 0 ? game.gainHp(e.value) : game.loseHp(Math.abs(e.value));
+              if (e.stat === 'gold') game.gainGold(e.value);
+              if (e.stat === 'xp') game.gainXp(e.value);
+              if (e.stat === 'armor') game.gainArmor(e.value);
+            });
+          }
+          if (reward.potion) addPotion(reward.potion);
+          game.addLog(`Tomb failure outcome: ${reward.label}`, 'damage');
+          game.event.outcome = reward.label;
+          game.event.modified = true;
+        }
+      }
+      
+      game.event = { ...game.event }; // Force Svelte reactivity update
+      game.skillCheck = null;
+      game.phase = 'event';
+      return;
+    }
+    
+    game.roomGrid[game.playerRow][game.playerCol]!.resolved = true;
+    game.skillCheck = null;
+    game.event = null;
+    game.phase = 'playing';
+    revealAdjacentRooms();
+  } catch (err) {
+    console.error('Error in resolveSkillCheck:', err);
+    alert('Oops! An error occurred resolving the skill check: ' + err);
+    // Force close to prevent soft-locking the game
+    game.skillCheck = null;
+    game.event = null;
+    game.phase = 'playing';
+    if (game.roomGrid[game.playerRow] && game.roomGrid[game.playerRow][game.playerCol]) {
+      game.roomGrid[game.playerRow][game.playerCol]!.resolved = true;
+    }
+    revealAdjacentRooms();
+  }
 }
 
 export function usePotion(slotIndex: number) {
@@ -554,6 +603,7 @@ export function handleItemRoom(action: 'take' | 'ignore') {
     if (card.cost) {
       if (card.cost.stat === 'gold' && game.gold >= card.cost.value) game.loseGold(card.cost.value);
       else if (card.cost.stat === 'hp' && game.hp > card.cost.value) game.loseHp(card.cost.value);
+      else if (card.cost.stat === 'xp' && game.xp >= card.cost.value) game.loseXp(card.cost.value);
       else return; // Cannot afford
     }
     game.item = card;

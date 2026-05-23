@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { game } from '$lib/game/gameState.svelte';
-	import { resolveRoom, revealAdjacentRooms } from '$lib/game/gameActions';
+	import { resolveRoom, revealAdjacentRooms, delve } from '$lib/game/gameActions';
 	import RoomCard from './RoomCard.svelte';
 
 	// Determine which rooms are available to move to (right and below current position)
@@ -20,6 +20,12 @@
 		const targetRoom = game.roomGrid[row]?.[col];
 		return targetRoom !== null && targetRoom !== undefined;
 	}
+	
+	const gridClass = $derived(
+		game.layoutSize === 3 ? 'grid-cols-3 grid-rows-3' : 
+		game.layoutSize === 4 ? 'grid-cols-4 grid-rows-4' : 
+		'grid-cols-5 grid-rows-5'
+	);
 </script>
 
 <div class="flex flex-col gap-4">
@@ -36,12 +42,9 @@
 	</div>
 
 	<!-- Dynamic N×N Room Grid -->
-	<div 
-		class="dungeon-map grid gap-3"
-		style="grid-template-columns: repeat({game.layoutSize}, minmax(0, 1fr)); grid-template-rows: repeat({game.layoutSize}, minmax(0, 1fr));"
-	>
-		{#each { length: game.layoutSize } as _, row}
-			{#each { length: game.layoutSize } as _, col}
+	<div class="dungeon-map grid {gridClass} gap-3">
+		{#each { length: game.layoutSize } as _, row (row)}
+			{#each { length: game.layoutSize } as _, col (col)}
 				{@const instance = game.roomGrid[row]?.[col] ?? null}
 				{@const isCurrent = row === game.playerRow && col === game.playerCol}
 				{@const available = isAvailable(row, col)}
@@ -58,4 +61,16 @@
 
 	<!-- Path visualization -->
 	<div class="h-px bg-gradient-to-r from-transparent via-amber-900/30 to-transparent"></div>
+
+	<!-- Next Area Button -->
+	{#if game.playerRow === game.layoutSize - 1 && game.playerCol === game.layoutSize - 1 && game.roomGrid[game.layoutSize - 1]?.[game.layoutSize - 1]?.resolved}
+		<div class="mt-4 flex justify-center">
+			<button
+				class="btn btn-primary px-8 py-4 text-xl tracking-widest shadow-[0_0_15px_rgba(217,119,6,0.4)]"
+				onclick={() => delve()}
+			>
+				Delve Deeper
+			</button>
+		</div>
+	{/if}
 </div>
