@@ -16,7 +16,7 @@
 
 	function getDieDisplayValue(die: DieResult): string {
 		if (die.value === 0) return '❌';
-		if (die.isCritical) return '💥';
+		if (die.isCritical || (die.type !== 'character' && die.type !== 'dungeon' && die.value === 6)) return '💥';
 		return String(die.value);
 	}
 </script>
@@ -32,7 +32,9 @@
 			class:die-rolling={rolling}
 			class:die-miss={die.value === 0}
 			class:die-critical={die.isCritical}
-			class:die-star={die.value === 5 || die.value === 6}
+			class:die-star={die.type === 'character' && (die.value === 5 || die.value === 6)}
+			class:die-poison-star={die.type === 'poison' && die.value === 6}
+			class:die-curse-star={die.type === 'curse' && die.value === 6}
 			class:opacity-40={die.setAside}
 			class:scale-90={die.setAside}
 		>

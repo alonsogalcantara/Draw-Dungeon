@@ -140,6 +140,8 @@ export function rollCombatDice() {
   
   game.combat.diceResults = Array(game.characterDiceCount).fill({ type: 'character', value: 0 });
   game.combat.dungeonDieResult = 1;
+  game.combat.poisonDieResult = game.poisoned ? { type: 'poison', value: 0, isStar: false, isCritical: false, isMiss: false, setAside: false, rerolled: false } : null;
+  game.combat.curseDieResult = game.cursed ? { type: 'curse', value: 0, isStar: false, isCritical: false, isMiss: false, setAside: false, rerolled: false } : null;
   game.combat.rolling = true;
   game.combat.rolled = true;
   
@@ -237,8 +239,12 @@ export function executeMonsterAttack() {
   const ignoreArmorEffect = game.combat.enemy.effects.includes('ignoreArmor');
   
   let currentDie = game.combat.dungeonDieResult;
+  game.combat.monsterRolls = [];
+  
   while (true) {
     const { damage, pierced, miss } = processMonsterAttack(currentDie, enemyDamage, game.armor + game.temporaryArmor, ignoreArmorEffect);
+    
+    game.combat.monsterRolls.push({ die: currentDie, damage: miss ? 0 : damage });
     
     if (miss) {
       game.addLog('Monster attack missed!', 'combat');
@@ -266,6 +272,11 @@ export function executeMonsterAttack() {
     game.addLog(`Monster attacks again! (Rolled ${currentDie})`, 'combat');
   }
   
+  game.combat.phase = 'monsterAttackResult';
+}
+
+export function finishMonsterAttack() {
+  if (!game.combat) return;
   if (game.hp <= 0) {
     game.combat.phase = 'defeat';
     game.phase = 'gameOver';
@@ -304,6 +315,8 @@ export function performSkillCheck(reason?: string) {
   
   game.skillCheck.diceResults = Array(game.characterDiceCount).fill({ type: 'character', value: 0 });
   game.skillCheck.dungeonDieResult = 1;
+  game.skillCheck.poisonDieResult = game.poisoned ? { type: 'poison', value: 0, isStar: false, isCritical: false, isMiss: false, setAside: false, rerolled: false } : null;
+  game.skillCheck.curseDieResult = game.cursed ? { type: 'curse', value: 0, isStar: false, isCritical: false, isMiss: false, setAside: false, rerolled: false } : null;
   game.skillCheck.rolling = true;
   game.skillCheck.rolled = true;
   
@@ -319,8 +332,14 @@ export function performSkillCheck(reason?: string) {
     
     game.skillCheck.rolling = false;
     game.skillCheck.dungeonDieResult = rollResult.dungeonDie;
+    game.skillCheck.poisonDieResult = rollResult.poisonDie;
+    game.skillCheck.curseDieResult = rollResult.curseDie;
     game.skillCheck.diceResults = dice;
     game.skillCheck.success = isSkillCheckSuccess(dice);
+    
+    if (rollResult.curseDie && isCurseTriggered(rollResult.curseDie)) {
+      game.cursed = true;
+    }
     
     if (rollResult.poisonDie && isPoisonTriggered(rollResult.poisonDie)) {
       game.loseHp(1);

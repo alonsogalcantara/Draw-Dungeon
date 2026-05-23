@@ -6,6 +6,7 @@
 		performFeat,
 		applyPlayerDamage,
 		executeMonsterAttack,
+		finishMonsterAttack,
 		endCombat,
 		usePotion
 	} from '$lib/game/gameActions';
@@ -17,8 +18,12 @@
 	const combat = $derived(game.combat);
 	const phase = $derived(combat?.phase ?? 'playerAttack');
 	const enemy = $derived(combat?.enemy ?? null);
-	const dice = $derived(combat?.dice ?? []);
-	const dungeonDie = $derived(combat?.dungeonDie ?? null);
+	const dice = $derived([
+		...(combat?.diceResults ?? []),
+		...(combat?.poisonDieResult ? [combat.poisonDieResult] : []),
+		...(combat?.curseDieResult ? [combat.curseDieResult] : [])
+	]);
+	const dungeonDie = $derived(combat?.dungeonDieResult ?? null);
 	const totalDamage = $derived(combat?.totalDamage ?? 0);
 	const rolling = $derived(combat?.rolling ?? false);
 
@@ -36,6 +41,7 @@
 			case 'resolvingAttack':
 			case 'playerAttack': return 'Your Attack';
 			case 'monsterAttack': return 'Monster Attack';
+			case 'monsterAttackResult': return 'Damage Received';
 			case 'victory': return 'Victory!';
 			case 'defeat': return 'Defeat...';
 			default: return 'Combat';
@@ -64,7 +70,7 @@
 			<div class="mb-6 text-center">
 				<span class={['rounded-full px-6 py-2 text-sm font-bold tracking-widest uppercase',
 					(phase === 'playerAttack' || phase === 'rolling' || phase === 'resolvingAttack') ? 'bg-amber-800/40 text-amber-300' : '',
-					phase === 'monsterAttack' ? 'bg-red-800/40 text-red-300' : '',
+					(phase === 'monsterAttack' || phase === 'monsterAttackResult') ? 'bg-red-800/40 text-red-300' : '',
 					phase === 'victory' ? 'bg-emerald-800/40 text-emerald-300' : '',
 					phase === 'defeat' ? 'bg-red-900/60 text-red-400' : ''
 				].filter(Boolean).join(' ')}>
@@ -98,11 +104,30 @@
 				<!-- Center: Dice area -->
 				<div class="flex flex-col items-center justify-center gap-4">
 					<span class="text-4xl">⚔️</span>
-					<DiceRoller {dice} {dungeonDie} {rolling} />
-					{#if totalDamage > 0 && phase === 'playerAttack' && !rolling}
-						<div class="text-center">
-							<span class="text-3xl font-black text-amber-300">{totalDamage}</span>
-							<span class="block text-xs text-stone-500">Total Damage</span>
+					{#if phase !== 'monsterAttackResult'}
+						<DiceRoller {dice} {dungeonDie} {rolling} />
+						{#if totalDamage > 0 && phase === 'playerAttack' && !rolling}
+							<div class="text-center">
+								<span class="text-3xl font-black text-amber-300">{totalDamage}</span>
+								<span class="block text-xs text-stone-500">Total Damage</span>
+							</div>
+						{/if}
+					{:else}
+						<!-- Monster Attack Result Display -->
+						<div class="flex flex-col items-center gap-3">
+							<div class="flex flex-wrap items-center justify-center gap-2">
+								{#each combat.monsterRolls || [] as roll}
+									<div class="flex h-12 w-12 flex-col items-center justify-center rounded-lg border-2 border-red-900/50 bg-red-950/80 shadow-md">
+										<span class="text-xl font-bold text-red-300">{roll.die}</span>
+									</div>
+								{/each}
+							</div>
+							<div class="text-center mt-2">
+								<span class="text-3xl font-black text-red-400">
+									{combat.monsterRolls?.reduce((acc, r) => acc + r.damage, 0) || 0}
+								</span>
+								<span class="block text-xs text-stone-500">Damage Received</span>
+							</div>
 						</div>
 					{/if}
 				</div>
@@ -186,6 +211,12 @@
 				{#if phase === 'monsterAttack'}
 					<button class="btn btn-primary px-6 py-2" onclick={() => executeMonsterAttack()}>
 						🛡️ Defend
+					</button>
+				{/if}
+
+				{#if phase === 'monsterAttackResult'}
+					<button class="btn btn-primary px-6 py-2" onclick={() => finishMonsterAttack()}>
+						Continue
 					</button>
 				{/if}
 

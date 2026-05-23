@@ -324,6 +324,7 @@ export interface CombatState {
     | 'playerAttack'
     | 'resolvingAttack'
     | 'monsterAttack'
+    | 'monsterAttackResult'
     | 'victory'
     | 'defeat';
   diceResults: DieResult[];
@@ -346,6 +347,7 @@ export interface CombatState {
   rolling?: boolean;
   rewards?: { gold?: number; xp?: number };
   log?: string[];
+  monsterRolls?: { die: number; damage: number }[];
 }
 
 // --- Skill Checks ---
@@ -358,6 +360,8 @@ export interface SkillCheckState {
   /** null = not yet rolled, true/false = result */
   success: boolean | null;
   resolved: boolean;
+  poisonDieResult?: DieResult | null;
+  curseDieResult?: DieResult | null;
   rolled?: boolean;
   dice?: DieResult[];
   dungeonDie?: number | null;

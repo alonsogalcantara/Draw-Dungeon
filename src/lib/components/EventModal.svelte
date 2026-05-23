@@ -12,6 +12,7 @@
 		usePotion
 	} from '$lib/game/gameActions';
 	import type { RoomCard } from '$lib/game/types';
+	import DiceRoller from './DiceRoller.svelte';
 
 	const event = $derived(game.event);
 	const eventType = $derived(event?.type ?? '');
@@ -56,6 +57,22 @@
 		handleTomb(mod);
 	}
 </script>
+
+{#snippet outcomesList(outcomes, title, highlightRoll = null)}
+	{#if outcomes}
+		<div class="mb-4 rounded-lg bg-stone-900/40 p-3 text-left">
+			<p class="mb-2 text-xs font-bold uppercase tracking-wider text-stone-500">{title}</p>
+			<div class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
+				{#each [1, 2, 3, 4, 5, 6] as roll}
+					{#if outcomes[roll]}
+						<div class="font-bold {highlightRoll === roll ? 'text-yellow-400' : 'text-stone-500'}">[{roll}]</div>
+						<div class="{highlightRoll === roll ? 'text-yellow-300 font-semibold' : 'text-stone-300'}">{outcomes[roll].label}</div>
+					{/if}
+				{/each}
+			</div>
+		</div>
+	{/if}
+{/snippet}
 
 {#if event}
 	<div class="overlay overlay-event fixed inset-0 z-40 flex items-center justify-center bg-black/80 backdrop-blur-sm">
@@ -145,6 +162,7 @@
 					<div class="divider my-4 h-px bg-gradient-to-r from-transparent via-purple-700/40 to-transparent"></div>
 
 					{#if !event.rolled}
+						{@render outcomesList(event.card.outcomes, 'Possible Boons')}
 						<p class="mb-4 text-xs text-stone-400">Roll the Dungeon die. Offer 1 Gold for +1 to the result.</p>
 						<div class="flex items-center justify-center gap-4">
 							<button class="btn btn-primary px-6 py-2" onclick={() => shrineRoll(false)}>
@@ -157,8 +175,12 @@
 							{/if}
 						</div>
 					{:else}
-						<div class="mb-4 rounded-lg bg-stone-800/60 px-4 py-3">
-							<p class="text-lg font-bold text-amber-300">Result: {event.result}</p>
+						{@render outcomesList(event.card.outcomes, 'Boons', event.result)}
+						<div class="mb-4 flex flex-col items-center rounded-lg bg-stone-800/60 px-4 py-3">
+							<p class="mb-2 text-lg font-bold text-amber-300">Result:</p>
+							<div class="mb-2 scale-75">
+								<DiceRoller dice={[]} dungeonDie={event.result ?? 1} rolling={event.result === undefined} />
+							</div>
 							{#if event.outcome}
 								<p class="mt-1 text-sm text-stone-300">{event.outcome}</p>
 							{/if}
@@ -185,6 +207,7 @@
 					{/if}
 
 					{#if !event.chestOpened}
+						{@render outcomesList(event.card.chestRewards, 'Possible Loot')}
 						<p class="mb-3 text-xs text-stone-400">Try to unlock the treasure chest?</p>
 						<button class="btn btn-primary px-6 py-2" onclick={treasureSkillCheck}>
 							🔓 Skill Check
@@ -193,6 +216,7 @@
 							Skip
 						</button>
 					{:else}
+						{@render outcomesList(event.card.chestRewards, 'Loot', event.dungeonResult)}
 						{#if event.chestReward}
 							<div class="mb-4 rounded-lg bg-emerald-900/20 px-4 py-2">
 								<p class="text-sm text-emerald-300">{event.chestReward}</p>
@@ -214,6 +238,7 @@
 					<div class="divider my-4 h-px bg-gradient-to-r from-transparent via-stone-600/40 to-transparent"></div>
 
 					{#if !event.rolled}
+						{@render outcomesList(event.card.outcomes, 'Possible Outcomes')}
 						<p class="mb-3 text-xs text-stone-400">Perform a skill check to investigate.</p>
 						<button class="btn btn-primary px-6 py-2" onclick={tombSkillCheck}>
 							🎲 Skill Check
@@ -222,7 +247,13 @@
 							Leave
 						</button>
 					{:else if event.success && !event.modified}
-						<p class="mb-3 text-sm text-emerald-400">✅ Success! Dungeon die: {event.dungeonResult}</p>
+						{@render outcomesList(event.card.outcomes, 'Outcomes', event.dungeonResult)}
+						<div class="mb-4 flex flex-col items-center">
+							<p class="mb-2 text-sm text-emerald-400">✅ Success!</p>
+							<div class="mb-2 scale-75">
+								<DiceRoller dice={[]} dungeonDie={event.dungeonResult ?? null} rolling={false} />
+							</div>
+						</div>
 						<p class="mb-3 text-xs text-stone-400">You may modify the result by +1 or -1.</p>
 						<div class="flex items-center justify-center gap-3">
 							<button class="btn btn-secondary px-4 py-2" onclick={() => tombModify(-1)}>
@@ -236,8 +267,14 @@
 							</button>
 						</div>
 					{:else}
+						{@render outcomesList(event.card.outcomes, 'Outcomes', event.dungeonResult)}
 						{#if !event.success}
-							<p class="mb-3 text-sm text-red-400">❌ Failed. Dungeon die: {event.dungeonResult}</p>
+							<div class="mb-4 flex flex-col items-center">
+								<p class="mb-2 text-sm text-red-400">❌ Failed.</p>
+								<div class="mb-2 scale-75">
+									<DiceRoller dice={[]} dungeonDie={event.dungeonResult ?? null} rolling={false} />
+								</div>
+							</div>
 						{/if}
 						{#if event.outcome}
 							<div class="mb-4 rounded-lg bg-stone-800/60 px-4 py-2">

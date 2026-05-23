@@ -42,6 +42,6 @@
 	<SkillCheckOverlay />
 {/if}
 
-{#if game.event !== null}
+{#if game.event !== null && game.skillCheck === null}
 	<EventModal />
 {/if}

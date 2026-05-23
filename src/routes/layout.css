@@ -675,6 +675,32 @@ body {
     inset 0 1px 0 rgba(156, 39, 176, 0.1);
 }
 
+/* ── Poison Die Star (Green Glow) ── */
+.die-poison-star {
+  background: linear-gradient(135deg, #0a3a0a, #00cc44);
+  color: #e6ffe6;
+  border-color: #00ff55;
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.4),
+    0 0 15px rgba(0, 255, 85, 0.4),
+    0 0 30px rgba(0, 204, 68, 0.2);
+  animation: shimmer 3s linear infinite;
+  background-size: 200% 100%;
+}
+
+/* ── Curse Die Star (Purple Glow) ── */
+.die-curse-star {
+  background: linear-gradient(135deg, #2a0630, #9c27b0);
+  color: #f3e5f5;
+  border-color: #e040fb;
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.4),
+    0 0 15px rgba(224, 64, 251, 0.4),
+    0 0 30px rgba(156, 39, 176, 0.2);
+  animation: shimmer 3s linear infinite;
+  background-size: 200% 100%;
+}
+
 /* ── Dice States ── */
 .die-rolling {
   animation: dice-spin 0.6s cubic-bezier(0.22, 0.68, 0, 1.2);
