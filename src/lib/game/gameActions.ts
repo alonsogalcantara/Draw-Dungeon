@@ -1,7 +1,7 @@
 import { game } from './gameState.svelte';
 import type { CharacterDef, DifficultyMode, PotionType, RoomCardInstance, RoomType, MonsterCard, BossCard, RoomCard } from './types';
 import { loadMetaProgress } from './metaState';
-import { ROOM_CARDS } from '../data/roomCards';
+import { ROOM_CARDS, BOSS_CARDS } from '../data/roomCards';
 import { DUNGEON_FLOORS, DIFFICULTY_MODIFIERS, MAX_HP } from '../data/constants';
 import { rollAllDice, applyCurseEffect, calculateDamage, rollDungeonDie, isSkillCheckSuccess, isPoisonTriggered, isCurseTriggered } from './diceEngine';
 import { initCombat, processAttackPhase, performFeat as combatPerformFeat, processMonsterAttack, applyEffects, checkCombatEnd, processRerollCriticals } from './combatEngine';
@@ -57,9 +57,9 @@ export function setupArea() {
   const isBossArea = game.currentAreaInFloor === bossArea;
   
   if (isBossArea) {
-    const bosses = ROOM_CARDS.filter(c => c.type === 'boss');
-    const finalBoss = bosses.find(b => (b as BossCard).isFinal);
-    const regularBosses = shuffle(bosses.filter(b => !(b as BossCard).isFinal));
+    const bosses = BOSS_CARDS;
+    const finalBoss = bosses.find(b => b.isFinal);
+    const regularBosses = shuffle(bosses.filter(b => !b.isFinal));
     
     // In actual game, you set up bosses facedown, here we just pick the boss for the floor
     const bossToFace = game.currentFloor === 4 ? finalBoss : regularBosses[0];
@@ -312,8 +312,13 @@ export function endCombat() {
       game.phase = 'victory';
       return;
     }
-    game.gainXp(3); // General reward
-    game.addLog(`Defeated ${enemy.name}! Gained 3 XP.`, 'loot');
+    const boss = enemy as BossCard;
+    const xpReward = boss.reward?.xp || 3;
+    game.gainXp(xpReward);
+    if (boss.reward?.gold) {
+      game.gold += boss.reward.gold;
+    }
+    game.addLog(`Defeated ${enemy.name}! Gained ${xpReward} XP${boss.reward?.gold ? ` and ${boss.reward.gold} Gold` : ''}.`, 'loot');
   }
   
   game.roomGrid[game.playerRow][game.playerCol]!.resolved = true;

@@ -169,6 +169,8 @@ export interface BossCard {
   phases: number;
   /** True for the final boss (Og's Remains) */
   isFinal: boolean;
+  /** Rewards given when defeating the boss */
+  reward: { xp: number; gold?: number; potion?: string; item?: string };
 }
 
 /** Trap requiring a skill check to evade */

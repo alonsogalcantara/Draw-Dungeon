@@ -165,11 +165,12 @@ export const BOSS_CARDS: BossCard[] = [
     type: 'boss',
     description:
       'A towering demon lord cloaked in chains of cursed iron. His very presence warps reality, and his strikes shatter both body and soul.',
-    hp: 15,
-    damage: 5,
+    hp: 18,
+    damage: 6,
     effects: ['curse', 'ignoreArmor'],
     phases: 1,
     isFinal: false,
+    reward: { xp: 5, gold: 3 },
   },
   {
     id: 'boss_queen_arachnia',
@@ -177,11 +178,12 @@ export const BOSS_CARDS: BossCard[] = [
     type: 'boss',
     description:
       'Mother of the spider-brood, her abdomen swollen with a thousand unborn horrors. Venomous silk lines her throne room, and her bite withers muscle and bone.',
-    hp: 18,
-    damage: 4,
+    hp: 22,
+    damage: 6,
     effects: ['poison', 'weaken'],
     phases: 1,
     isFinal: false,
+    reward: { xp: 6, gold: 4 },
   },
   {
     id: 'boss_dreadlord_morvain',
@@ -189,11 +191,12 @@ export const BOSS_CARDS: BossCard[] = [
     type: 'boss',
     description:
       'Once the dungeon\'s architect, Morvain sold his sight to the void in exchange for dominion over shadow. His blind eyes see everything, and his curses linger long after death.',
-    hp: 20,
-    damage: 5,
+    hp: 25,
+    damage: 7,
     effects: ['curse', 'blindness'],
     phases: 1,
     isFinal: false,
+    reward: { xp: 7, gold: 5 },
   },
   {
     id: 'boss_ogs_remains',
@@ -201,11 +204,12 @@ export const BOSS_CARDS: BossCard[] = [
     type: 'boss',
     description:
       'The shattered skeleton of the primordial titan Og, reanimated by the blood-ruby lodged in its ribcage. It fights with the fury of a dead god, and defeating it once only awakens its true form.',
-    hp: 22,
-    damage: 6,
+    hp: 30,
+    damage: 8,
     effects: ['curse', 'ignoreArmor', 'regeneration'],
     phases: 2,
     isFinal: true,
+    reward: { xp: 10, gold: 10 },
   },
 ];
 
