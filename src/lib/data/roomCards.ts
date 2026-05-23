@@ -35,6 +35,48 @@ export const MONSTER_CARDS: MonsterCard[] = [
     xpRewardPerFloor: [1, 1, 2, 3],
   },
   {
+    id: 'monster_wailing_banshee',
+    name: 'Wailing Banshee',
+    type: 'monster',
+    description:
+      'The tortured spirit of a queen who was buried alive. Her shriek shatters resolve and saps the will to fight.',
+    image: '/images/monsters/tower/floor 1/Wailing Banshee.png',
+    campaign: 'tower',
+    floor: 1,
+    hpPerFloor: [5, 7, 9, 12],
+    damage: 3,
+    effects: ['curse', 'weaken'],
+    xpRewardPerFloor: [2, 2, 3, 3],
+  },
+  {
+    id: 'monster_abyssal_crawler',
+    name: 'Abyssal Crawler',
+    type: 'monster',
+    description:
+      'A many-limbed horror that drags itself from cracks in the deepest stone. Its maw is a ring of serrated teeth that never stops spinning.',
+    image: '/images/monsters/tower/floor 1/Abyssal Crawler.png',
+    campaign: 'tower',
+    floor: 1,
+    hpPerFloor: [5, 7, 10, 13],
+    damage: 4,
+    effects: [],
+    xpRewardPerFloor: [2, 2, 3, 3],
+  },
+  {
+    id: 'monster_bone_golem',
+    name: 'Bone Golem',
+    type: 'monster',
+    description:
+      'An abomination assembled from the skeletons of a hundred victims, bound together by dark sorcery. Each step shakes the dungeon floor.',
+    image: '/images/monsters/tower/floor 1/Bone Golem.png',
+    campaign: 'tower',
+    floor: 1,
+    hpPerFloor: [7, 9, 12, 15],
+    damage: 4,
+    effects: ['weaken'],
+    xpRewardPerFloor: [2, 3, 3, 3],
+  },
+  {
     id: 'monster_gelatinous_cube',
     name: 'Gelatinous Cube',
     type: 'monster',
@@ -133,20 +175,6 @@ export const MONSTER_CARDS: MonsterCard[] = [
     xpRewardPerFloor: [2, 2, 3, 3],
   },
   {
-    id: 'monster_bone_golem',
-    name: 'Bone Golem',
-    type: 'monster',
-    description:
-      'An abomination assembled from the skeletons of a hundred victims, bound together by dark sorcery. Each step shakes the dungeon floor.',
-    image: '/images/monsters/tower/floor 1/Bone Golem.png',
-    campaign: 'tower',
-    floor: 1,
-    hpPerFloor: [7, 9, 12, 15],
-    damage: 4,
-    effects: ['weaken'],
-    xpRewardPerFloor: [2, 3, 3, 3],
-  },
-  {
     id: 'monster_infernal_imp',
     name: 'Infernal Imp',
     type: 'monster',
@@ -156,50 +184,7 @@ export const MONSTER_CARDS: MonsterCard[] = [
     damage: 2,
     effects: ['curse'],
     xpRewardPerFloor: [1, 1, 2, 2],
-  },
-  {
-    id: 'monster_plague_rat_swarm',
-    name: 'Plague Rat Swarm',
-    type: 'monster',
-    description:
-      'Hundreds of diseased rodents moving as one writhing mass, their collective hunger insatiable and their bites infectious.',
-    image: '/images/monsters/tower/floor 1/Enjambre de ratas de plaga.png',
-    campaign: 'tower',
-    floor: 1,
-    hpPerFloor: [4, 5, 7, 10],
-    damage: 1,
-    effects: ['poison', 'weaken'],
-    xpRewardPerFloor: [1, 2, 2, 3],
-  },
-
-  {
-    id: 'monster_wailing_banshee',
-    name: 'Wailing Banshee',
-    type: 'monster',
-    description:
-      'The tortured spirit of a queen who was buried alive. Her shriek shatters resolve and saps the will to fight.',
-    image: '/images/monsters/tower/floor 1/Wailing Banshee.png',
-    campaign: 'tower',
-    floor: 1,
-    hpPerFloor: [5, 7, 9, 12],
-    damage: 3,
-    effects: ['curse', 'weaken'],
-    xpRewardPerFloor: [2, 2, 3, 3],
-  },
-  {
-    id: 'monster_abyssal_crawler',
-    name: 'Abyssal Crawler',
-    type: 'monster',
-    description:
-      'A many-limbed horror that drags itself from cracks in the deepest stone. Its maw is a ring of serrated teeth that never stops spinning.',
-    image: '/images/monsters/tower/floor 1/Abyssal Crawler.png',
-    campaign: 'tower',
-    floor: 1,
-    hpPerFloor: [5, 7, 10, 13],
-    damage: 4,
-    effects: [],
-    xpRewardPerFloor: [2, 2, 3, 3],
-  },
+  }
 ];
 
 // ============================================================================
