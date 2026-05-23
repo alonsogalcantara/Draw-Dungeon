@@ -45,6 +45,8 @@ class GameState {
   
   // Room grid
   roomGrid = $state<(RoomCardInstance | null)[][]>([]);
+  gridHistory = $state<{ floor: number, area: number, grid: (RoomCardInstance | null)[][] }[]>([]);
+  viewAreaIndex = $state(0);
   playerRow = $state(0);
   playerCol = $state(0);
   
@@ -89,6 +91,8 @@ class GameState {
     this.currentArea = 1;
     this.currentAreaInFloor = 1;
     this.roomGrid = [];
+    this.gridHistory = [];
+    this.viewAreaIndex = 0;
     this.playerRow = 0;
     this.playerCol = 0;
     this.combat = null;

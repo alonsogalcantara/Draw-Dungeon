@@ -98,6 +98,14 @@ export function setupArea() {
   }
 
   game.roomGrid = newGrid;
+  game.gridHistory.push({
+    floor: game.currentFloor,
+    area: game.currentAreaInFloor,
+    grid: newGrid
+  });
+  
+  // Notice we DO NOT change game.viewAreaIndex here. It will be changed in enterArea().
+
   game.playerRow = 0;
   game.playerCol = 0;
   
@@ -106,12 +114,28 @@ export function setupArea() {
 }
 
 export function enterArea() {
-  const startRoom = game.roomGrid[0][0]!;
-  startRoom.revealed = true;
-  resolveRoom(startRoom);
-  if (game.phase === 'playing') {
-    revealAdjacentRooms();
-  }
+  // 1. Hide overlay and slide carousel
+  game.phase = 'playing';
+  game.viewAreaIndex = game.gridHistory.length - 1;
+
+  // 2. Wait for slide animation to finish
+  setTimeout(() => {
+    const startRoom = game.roomGrid[0][0]!;
+    
+    // 3. Reveal the starting card
+    startRoom.revealed = true;
+
+    // 4. Wait for card flip animation to finish
+    setTimeout(() => {
+      // 5. Resolve the card
+      resolveRoom(startRoom);
+      
+      // If no event modal popped up, reveal adjacent rooms
+      if (game.phase === 'playing') {
+        revealAdjacentRooms();
+      }
+    }, 600);
+  }, 800);
 }
 
 export function revealAdjacentRooms() {
