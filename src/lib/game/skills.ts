@@ -1,5 +1,5 @@
 import { game } from './gameState.svelte';
-import { revealAdjacentRooms } from './gameActions';
+import { revealAdjacentRooms, dealDirectDamageToEnemy } from './gameActions';
 
 export type SkillLogic = (actionArg?: any) => boolean;
 
@@ -49,8 +49,8 @@ export const SKILL_DICTIONARY: Record<string, SkillLogic> = {
       game.addLog("Can only use Arcane Bolt in combat.", "system");
       return false;
     }
-    game.combat.totalDamage += 4;
     game.addLog("Varis casts Arcane Bolt! Deals 4 damage.", "damage");
+    dealDirectDamageToEnemy(4);
     return true;
   },
   'Foresight': () => {

@@ -352,6 +352,22 @@ export function performFeat(dieIndex: number, costType: 'xp' | 'hp' | 'free') {
   }
 }
 
+export function dealDirectDamageToEnemy(damage: number) {
+  if (!game.combat) return;
+  game.combat.enemyHp -= damage;
+  game.addLog(`Dealt ${damage} direct damage to ${game.combat.enemy.name}`, 'combat');
+  
+  const endState = checkCombatEnd(game.hp, game.combat.enemyHp, game.combat.bossPhase, game.combat.enemy);
+  if (endState === 'victory') {
+    game.combat.phase = 'victory';
+    game.addLog(`Defeated ${game.combat.enemy.name}!`, 'info');
+  } else if (endState === 'nextPhase') {
+    game.combat.bossPhase = 2;
+    game.combat.enemyHp = (game.combat.enemy as BossCard).hp;
+  }
+  // If not victory or nextPhase, the combat just continues from whatever phase it was in.
+}
+
 export function applyPlayerDamage() {
   if (!game.combat) return;
   const { damage, updatedDice } = processAttackPhase(game.combat, game.combat.diceResults);

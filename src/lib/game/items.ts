@@ -1,5 +1,5 @@
 import { game } from './gameState.svelte';
-import { revealAdjacentRooms } from './gameActions';
+import { revealAdjacentRooms, dealDirectDamageToEnemy } from './gameActions';
 
 export type ItemLogic = (actionArg?: any) => boolean;
 
@@ -39,16 +39,13 @@ export const ITEM_DICTIONARY: Record<string, ItemLogic> = {
   },
   
   'item_war_horn': () => {
+    // Deal 3 damage instantly
     if (game.phase !== 'combat' || !game.combat) {
-      game.addLog("The War Horn can only be used in combat.", "system");
-      return false;
-    }
-    if (game.combat.turnCount > 0) {
       game.addLog("The War Horn must be used at the start of combat.", "system");
       return false;
     }
-    game.combat.totalDamage += 3;
     game.addLog("The thunderous blast of the War Horn deals 3 damage!", "damage");
+    dealDirectDamageToEnemy(3);
     return true;
   },
   
