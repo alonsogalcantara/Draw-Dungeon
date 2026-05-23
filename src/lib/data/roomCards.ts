@@ -194,7 +194,7 @@ export const MONSTER_CARDS: MonsterCard[] = [
 ];
 
 // ============================================================================
-// BOSS CARDS (4)
+// BOSS CARDS
 // ============================================================================
 
 export const BOSS_CARDS: BossCard[] = [
@@ -247,6 +247,8 @@ export const BOSS_CARDS: BossCard[] = [
     id: 'boss_ogs_remains',
     name: "Og's Remains",
     type: 'boss',
+    image: getImageUrl('tower', 'boss', "Og's Remains"),
+    campaign: 'tower',
     description:
       'The shattered skeleton of the primordial titan Og, reanimated by the blood-ruby lodged in its ribcage. It fights with the fury of a dead god, and defeating it once only awakens its true form.',
     hp: 30,
@@ -260,6 +262,8 @@ export const BOSS_CARDS: BossCard[] = [
     id: 'boss_ogs_blood',
     name: "Og's Blood",
     type: 'boss',
+    image: getImageUrl('tower', 'boss', "Og's Blood"),
+    campaign: 'tower',
     description:
       'The ancient blood of the primordial titan Og, coalesced into a terrifying physical form. It burns with the fury of a dead god, and defeating it once only awakens its true form.',
     hp: 30,
@@ -272,7 +276,7 @@ export const BOSS_CARDS: BossCard[] = [
 ];
 
 // ============================================================================
-// TRAP CARDS (6)
+// TRAP CARDS
 // ============================================================================
 
 export const TRAP_CARDS: TrapCard[] = [
@@ -429,7 +433,7 @@ export const TRAP_CARDS: TrapCard[] = [
 ];
 
 // ============================================================================
-// TREASURE CARDS (4)
+// TREASURE CARDS
 // ============================================================================
 
 export const TREASURE_CARDS: TreasureCard[] = [
@@ -512,7 +516,7 @@ export const TREASURE_CARDS: TreasureCard[] = [
 ];
 
 // ============================================================================
-// BONFIRE CARDS (3)
+// BONFIRE CARDS
 // ============================================================================
 
 export const BONFIRE_CARDS: BonfireCard[] = [
@@ -600,7 +604,7 @@ export const BONFIRE_CARDS: BonfireCard[] = [
 ];
 
 // ============================================================================
-// MERCHANT CARDS (3)
+// MERCHANT CARDS
 // ============================================================================
 
 export const MERCHANT_CARDS: MerchantCard[] = [
@@ -608,7 +612,7 @@ export const MERCHANT_CARDS: MerchantCard[] = [
     id: 'merchant_hooded_peddler',
     name: 'Hooded Peddler',
     type: 'merchant',
-    image: getImageUrl('tower', '', 'Hooded Peddler'),
+    image: getImageUrl('tower', 'merchant', 'Hooded Peddler'),
     campaign: 'tower',
     description:
       'A hunched figure draped in rags, their face hidden beneath a deep hood. They gesture toward wares spread on a moth-eaten blanket.',
@@ -623,7 +627,7 @@ export const MERCHANT_CARDS: MerchantCard[] = [
     id: 'merchant_goblin_broker',
     name: 'Goblin Broker',
     type: 'merchant',
-    image: getImageUrl('tower', '', 'Goblin Broker'),
+    image: getImageUrl('tower', 'merchant', 'Goblin Broker'),
     campaign: 'tower',
     description:
       'A wiry goblin with gold-capped teeth and an unsettling grin. Despite appearances, his goods are surprisingly genuine.',
@@ -638,7 +642,7 @@ export const MERCHANT_CARDS: MerchantCard[] = [
     id: 'merchant_spectral_vendor',
     name: 'Spectral Vendor',
     type: 'merchant',
-    image: getImageUrl('tower', '', 'Spectral Vendor'),
+    image: getImageUrl('tower', 'merchant', 'Spectral Vendor'),
     campaign: 'tower',
     description:
       'A translucent apparition floating before a ghostly market stall. It accepts only gold—mortal currency seems to amuse it.',
@@ -653,7 +657,7 @@ export const MERCHANT_CARDS: MerchantCard[] = [
 ];
 
 // ============================================================================
-// SHRINE CARDS (3)
+// SHRINE CARDS
 // ============================================================================
 
 export const SHRINE_CARDS: ShrineCard[] = [
@@ -710,7 +714,7 @@ export const SHRINE_CARDS: ShrineCard[] = [
 ];
 
 // ============================================================================
-// TOMB CARDS (3)
+// TOMB CARDS
 // ============================================================================
 
 export const TOMB_CARDS: TombCard[] = [
