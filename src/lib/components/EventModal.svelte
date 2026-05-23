@@ -14,6 +14,7 @@
 	import type { RoomCard } from '$lib/game/types';
 	import DiceRoller from './DiceRoller.svelte';
 	import RoomCardDetail from './RoomCardDetail.svelte';
+	import SkillCheckPanel from './SkillCheckPanel.svelte';
 
 	const event = $derived(game.event);
 	const eventType = $derived(event?.type ?? '');
@@ -213,13 +214,20 @@
 
 					{#if !event.chestOpened}
 						{@render outcomesList((event.card as any).chestRewards, 'Possible Loot')}
-						<p class="mb-3 text-xs text-stone-400">Try to unlock the treasure chest?</p>
-						<button class="btn btn-primary px-6 py-2" onclick={treasureSkillCheck}>
-							🔓 Skill Check
-						</button>
-						<button class="btn btn-secondary ml-2 px-6 py-2" onclick={closeEvent}>
-							Skip
-						</button>
+						
+						{#if game.skillCheck}
+							<div class="mt-4 border-t border-amber-900/30 pt-4">
+								<SkillCheckPanel />
+							</div>
+						{:else}
+							<p class="mb-3 text-xs text-stone-400">Try to unlock the treasure chest?</p>
+							<button class="btn btn-primary px-6 py-2" onclick={treasureSkillCheck}>
+								🔓 Skill Check
+							</button>
+							<button class="btn btn-secondary ml-2 px-6 py-2" onclick={closeEvent}>
+								Skip
+							</button>
+						{/if}
 					{:else}
 						{@render outcomesList((event.card as any).chestRewards, 'Loot', event.dungeonResult)}
 						{#if event.chestReward}
@@ -244,13 +252,20 @@
 
 					{#if !event.rolled}
 						{@render outcomesList((event.card as any).outcomes, 'Possible Outcomes')}
-						<p class="mb-3 text-xs text-stone-400">Perform a skill check to investigate.</p>
-						<button class="btn btn-primary px-6 py-2" onclick={tombSkillCheck}>
-							🎲 Skill Check
-						</button>
-						<button class="btn btn-secondary ml-2 px-6 py-2" onclick={closeEvent}>
-							Leave
-						</button>
+						
+						{#if game.skillCheck}
+							<div class="mt-4 border-t border-stone-700/50 pt-4">
+								<SkillCheckPanel />
+							</div>
+						{:else}
+							<p class="mb-3 text-xs text-stone-400">Perform a skill check to investigate.</p>
+							<button class="btn btn-primary px-6 py-2" onclick={tombSkillCheck}>
+								🎲 Skill Check
+							</button>
+							<button class="btn btn-secondary ml-2 px-6 py-2" onclick={closeEvent}>
+								Leave
+							</button>
+						{/if}
 					{:else if event.success && !event.modified}
 						{@render outcomesList((event.card as any).outcomes, 'Outcomes', event.dungeonResult)}
 						<div class="mb-4 flex flex-col items-center">

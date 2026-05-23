@@ -39,12 +39,12 @@
 	<CombatOverlay />
 {/if}
 
-{#if game.skillCheck !== null}
-	<SkillCheckOverlay />
+{#if game.event !== null && (game.skillCheck === null || game.event.card.type === 'treasure' || game.event.card.type === 'tomb')}
+	<EventModal />
 {/if}
 
-{#if game.event !== null && game.skillCheck === null}
-	<EventModal />
+{#if game.skillCheck !== null && game.event?.card.type !== 'treasure' && game.event?.card.type !== 'tomb'}
+	<SkillCheckOverlay />
 {/if}
 
 {#if game.phase === 'delving'}
