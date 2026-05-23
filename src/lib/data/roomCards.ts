@@ -181,6 +181,8 @@ export const MONSTER_CARDS: MonsterCard[] = [
     id: 'monster_infernal_imp',
     name: 'Infernal Imp',
     type: 'monster',
+    image: getImageUrl('tower', 'monster', 'Infernal Imp'),
+    campaign: 'tower',
     description:
       'A cackling fiend no larger than a child, wreathed in brimstone smoke. Its curses are far more dangerous than its claws.',
     floor: 2,
@@ -200,6 +202,8 @@ export const BOSS_CARDS: BossCard[] = [
     id: 'boss_gorgath',
     name: 'Gorgath the Defiler',
     type: 'boss',
+    image: getImageUrl('tower', 'boss', 'Gorgath the Defiler'),
+    campaign: 'tower',
     description:
       'A towering demon lord cloaked in chains of cursed iron. His very presence warps reality, and his strikes shatter both body and soul.',
     hp: 18,
@@ -213,6 +217,8 @@ export const BOSS_CARDS: BossCard[] = [
     id: 'boss_queen_arachnia',
     name: 'Queen Arachnia',
     type: 'boss',
+    image: getImageUrl('tower', 'boss', 'Queen Arachnia'),
+    campaign: 'tower',
     description:
       'Mother of the spider-brood, her abdomen swollen with a thousand unborn horrors. Venomous silk lines her throne room, and her bite withers muscle and bone.',
     hp: 22,
@@ -226,6 +232,8 @@ export const BOSS_CARDS: BossCard[] = [
     id: 'boss_dreadlord_morvain',
     name: 'Dreadlord Morvain',
     type: 'boss',
+    image: getImageUrl('tower', 'boss', 'Dreadlord Morvain'),
+    campaign: 'tower',
     description:
       'Once the dungeon\'s architect, Morvain sold his sight to the void in exchange for dominion over shadow. His blind eyes see everything, and his curses linger long after death.',
     hp: 25,
@@ -272,6 +280,8 @@ export const TRAP_CARDS: TrapCard[] = [
     id: 'trap_spike_pit',
     name: 'Spike Pit',
     type: 'trap',
+    image: getImageUrl('tower', 'trap', 'Spike Pit'),
+    campaign: 'tower',
     description:
       'The floor gives way beneath your feet, revealing a pit of rusted iron spikes coated in ancient filth.',
     successRewards: {
@@ -295,6 +305,8 @@ export const TRAP_CARDS: TrapCard[] = [
     id: 'trap_poison_dart_wall',
     name: 'Poison Dart Wall',
     type: 'trap',
+    image: getImageUrl('tower', 'trap', 'Poison Dart Wall'),
+    campaign: 'tower',
     description:
       'Tiny holes line the corridor walls. A pressure plate clicks underfoot, and a hail of envenomed darts erupts from every direction.',
     successRewards: {
@@ -318,6 +330,8 @@ export const TRAP_CARDS: TrapCard[] = [
     id: 'trap_crushing_ceiling',
     name: 'Crushing Ceiling',
     type: 'trap',
+    image: getImageUrl('tower', 'trap', 'Crushing Ceiling'),
+    campaign: 'tower',
     description:
       'The ceiling groans and begins to descend. Ancient gears turn as the room slowly compresses into a stone coffin.',
     successRewards: {
@@ -341,6 +355,8 @@ export const TRAP_CARDS: TrapCard[] = [
     id: 'trap_arcane_tripwire',
     name: 'Arcane Tripwire',
     type: 'trap',
+    image: getImageUrl('tower', 'trap', 'Arcane Tripwire'),
+    campaign: 'tower',
     description:
       'An invisible thread of pure mana stretches across the corridor. Disturbing it unleashes a stored hex of terrible potency.',
     successRewards: {
@@ -364,6 +380,8 @@ export const TRAP_CARDS: TrapCard[] = [
     id: 'trap_flame_geyser',
     name: 'Flame Geyser',
     type: 'trap',
+    image: getImageUrl('tower', 'trap', 'Flame Geyser'),
+    campaign: 'tower',
     description:
       'Volcanic vents hidden beneath cracked flagstones erupt with pillars of searing flame, filling the chamber with blinding fire.',
     successRewards: {
@@ -387,6 +405,8 @@ export const TRAP_CARDS: TrapCard[] = [
     id: 'trap_shadow_snare',
     name: 'Shadow Snare',
     type: 'trap',
+    image: getImageUrl('tower', 'trap', 'Shadow Snare'),
+    campaign: 'tower',
     description:
       'Tendrils of living shadow erupt from the walls, wrapping around your limbs and draining your vitality with an icy, paralyzing grip.',
     successRewards: {
@@ -417,6 +437,8 @@ export const TREASURE_CARDS: TreasureCard[] = [
     id: 'treasure_forgotten_stash',
     name: 'Forgotten Stash',
     type: 'treasure',
+    image: getImageUrl('tower', 'treasure', 'Forgotten Stash'),
+    campaign: 'tower',
     description:
       'A crumbling alcove conceals a leather satchel, half-buried under rubble and bone dust. Something glints inside.',
     goldBase: 1,
@@ -434,6 +456,8 @@ export const TREASURE_CARDS: TreasureCard[] = [
     id: 'treasure_gilded_reliquary',
     name: 'Gilded Reliquary',
     type: 'treasure',
+    image: getImageUrl('tower', 'treasure', 'Gilded Reliquary'),
+    campaign: 'tower',
     description:
       'An ornate box of tarnished gold, adorned with faded runes. The lock is rusted but might yield to skill or force.',
     goldBase: 1,
@@ -451,6 +475,8 @@ export const TREASURE_CARDS: TreasureCard[] = [
     id: 'treasure_dusty_coffer',
     name: 'Dusty Coffer',
     type: 'treasure',
+    image: getImageUrl('tower', 'treasure', 'Dusty Coffer'),
+    campaign: 'tower',
     description:
       'A wooden chest bound in corroded copper sits in the corner, its keyhole shaped like a screaming face.',
     goldBase: 1,
@@ -468,6 +494,8 @@ export const TREASURE_CARDS: TreasureCard[] = [
     id: 'treasure_cursed_reliquary',
     name: 'Cursed Reliquary',
     type: 'treasure',
+    image: getImageUrl('tower', 'treasure', 'Cursed Reliquary'),
+    campaign: 'tower',
     description:
       'A chest of obsidian and bone radiates a palpable malice. The rewards within are great, but so are the risks.',
     goldBase: 1,
@@ -492,6 +520,8 @@ export const BONFIRE_CARDS: BonfireCard[] = [
     id: 'bonfire_ember_hearth',
     name: 'Ember Hearth',
     type: 'bonfire',
+    image: getImageUrl('tower', 'bonfire', 'Ember Hearth'),
+    campaign: 'tower',
     description:
       'Warm coals still glow in this forgotten campsite. The remains of a bedroll and a rusted cook-pot suggest someone rested here recently.',
     actions: [
@@ -516,6 +546,8 @@ export const BONFIRE_CARDS: BonfireCard[] = [
     id: 'bonfire_sanctuary_fire',
     name: 'Sanctuary Fire',
     type: 'bonfire',
+    image: getImageUrl('tower', 'bonfire', 'Sanctuary Fire'),
+    campaign: 'tower',
     description:
       'A sacred flame burns in a stone brazier, untouched by the corruption that taints the rest of the dungeon. Its warmth heals wounds of body and spirit.',
     actions: [
@@ -576,6 +608,8 @@ export const MERCHANT_CARDS: MerchantCard[] = [
     id: 'merchant_hooded_peddler',
     name: 'Hooded Peddler',
     type: 'merchant',
+    image: getImageUrl('tower', '', 'Hooded Peddler'),
+    campaign: 'tower',
     description:
       'A hunched figure draped in rags, their face hidden beneath a deep hood. They gesture toward wares spread on a moth-eaten blanket.',
     items: [
@@ -589,6 +623,8 @@ export const MERCHANT_CARDS: MerchantCard[] = [
     id: 'merchant_goblin_broker',
     name: 'Goblin Broker',
     type: 'merchant',
+    image: getImageUrl('tower', '', 'Goblin Broker'),
+    campaign: 'tower',
     description:
       'A wiry goblin with gold-capped teeth and an unsettling grin. Despite appearances, his goods are surprisingly genuine.',
     items: [
@@ -602,6 +638,8 @@ export const MERCHANT_CARDS: MerchantCard[] = [
     id: 'merchant_spectral_vendor',
     name: 'Spectral Vendor',
     type: 'merchant',
+    image: getImageUrl('tower', '', 'Spectral Vendor'),
+    campaign: 'tower',
     description:
       'A translucent apparition floating before a ghostly market stall. It accepts only gold—mortal currency seems to amuse it.',
     items: [
@@ -639,6 +677,8 @@ export const SHRINE_CARDS: ShrineCard[] = [
     id: 'shrine_forgotten_idol',
     name: 'Forgotten Idol',
     type: 'shrine',
+    image: getImageUrl('tower', 'shrine', 'Forgotten Idol'),
+    campaign: 'tower',
     description:
       'A crumbling statue of a deity whose name has been lost to time. Offerings placed at its base sometimes vanish, replaced by gifts.',
     outcomes: {
@@ -654,6 +694,8 @@ export const SHRINE_CARDS: ShrineCard[] = [
     id: 'shrine_blood_fountain',
     name: 'Blood Fountain',
     type: 'shrine',
+    image: getImageUrl('tower', 'shrine', 'Blood Fountain'),
+    campaign: 'tower',
     description:
       'A fountain of dark crimson liquid bubbles from cracked stone. Those brave enough to drink may find restoration—or ruin.',
     outcomes: {
@@ -676,6 +718,8 @@ export const TOMB_CARDS: TombCard[] = [
     id: 'tomb_ancient_sarcophagus',
     name: 'Ancient Sarcophagus',
     type: 'tomb',
+    image: getImageUrl('tower', 'tomb', 'Ancient Sarcophagus'),
+    campaign: 'tower',
     description:
       'A stone coffin carved with warnings in a dead language. The lid is ajar, and something glints within the darkness.',
     outcomes: {
@@ -707,6 +751,8 @@ export const TOMB_CARDS: TombCard[] = [
     id: 'tomb_ossuary',
     name: 'Ossuary of the Damned',
     type: 'tomb',
+    image: getImageUrl('tower', 'tomb', 'Ossuary of the Damned'),
+    campaign: 'tower',
     description:
       'Skulls are stacked floor to ceiling in meticulous rows, each inscribed with a name and a sin. The air hums with trapped souls.',
     outcomes: {
@@ -729,6 +775,8 @@ export const ITEM_CARDS: ItemCard[] = [
     id: 'item_crow',
     name: 'Crow',
     type: 'item_room',
+    image: getImageUrl('tower', 'item_room', 'Crow'),
+    campaign: 'tower',
     description:
       'A ragged black bird perches on a broken beam, watching you with unsettling intelligence. Feed it, and it may prove a loyal companion.',
     cost: { stat: 'food', value: 1 },
@@ -744,6 +792,8 @@ export const ITEM_CARDS: ItemCard[] = [
     id: 'item_lantern',
     name: 'Lantern',
     type: 'item_room',
+    image: getImageUrl('tower', 'item_room', 'Lantern'),
+    campaign: 'tower',
     description:
       'An oil lantern that still holds fuel, its flame casting a warm circle of light that defies the dungeon\'s gloom.',
     cost: { stat: 'gold', value: 2 },
@@ -755,6 +805,8 @@ export const ITEM_CARDS: ItemCard[] = [
     id: 'item_war_horn',
     name: 'War Horn',
     type: 'item_room',
+    image: getImageUrl('tower', 'item_room', 'War Horn'),
+    campaign: 'tower',
     description:
       'A battered horn carved from a minotaur\'s horn. Its thunderous blast echoes through the dungeon and strikes fear into enemies.',
     cost: { stat: 'gold', value: 1 },
@@ -766,6 +818,8 @@ export const ITEM_CARDS: ItemCard[] = [
     id: 'item_ancient_codex',
     name: 'Ancient Codex',
     type: 'item_room',
+    image: getImageUrl('tower', 'item_room', 'Ancient Codex'),
+    campaign: 'tower',
     description:
       'A leather-bound tome scrawled with arcane formulae. Reading it fills your mind with knowledge—if you can decipher the script.',
     cost: { stat: 'xp', value: 0 },
@@ -776,6 +830,8 @@ export const ITEM_CARDS: ItemCard[] = [
     id: 'item_herbal_pouch',
     name: 'Herbal Pouch',
     type: 'item_room',
+    image: getImageUrl('tower', 'item_room', 'Herbal Pouch'),
+    campaign: 'tower',
     description:
       'A pouch of dried herbs and medicinal roots, carefully preserved. Their curative properties can neutralize even magical poisons.',
     cost: { stat: 'gold', value: 1 },
@@ -786,6 +842,8 @@ export const ITEM_CARDS: ItemCard[] = [
     id: 'item_rusty_shield',
     name: 'Rusty Shield',
     type: 'item_room',
+    image: getImageUrl('tower', 'item_room', 'Rusty Shield'),
+    campaign: 'tower',
     description:
       'A battered shield covered in rust and dents. Despite its poor condition, it still turns blades when it matters most.',
     cost: { stat: 'gold', value: 2 },
