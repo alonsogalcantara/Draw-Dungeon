@@ -83,7 +83,11 @@
 	<div class="relative flex-1 bg-gradient-to-b from-transparent to-black/80 flex items-center justify-center overflow-hidden">
 		<!-- Placeholder illustration -->
 		<div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] mix-blend-overlay"></div>
-		<span class="text-[120px] opacity-30 drop-shadow-[0_0_15px_rgba(0,0,0,0.8)] mix-blend-overlay">{roomIcons[card.type]}</span>
+		{#if 'image' in card && (card as any).image}
+			<img src={(card as any).image} alt={card.name} class="absolute inset-0 w-full h-full object-cover" />
+		{:else}
+			<span class="text-[120px] opacity-30 drop-shadow-[0_0_15px_rgba(0,0,0,0.8)] mix-blend-overlay">{roomIcons[card.type]}</span>
+		{/if}
 	</div>
 
 	<!-- 4. Flavour Text (Ribbon) -->

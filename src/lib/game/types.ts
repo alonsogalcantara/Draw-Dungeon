@@ -146,6 +146,9 @@ export interface MonsterCard {
   name: string;
   type: 'monster';
   description: string;
+  image?: string;
+  campaign?: string;
+  floor?: number;
   /** HP values indexed by floor (0-3 for floors 1-4) */
   hpPerFloor: [number, number, number, number];
   /** Base damage dealt per attack */

@@ -50,7 +50,18 @@ export function startNewGame(character: CharacterDef, difficulty: DifficultyMode
 }
 
 export function setupArea() {
-  const deck = shuffle(ROOM_CARDS.filter(c => c.type !== 'boss'));
+  let deck = ROOM_CARDS.filter(c => c.type !== 'boss');
+  
+  deck = deck.filter(c => {
+    if (c.type === 'monster') {
+      const mc = c as any;
+      if (mc.campaign && mc.campaign !== game.campaign) return false;
+      if (mc.floor && mc.floor !== game.currentFloor) return false;
+    }
+    return true;
+  });
+
+  deck = shuffle(deck);
   
   const totalCards = game.layoutSize * game.layoutSize;
   const gridCards: RoomCard[] = deck.slice(0, totalCards);
