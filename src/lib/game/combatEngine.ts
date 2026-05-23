@@ -9,30 +9,10 @@ export function initCombat(enemy: MonsterCard | BossCard, floor: number, level: 
     hp = enemy.hp;
   }
   
-  const scaledHp = hp + (level - 1) * 3;
-  let scaledEnemy: MonsterCard | BossCard;
-  const scaledDamage = enemy.damage + (level - 1) * 1;
-
-  if (enemy.type === 'boss') {
-    scaledEnemy = {
-      ...enemy,
-      damage: scaledDamage,
-      hp: scaledHp,
-    } as BossCard;
-  } else {
-    const scaledXpReward = enemy.xpRewardPerFloor.map(xp => xp + (level - 1) * 1) as [number, number, number, number];
-    const scaledHpPerFloor = enemy.hpPerFloor.map(h => h + (level - 1) * 3) as [number, number, number, number];
-    scaledEnemy = {
-      ...enemy,
-      damage: scaledDamage,
-      xpRewardPerFloor: scaledXpReward,
-      hpPerFloor: scaledHpPerFloor,
-    } as MonsterCard;
-  }
   return {
-    enemy: scaledEnemy,
-    enemyHp: scaledHp,
-    enemyMaxHp: scaledHp,
+    enemy: enemy,
+    enemyHp: hp,
+    enemyMaxHp: hp,
     phase: 'rolling',
     diceResults: [],
     dungeonDieResult: 0,

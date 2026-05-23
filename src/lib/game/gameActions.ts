@@ -49,6 +49,96 @@ export function startNewGame(character: CharacterDef, difficulty: DifficultyMode
   setupArea();
 }
 
+function scaleCardToLevel(card: RoomCard, level: number, floor: number): RoomCard {
+  const scaledCard = structuredClone(card);
+  const l = Math.max(0, level - 1);
+  const gentleL = Math.floor(l / 2);
+  const hpL = l * 3;
+  const dmgL = l * 1;
+  const xpL = l * 1;
+
+  if (scaledCard.type === 'monster') {
+    const m = scaledCard as any;
+    m.damage += dmgL;
+    m.hpPerFloor = m.hpPerFloor.map((hp: number) => hp + hpL);
+    m.xpRewardPerFloor = m.xpRewardPerFloor.map((xp: number) => xp + xpL);
+  } else if (scaledCard.type === 'boss') {
+    const b = scaledCard as any;
+    b.damage += dmgL;
+    b.hp += hpL;
+    if (b.reward && typeof b.reward.xp === 'number') {
+      b.reward.xp += xpL;
+    }
+  } else if (scaledCard.type === 'trap') {
+    const t = scaledCard as any;
+    if (t.failurePenalties) {
+      for (const roll in t.failurePenalties) {
+        t.failurePenalties[roll].effects.forEach((e: any) => {
+          if (e.stat === 'hp') e.value -= gentleL; // more damage (negative value)
+        });
+      }
+    }
+    if (t.successRewards) {
+      for (const roll in t.successRewards) {
+        t.successRewards[roll].effects.forEach((e: any) => {
+          if (e.stat === 'xp' || e.stat === 'gold') e.value += gentleL;
+        });
+      }
+    }
+  } else if (scaledCard.type === 'bonfire') {
+    const b = scaledCard as any;
+    if (b.actions) {
+      b.actions.forEach((a: any) => {
+        a.effect.forEach((e: any) => {
+          if (e.stat === 'hp' || e.stat === 'food') e.value += gentleL;
+          if (e.stat === 'xp' || e.stat === 'armor') e.value += gentleL > 1 ? 1 : 0;
+        });
+      });
+    }
+  } else if (scaledCard.type === 'merchant') {
+    const m = scaledCard as any;
+    if (m.items) {
+      m.items.forEach((item: any) => {
+        item.cost += gentleL; // more expensive
+        item.effect.forEach((e: any) => {
+          if (e.stat === 'hp' || e.stat === 'armor' || e.stat === 'food') {
+            e.value += gentleL; // better stats
+          }
+        });
+      });
+    }
+  } else if (scaledCard.type === 'shrine' || scaledCard.type === 'tomb') {
+    const st = scaledCard as any;
+    if (st.outcomes) {
+      for (const roll in st.outcomes) {
+        st.outcomes[roll].effects.forEach((e: any) => {
+          if (e.stat === 'hp' || e.stat === 'xp' || e.stat === 'gold') {
+             if (e.value > 0) e.value += gentleL;
+             else if (e.value < 0) e.value -= gentleL;
+          }
+        });
+      }
+    }
+  } else if (scaledCard.type === 'treasure') {
+    const t = scaledCard as any;
+    if (t.goldBase !== undefined) t.goldBase += gentleL;
+    if (t.goldIfCombat !== undefined) t.goldIfCombat += gentleL;
+    if (t.chestRewards) {
+      for (const roll in t.chestRewards) {
+        t.chestRewards[roll].effects.forEach((e: any) => {
+          if (e.stat === 'gold' || e.stat === 'xp') e.value += gentleL;
+          if (e.stat === 'hp' && e.value < 0) e.value -= gentleL;
+        });
+      }
+    }
+  } else if (scaledCard.type === 'item_room') {
+    const i = scaledCard as any;
+    if (i.uses) i.uses += gentleL;
+  }
+
+  return scaledCard as RoomCard;
+}
+
 export function setupArea() {
   let deck = ROOM_CARDS.filter(c => c.type !== 'boss');
   
@@ -81,6 +171,9 @@ export function setupArea() {
     }
   }
 
+  // Scale all cards dynamically according to character level and floor!
+  const scaledGridCards = gridCards.map(c => scaleCardToLevel(c, game.level, game.currentFloor));
+
   const newGrid: (RoomCardInstance | null)[][] = Array(game.layoutSize)
     .fill(null)
     .map(() => Array(game.layoutSize).fill(null));
@@ -88,7 +181,7 @@ export function setupArea() {
   for (let r = 0; r < game.layoutSize; r++) {
     for (let c = 0; c < game.layoutSize; c++) {
       newGrid[r][c] = {
-        card: gridCards[r * game.layoutSize + c],
+        card: scaledGridCards[r * game.layoutSize + c],
         revealed: false,
         resolved: false,
         row: r,

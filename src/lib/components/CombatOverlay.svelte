@@ -144,7 +144,7 @@
 				<!-- Enemy side (Card Anatomy) -->
 				<div class="flex flex-col items-center justify-center gap-3">
 					{#if enemy}
-						<RoomCardDetail card={enemy} isScaled={true} />
+						<RoomCardDetail card={enemy} />
 						
 						<!-- Live HP Bar overlay/below -->
 						<div class="w-full max-w-[280px] rounded-lg bg-stone-900/80 p-2 border border-red-900/30">
