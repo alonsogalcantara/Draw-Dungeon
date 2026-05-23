@@ -128,6 +128,31 @@ export const SENNA: CharacterDef = {
   ],
 };
 
-// --- All Characters ---
+// --- Custom Champion ---
 
-export const CHARACTERS: CharacterDef[] = [BRUENOR, ELARA, VARIS, SENNA];
+export const CUSTOM_CHAMPION: CharacterDef = {
+  id: 'custom_champion',
+  name: 'Custom Champion',
+  className: 'Wanderer',
+  description: 'A blank slate. Forge your own destiny.',
+  lore: 'They arrived at the dungeon gates with nothing but a rusted blade and a head full of ambition. No one knows where they came from, and few expect them to return. Yet, beneath their unassuming exterior lies a potential that could rival the greatest heroes of old.',
+  startingStats: {
+    hp: 5,
+    food: 0,
+    gold: 0,
+    armor: 0,
+    xp: 0,
+  },
+  skills: [], // Assigned dynamically
+};
+
+// --- All Characters & Skills ---
+
+export const CHARACTERS: CharacterDef[] = [BRUENOR, ELARA, VARIS, SENNA, CUSTOM_CHAMPION];
+
+export const ALL_SKILLS = [
+  ...BRUENOR.skills,
+  ...ELARA.skills,
+  ...VARIS.skills,
+  ...SENNA.skills,
+];

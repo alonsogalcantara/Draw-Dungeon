@@ -28,7 +28,12 @@ class GameState {
   maxXp = $derived(XP_REQUIREMENTS_PER_LEVEL[Math.min(this.level - 1, XP_REQUIREMENTS_PER_LEVEL.length - 1)] || 120);
   
   characterDieFaces = $derived(POLYHEDRAL_DICE[Math.min(this.level - 1, POLYHEDRAL_DICE.length - 1)]);
-  characterDiceCount = $derived(Math.min(3, this.level)); // Increases up to 3, then stops
+  characterDiceCount = $derived.by(() => {
+    const ratio = this.xp / this.maxXp;
+    if (ratio >= 0.666) return 3;
+    if (ratio >= 0.333) return 2;
+    return 1;
+  });
   isDead = $derived(this.hp <= 0);
   
   // Dungeon

@@ -77,6 +77,9 @@
 				class="h-full rounded-full bg-gradient-to-r from-purple-700 to-purple-500 transition-all duration-500"
 				style="width: {xpPercent}%"
 			></div>
+			<!-- Third markers for extra dice -->
+			<div class="absolute top-0 h-full w-0.5 bg-amber-400/40" style="left: 33.33%"></div>
+			<div class="absolute top-0 h-full w-0.5 bg-amber-400/40" style="left: 66.66%"></div>
 		</div>
 	</div>
 
