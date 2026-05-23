@@ -155,8 +155,12 @@ export function moveToRoom(row: number, col: number) {
   game.playerRow = row;
   game.playerCol = col;
   const room = game.roomGrid[row][col]!;
-  room.revealed = true;
-  resolveRoom(room);
+  
+  // Wait for the flip animation (600ms) before revealing and resolving
+  setTimeout(() => {
+    room.revealed = true;
+    resolveRoom(room);
+  }, 600);
 }
 
 export function resolveRoom(roomInstance: RoomCardInstance) {

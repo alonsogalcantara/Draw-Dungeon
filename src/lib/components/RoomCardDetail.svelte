@@ -53,7 +53,13 @@
 				style="background: repeating-linear-gradient(45deg, transparent, transparent 15px, rgba(180,130,60,0.08) 15px, rgba(180,130,60,0.08) 30px);"
 			></div>
 			<div class="relative z-10 flex h-24 w-24 items-center justify-center rounded-full border-4 border-stone-400 bg-stone-800 shadow-xl">
-				<span class="text-5xl">🃏</span>
+				<svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-stone-400 opacity-80" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+					<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+					<path d="M12 3l8 4.5v9l-8 4.5l-8 -4.5v-9l8 -4.5" />
+					<path d="M12 12l8 -4.5" />
+					<path d="M12 12v9" />
+					<path d="M12 12l-8 -4.5" />
+				</svg>
 			</div>
 			<h2 class="relative z-10 mt-6 text-xl tracking-[0.2em] font-black text-stone-500 uppercase">
 				Room
@@ -64,17 +70,17 @@
 	<!-- Top Area (Header) -->
 	<div class="relative z-20 flex h-12 w-full items-center justify-center bg-[#f4ebd8] shadow-md border-b-[3px] border-[#d0c4a6]">
 		<!-- 1. Card Type (Circle) -->
-		<div class="absolute -left-3 top-1/2 flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full border-4 border-[#d0c4a6] bg-[#5e7784] text-2xl shadow-inner">
+		<div class="absolute left-1 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border-[3px] border-[#d0c4a6] bg-[#5e7784] text-xl shadow-inner">
 			<span class="drop-shadow-md">{roomIcons[card.type] ?? '❓'}</span>
 		</div>
 		
 		<!-- 2. Card Name (Banner) -->
-		<h2 class="flex-1 pl-12 pr-10 text-center text-sm font-black tracking-widest text-[#5e4b3c] uppercase truncate">
+		<h2 class="flex-1 pl-12 pr-10 text-center text-[13px] font-black tracking-widest text-[#5e4b3c] uppercase truncate">
 			{card.name ?? card.type}
 		</h2>
 
 		<!-- 3. Resolve Icon (Square) -->
-		<div class="absolute right-1 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded border-[2px] border-[#d0c4a6] bg-[#f4ebd8] text-sm shadow-sm">
+		<div class="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded border-[2px] border-[#d0c4a6] bg-[#f4ebd8] text-sm shadow-sm">
 			{resolveIcons[card.type] ?? '❓'}
 		</div>
 	</div>
@@ -83,8 +89,8 @@
 	<div class="relative flex-1 bg-gradient-to-b from-transparent to-black/80 flex items-center justify-center overflow-hidden">
 		<!-- Placeholder illustration -->
 		<div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] mix-blend-overlay"></div>
-		{#if 'image' in card && (card as any).image}
-			<img src={(card as any).image} alt={card.name} class="absolute inset-0 w-full h-full object-cover" />
+		{#if card.image}
+			<img src={card.image} alt={card.name} class="absolute inset-0 w-full h-full object-cover" />
 		{:else}
 			<span class="text-[120px] opacity-30 drop-shadow-[0_0_15px_rgba(0,0,0,0.8)] mix-blend-overlay">{roomIcons[card.type]}</span>
 		{/if}
@@ -121,7 +127,7 @@
 			{@const t = card as TrapCard}
 			<div class="grid grid-cols-[auto_1fr_auto] gap-x-2 gap-y-1.5 items-center">
 				<div class="font-bold text-stone-500 uppercase col-span-3 border-b border-stone-300 pb-1 mb-1 tracking-wider text-[10px]">Skill Check</div>
-				{#each [1, 2, 3, 4, 5, 6] as roll}
+				{#each [1, 2, 3, 4, 5, 6] as roll (roll)}
 					<div class="flex h-5 w-5 items-center justify-center rounded bg-stone-900 text-white font-black shadow-sm">{roll}</div>
 					{#if t.successRewards && t.successRewards[roll]}
 						<div class="font-semibold text-stone-700">{t.successRewards[roll].label}</div>
@@ -139,7 +145,7 @@
 			{@const s = card as ShrineCard}
 			<div class="grid grid-cols-[auto_1fr_auto] gap-x-2 gap-y-1.5 items-center">
 				<div class="font-bold text-stone-500 uppercase col-span-3 border-b border-stone-300 pb-1 mb-1 tracking-wider text-[10px]">Pray to the Gods</div>
-				{#each [1, 2, 3, 4, 5, 6] as roll}
+				{#each [1, 2, 3, 4, 5, 6] as roll (roll)}
 					<div class="flex h-5 w-5 items-center justify-center rounded bg-stone-900 text-white font-black shadow-sm">{roll}</div>
 					{#if s.outcomes && s.outcomes[roll]}
 						<div class="font-semibold text-stone-700">{s.outcomes[roll].label}</div>
