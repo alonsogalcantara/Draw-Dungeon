@@ -1,5 +1,5 @@
 export const getImageUrl = (campaign: string, type: string, imageName: string) =>
-  `/images/${type}s/${campaign}/${imageName}.png`;
+  `/images/${campaign}/${type}/${imageName}.png`;
 
 // ============================================================================
 // Mini Rogue - Room Card Definitions
