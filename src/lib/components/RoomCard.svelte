@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { moveToRoom } from '$lib/game/gameActions';
 	import type { RoomCardInstance } from '$lib/game/types';
+	import RoomCardDetail from './RoomCardDetail.svelte';
 
 	let {
 		instance = null,
@@ -17,6 +18,9 @@
 	} = $props();
 
 	let flipping = $state(false);
+	let cardWidth = $state(0);
+	const baseWidth = 320;
+	const scale = $derived(cardWidth > 0 ? cardWidth / baseWidth : 0.5);
 
 	const roomIcons: Record<string, string> = {
 		monster: '⚔️',
@@ -56,55 +60,51 @@
 
 {#if instance}
 	<button
-		class={['card relative flex h-full min-h-[120px] w-full flex-col items-center justify-center rounded-xl border-2 p-3 text-center transition-all duration-300',
+		bind:clientWidth={cardWidth}
+		class={['card relative flex items-center justify-center transition-all duration-300 w-full aspect-[320/460] rounded-xl',
 			!instance.revealed ? 'card-facedown' : '',
-			isCurrentPosition ? 'card-selected border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.3)]' : '',
-			isAvailable && !isCurrentPosition ? 'card-available cursor-pointer border-emerald-500/50 hover:border-emerald-400 hover:shadow-[0_0_12px_rgba(16,185,129,0.2)]' : '',
+			isCurrentPosition ? 'card-selected shadow-[0_0_20px_rgba(245,158,11,0.6)] rounded-xl scale-[1.02]' : '',
+			isAvailable && !isCurrentPosition ? 'card-available cursor-pointer hover:shadow-[0_0_15px_rgba(16,185,129,0.4)] rounded-xl scale-[1.05]' : '',
 			flipping ? 'card-flipping' : '',
 			!isAvailable || isCurrentPosition ? 'cursor-default' : '',
-			!isCurrentPosition && !isAvailable ? 'border-stone-700/40' : ''
+			!isCurrentPosition && !isAvailable ? 'opacity-70' : ''
 		].filter(Boolean).join(' ')}
 		onclick={handleClick}
 		disabled={!isAvailable || isCurrentPosition}
 	>
-		{#if !instance.revealed}
-			<!-- Facedown -->
-			<div class="flex flex-col items-center gap-1 opacity-40">
-				<span class="text-2xl">🃏</span>
-				<span class="text-[10px] tracking-widest text-stone-500 uppercase">Room</span>
-			</div>
-			<!-- Ornate back pattern -->
-			<div class="pointer-events-none absolute inset-2 rounded-lg border border-amber-900/10 opacity-30"
-				style="background: repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(180,130,60,0.03) 8px, rgba(180,130,60,0.03) 16px);"
-			></div>
-		{:else}
-			<!-- Faceup -->
-			<div class="{typeClass} flex flex-col items-center gap-1.5">
-				<span class="text-3xl drop-shadow-lg">{icon}</span>
-				<span class="text-xs font-bold tracking-wide text-amber-100 uppercase">{instance.card.name ?? instance.card.type}</span>
-				{#if instance.card.description}
-					<span class="line-clamp-2 text-[10px] leading-tight text-stone-400">{instance.card.description}</span>
-				{/if}
+		<!-- Scaling Wrapper for the Anatomy Card -->
+		<div class="relative w-full h-full overflow-hidden rounded-xl">
+			<div class="absolute top-0 left-0 origin-top-left pointer-events-none" style="transform: scale({scale}); width: {baseWidth}px; height: 460px;">
+				<RoomCardDetail card={instance.card} facedown={!instance.revealed} />
 			</div>
 
+			<!-- Interaction Borders overlay -->
+			{#if isCurrentPosition}
+				<div class="absolute inset-0 rounded-xl border-4 border-amber-400 pointer-events-none"></div>
+			{:else if isAvailable}
+				<div class="absolute inset-0 rounded-xl border-4 border-emerald-500/80 pointer-events-none"></div>
+			{:else}
+				<div class="absolute inset-0 rounded-xl border-4 border-stone-800/60 pointer-events-none"></div>
+			{/if}
+
 			{#if isCurrentPosition && !instance.resolved}
-				<div class="absolute -bottom-1 left-1/2 -translate-x-1/2">
-					<span class="badge animate-pulse rounded-full bg-amber-600/80 px-2 py-0.5 text-[10px] font-bold text-white shadow-lg">
+				<div class="absolute bottom-1 left-1/2 -translate-x-1/2">
+					<span class="badge animate-pulse rounded-full bg-amber-600/90 px-3 py-1 text-xs font-bold text-white shadow-lg">
 						HERE
 					</span>
 				</div>
 			{/if}
-		{/if}
+		</div>
 
 		<!-- Player marker -->
 		{#if isCurrentPosition}
-			<div class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-xs shadow-lg">
+			<div class="absolute -top-3 -right-3 flex h-8 w-8 items-center justify-center rounded-full bg-amber-500 text-lg shadow-xl z-10 border-2 border-amber-200">
 				🧙
 			</div>
 		{/if}
 	</button>
 {:else}
 	<!-- Empty cell -->
-	<div class="flex min-h-[120px] items-center justify-center rounded-xl border-2 border-stone-800/20 bg-stone-900/20">
+	<div class="w-full aspect-[320/460] rounded-xl border-4 border-stone-800/20 bg-stone-900/20">
 	</div>
 {/if}

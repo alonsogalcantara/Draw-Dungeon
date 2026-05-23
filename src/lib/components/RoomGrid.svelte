@@ -42,7 +42,8 @@
 	</div>
 
 	<!-- Dynamic N×N Room Grid -->
-	<div class="dungeon-map grid {gridClass} gap-3">
+	<div class="dungeon-map flex justify-center w-full max-w-5xl mx-auto px-4">
+		<div class="grid {gridClass} gap-4 sm:gap-6 justify-items-center w-full">
 		{#each { length: game.layoutSize } as _, row (row)}
 			{#each { length: game.layoutSize } as _, col (col)}
 				{@const instance = game.roomGrid[row]?.[col] ?? null}
@@ -57,6 +58,7 @@
 				/>
 			{/each}
 		{/each}
+		</div>
 	</div>
 
 	<!-- Path visualization -->

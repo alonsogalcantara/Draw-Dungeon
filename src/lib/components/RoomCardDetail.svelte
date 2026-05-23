@@ -2,7 +2,7 @@
 	import type { RoomCard, MonsterCard, BossCard, TrapCard, TreasureCard, ShrineCard } from '$lib/game/types';
 	import { game } from '$lib/game/gameState.svelte';
 
-	let { card }: { card: RoomCard } = $props();
+	let { card, facedown = false }: { card: RoomCard | null; facedown?: boolean } = $props();
 
 	// Computed properties based on card type
 	const roomIcons: Record<string, string> = {
@@ -40,9 +40,26 @@
 		tomb: 'bg-stone-900/90',
 		item: 'bg-blue-950/90'
 	};
+	
+	const cardBg = $derived(facedown ? 'bg-stone-900/90' : (card ? bgColorClass[card.type] : 'bg-stone-900/90'));
 </script>
 
-<div class="relative flex w-[280px] h-[400px] sm:w-[320px] sm:h-[460px] flex-col overflow-hidden rounded-xl border-[8px] border-stone-200 shadow-2xl {bgColorClass[card.type]} font-serif shrink-0">
+<div class="relative flex w-[320px] h-[460px] flex-col overflow-hidden rounded-xl border-[8px] border-stone-200 shadow-2xl {cardBg} font-serif shrink-0">
+	{#if facedown}
+		<!-- Facedown Design -->
+		<div class="flex h-full w-full flex-col items-center justify-center p-6 relative">
+			<!-- Ornate back pattern -->
+			<div class="pointer-events-none absolute inset-2 rounded-lg border-2 border-amber-900/30 opacity-60"
+				style="background: repeating-linear-gradient(45deg, transparent, transparent 15px, rgba(180,130,60,0.08) 15px, rgba(180,130,60,0.08) 30px);"
+			></div>
+			<div class="relative z-10 flex h-24 w-24 items-center justify-center rounded-full border-4 border-stone-400 bg-stone-800 shadow-xl">
+				<span class="text-5xl">🃏</span>
+			</div>
+			<h2 class="relative z-10 mt-6 text-xl tracking-[0.2em] font-black text-stone-500 uppercase">
+				Room
+			</h2>
+		</div>
+	{:else if card}
 	
 	<!-- Top Area (Header) -->
 	<div class="relative z-20 flex h-12 w-full items-center justify-center bg-[#f4ebd8] shadow-md border-b-[3px] border-[#d0c4a6]">
@@ -149,4 +166,5 @@
 			</div>
 		{/if}
 	</div>
+	{/if}
 </div>
