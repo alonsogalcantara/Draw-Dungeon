@@ -592,12 +592,11 @@ export function handleMerchant(action: 'buy' | 'sell', itemIndex: number) {
       if (e.stat === 'food') game.gainFood(e.value);
       if (e.stat === 'armor') game.gainArmor(e.value);
       if (e.stat === 'hp') game.gainHp(e.value);
+      if (e.stat.startsWith('potion_')) {
+        const type = e.stat.replace('potion_', '') as import('./types').PotionType;
+        addPotion(type);
+      }
     });
-    // Check if it's a potion by name
-    if (item.name.toLowerCase().includes('potion')) {
-      const type = item.name.toLowerCase().replace(' potion', '') as PotionType;
-      addPotion(type);
-    }
     game.addLog(`Bought ${item.name}`, 'loot');
   }
 }

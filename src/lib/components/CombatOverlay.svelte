@@ -8,7 +8,9 @@
 		executeMonsterAttack,
 		finishMonsterAttack,
 		endCombat,
-		usePotion
+		usePotion,
+		useEquippedItem,
+		useCharacterSkill
 	} from '$lib/game/gameActions';
 	import { POTIONS } from '$lib/data/potions';
 	import DiceRoller from './DiceRoller.svelte';
@@ -213,6 +215,21 @@
 								</div>
 							{/if}
 						</div>
+					{/if}
+
+					<!-- Combat Skill & Item Buttons -->
+					{#if game.item && game.itemUsesLeft > 0 && game.item.skillType === 'combat'}
+						<button class="btn btn-secondary px-4 py-2 text-sm border-amber-700/50" onclick={() => useEquippedItem()}>
+							🔧 {game.item.name} ({game.itemUsesLeft})
+						</button>
+					{/if}
+
+					{#if game.selectedCharacter && !game.skillUsed}
+						{#each game.selectedCharacter.skills.filter(s => s.type === 'combat') as skill}
+							<button class="btn btn-secondary px-4 py-2 text-sm border-emerald-700/50 text-emerald-100" onclick={() => useCharacterSkill(skill.name)}>
+								✨ {skill.name}
+							</button>
+						{/each}
 					{/if}
 				{/if}
 

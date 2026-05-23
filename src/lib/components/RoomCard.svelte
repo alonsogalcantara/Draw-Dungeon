@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { moveToRoom } from '$lib/game/gameActions';
+	import { game } from '$lib/game/gameState.svelte';
 	import type { RoomCardInstance } from '$lib/game/types';
 	import RoomCardDetail from './RoomCardDetail.svelte';
 
