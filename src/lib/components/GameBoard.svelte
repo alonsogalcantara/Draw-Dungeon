@@ -7,6 +7,7 @@
 	import CombatOverlay from './CombatOverlay.svelte';
 	import SkillCheckOverlay from './SkillCheckOverlay.svelte';
 	import EventModal from './EventModal.svelte';
+	import DelvingOverlay from './DelvingOverlay.svelte';
 </script>
 
 <div class="grid min-h-screen bg-gradient-to-b from-stone-950 via-stone-900 to-stone-950"
@@ -44,4 +45,8 @@
 
 {#if game.event !== null && game.skillCheck === null}
 	<EventModal />
+{/if}
+
+{#if game.phase === 'delving'}
+	<DelvingOverlay />
 {/if}

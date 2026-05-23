@@ -90,11 +90,13 @@ export function setupArea() {
   game.playerRow = 0;
   game.playerCol = 0;
   
-  // Reveal and resolve start card
+  game.phase = 'delving';
+  game.addLog(`${game.campaign === 'tower' ? 'Ascended' : 'Descended'} to Area ${game.currentArea} (Floor ${game.currentFloor})`, 'info');
+}
+
+export function enterArea() {
   const startRoom = game.roomGrid[0][0]!;
   startRoom.revealed = true;
-  game.addLog(`${game.campaign === 'tower' ? 'Ascended' : 'Descended'} to Area ${game.currentArea} (Floor ${game.currentFloor})`, 'info');
-  
   resolveRoom(startRoom);
   if (game.phase === 'playing') {
     revealAdjacentRooms();
