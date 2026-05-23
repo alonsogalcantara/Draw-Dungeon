@@ -95,7 +95,7 @@ export const MONSTER_CARDS: MonsterCard[] = [
     name: 'Tomb Guardian',
     type: 'monster',
     description:
-      'Un antiguo autómata de piedra y bronce encantado, despertado para defender las cámaras funerarias de los reyes olvidados. Sus golpes atraviesan las defensas mortales.',
+      'A reanimated skeletal squad clutching rotting weapons. Their hollow eyes glow with a faint, malicious light as they advance in formation.',
     image: '/images/monsters/tower/floor 1/Guardian de la Tumba.png',
     campaign: 'tower',
     floor: 1,
@@ -138,6 +138,9 @@ export const MONSTER_CARDS: MonsterCard[] = [
     type: 'monster',
     description:
       'An abomination assembled from the skeletons of a hundred victims, bound together by dark sorcery. Each step shakes the dungeon floor.',
+    image: '/images/monsters/tower/floor 1/Bone Golem.png',
+    campaign: 'tower',
+    floor: 1,
     hpPerFloor: [7, 9, 12, 15],
     damage: 4,
     effects: ['weaken'],
@@ -160,28 +163,24 @@ export const MONSTER_CARDS: MonsterCard[] = [
     type: 'monster',
     description:
       'Hundreds of diseased rodents moving as one writhing mass, their collective hunger insatiable and their bites infectious.',
+    image: '/images/monsters/tower/floor 1/Enjambre de ratas de plaga.png',
+    campaign: 'tower',
+    floor: 1,
     hpPerFloor: [4, 5, 7, 10],
     damage: 1,
     effects: ['poison', 'weaken'],
     xpRewardPerFloor: [1, 2, 2, 3],
   },
-  {
-    id: 'monster_tomb_guardian',
-    name: 'Tomb Guardian',
-    type: 'monster',
-    description:
-      'An ancient construct of stone and enchanted bronze, awakened to defend the burial chambers of forgotten kings. Its strikes bypass all mortal defenses.',
-    hpPerFloor: [6, 8, 11, 14],
-    damage: 3,
-    effects: ['ignoreArmor'],
-    xpRewardPerFloor: [2, 2, 3, 3],
-  },
+
   {
     id: 'monster_wailing_banshee',
     name: 'Wailing Banshee',
     type: 'monster',
     description:
       'The tortured spirit of a queen who was buried alive. Her shriek shatters resolve and saps the will to fight.',
+    image: '/images/monsters/tower/floor 1/Wailing Banshee.png',
+    campaign: 'tower',
+    floor: 1,
     hpPerFloor: [5, 7, 9, 12],
     damage: 3,
     effects: ['curse', 'weaken'],
