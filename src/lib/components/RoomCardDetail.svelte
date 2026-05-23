@@ -69,7 +69,7 @@
 		</div>
 		
 		<!-- 2. Card Name (Banner) -->
-		<h2 class="ml-10 text-center text-sm font-black tracking-widest text-[#5e4b3c] uppercase">
+		<h2 class="flex-1 pl-12 pr-10 text-center text-sm font-black tracking-widest text-[#5e4b3c] uppercase truncate">
 			{card.name ?? card.type}
 		</h2>
 
