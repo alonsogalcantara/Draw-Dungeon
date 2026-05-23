@@ -10,6 +10,7 @@
 	let selectedChar = $state<CharacterDef | null>(null);
 	let difficulty = $state<DifficultyMode>('normal');
 	let layoutSize = $state<number>(3);
+	let step = $state<number>(1);
 	let metaProgress = $state<Record<string, MetaProgress>>({});
 
 	onMount(() => {
@@ -96,7 +97,11 @@
 	}
 
 	function handleBack() {
-		game.phase = 'title';
+		if (step > 1) {
+			step--;
+		} else {
+			game.phase = 'title';
+		}
 	}
 
 	function handleWipeProgress() {
@@ -119,8 +124,12 @@
 
 	<!-- Title & Controls -->
 	<div class="mb-2 flex w-full max-w-6xl items-center justify-between">
-		<h1 class="title-text text-4xl tracking-wider">Choose Your Champion</h1>
-		{#if Object.keys(metaProgress).length > 0}
+		<h1 class="title-text text-4xl tracking-wider">
+			{#if step === 1}Choose Your Champion
+			{:else if step === 2}Choose Difficulty
+			{:else}Choose Dungeon Layout{/if}
+		</h1>
+		{#if Object.keys(metaProgress).length > 0 && step === 1}
 			<button class="btn btn-secondary text-xs text-red-400 hover:bg-red-900/30 hover:text-red-300" onclick={handleWipeProgress}>
 				🗑️ Wipe Progress
 			</button>
@@ -128,10 +137,14 @@
 	</div>
 	<div class="mb-8 h-px w-48 bg-gradient-to-r from-transparent via-amber-600/50 to-transparent"></div>
 
+	{#if step === 1}
 	<!-- Character cards grid -->
 	<div class="mb-8 grid w-full max-w-6xl grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
 		{#each CHARACTERS as char (char.id)}
-			<button
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<div
+				role="button"
+				tabindex="0"
 				class={['card group relative cursor-pointer rounded-xl border-2 p-5 text-left transition-all duration-300 hover:scale-[1.02]',
 					selectedChar?.id === char.id ? 'card-selected border-amber-400' : 'border-amber-500/30'
 				].join(' ')}
@@ -198,7 +211,7 @@
 						{char.lore}
 					</p>
 				{/if}
-			</button>
+			</div>
 		{/each}
 	</div>
 
@@ -312,6 +325,18 @@
 		</div>
 	{/if}
 
+	<div class="mt-4">
+		<button
+			class="btn btn-primary px-16 py-4 text-lg tracking-wider uppercase transition-all duration-300 hover:scale-105 disabled:opacity-40 disabled:hover:scale-100"
+			onclick={() => step = 2}
+			disabled={!selectedChar || (selectedChar.id === 'custom_champion' && !isCustomValid)}
+		>
+			Next: Difficulty
+		</button>
+	</div>
+	{/if}
+
+	{#if step === 2}
 	<!-- Difficulty selector -->
 	<div class="mb-8 w-full max-w-2xl">
 		<h2 class="mb-4 text-center text-lg font-semibold tracking-wider text-amber-200/70 uppercase">Difficulty</h2>
@@ -329,7 +354,17 @@
 			{/each}
 		</div>
 	</div>
+	<div class="mt-8">
+		<button
+			class="btn btn-primary px-16 py-4 text-lg tracking-wider uppercase transition-all duration-300 hover:scale-105 disabled:opacity-40 disabled:hover:scale-100"
+			onclick={() => step = 3}
+		>
+			Next: Layout
+		</button>
+	</div>
+	{/if}
 
+	{#if step === 3}
 	<!-- Layout selector -->
 	<div class="mb-8 w-full max-w-2xl">
 		<h2 class="mb-4 text-center text-lg font-semibold tracking-wider text-amber-200/70 uppercase">Dungeon Layout</h2>
@@ -349,11 +384,14 @@
 	</div>
 
 	<!-- Begin button -->
-	<button
-		class="btn btn-primary px-16 py-4 text-lg tracking-wider uppercase transition-all duration-300 hover:scale-105 disabled:opacity-40 disabled:hover:scale-100"
-		onclick={handleBegin}
-		disabled={!selectedChar || (selectedChar.id === 'custom_champion' && !isCustomValid)}
-	>
-		Begin Adventure
-	</button>
+	<div class="mt-8">
+		<button
+			class="btn btn-primary px-16 py-4 text-lg tracking-wider uppercase transition-all duration-300 hover:scale-105 disabled:opacity-40 disabled:hover:scale-100"
+			onclick={handleBegin}
+			disabled={!selectedChar || (selectedChar.id === 'custom_champion' && !isCustomValid)}
+		>
+			Begin Adventure
+		</button>
+	</div>
+	{/if}
 </div>
