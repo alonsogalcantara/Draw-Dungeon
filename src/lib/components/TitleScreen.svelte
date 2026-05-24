@@ -12,8 +12,10 @@
 
 	import { onMount } from 'svelte';
 	import { t } from '$lib/i18n';
+	import HowToPlayModal from './HowToPlayModal.svelte';
 
 	let hasSave = $state(false);
+	let showTutorial = $state(false);
 
 	onMount(() => {
 		hasSave = game.hasSavedState();
@@ -82,6 +84,13 @@
 			</button>
 		</div>
 
+		<button
+			class="mt-2 flex items-center gap-2 text-sm uppercase tracking-widest text-stone-400 hover:text-amber-400 transition-colors"
+			onclick={() => showTutorial = true}
+		>
+			<span class="text-lg">📜</span> Cómo Jugar
+		</button>
+
 		<p class="mt-6 text-xs tracking-widest text-amber-900/40 uppercase">
 			A solitaire dungeon-crawling card game
 		</p>
@@ -124,3 +133,5 @@
 		animation: torch-flicker 3s ease-in-out infinite;
 	}
 </style>
+
+<HowToPlayModal open={showTutorial} onClose={() => showTutorial = false} />

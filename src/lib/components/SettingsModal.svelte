@@ -1,8 +1,11 @@
 <script lang="ts">
 	import { game } from '$lib/game/gameState.svelte';
 	import { t } from '$lib/i18n';
+	import HowToPlayModal from './HowToPlayModal.svelte';
 
 	let { open, onClose } = $props<{ open: boolean; onClose: () => void }>();
+	
+	let showTutorial = $state(false);
 </script>
 
 {#if open}
@@ -71,11 +74,20 @@
 				</div>
 			</div>
 
-			<div class="mt-8 text-center">
+			<div class="mt-8 flex flex-col gap-3 text-center">
+				<button 
+					class="btn bg-stone-800 text-stone-300 border border-stone-700 hover:bg-stone-700 hover:text-white px-8 py-2"
+					onclick={() => showTutorial = true}
+				>
+					📜 Cómo Jugar / Manual
+				</button>
 				<button class="btn btn-primary px-8 py-2" onclick={onClose}>
 					{t('settings.close')}
 				</button>
 			</div>
 		</div>
 	</div>
+
+	<!-- Render tutorial modal above settings if opened -->
+	<HowToPlayModal open={showTutorial} onClose={() => showTutorial = false} />
 {/if}
