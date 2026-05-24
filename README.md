@@ -12,6 +12,20 @@ En este juego tomas el papel de un valiente aventurero que desciende a las profu
 
 A través de las diferentes áreas, revelarás cartas que representan Monstruos, Trampas, Comerciantes, Santuarios, Tesoros y Jefes. Las batallas y decisiones se basan en tiradas de dados y el uso estratégico de habilidades pasivas y activas.
 
+### 🛡️ Forjando a tu Campeón
+
+Antes de adentrarte en la mazmorra, forjarás a tu propio **Campeón Personalizado**. Deberás elegir entre cuatro roles principales:
+- **Warrior (Guerrero):** Maestro del combate cuerpo a cuerpo y la defensa.
+- **Mage (Mago):** Experto en manipular energías arcanas y controlar el campo de batalla.
+- **Rogue (Ladrón):** Ágil y astuto, confía en la evasión y la precisión letal.
+- **Cleric (Clérigo):** Canaliza poderes divinos para curar y purificar.
+
+Tu elección de rol es vital para la **Sinergia de Habilidades**. Las habilidades están ligadas a un rol específico:
+- **Efectos Potenciados (Sinergia):** Si seleccionas una habilidad afín a tu rol (Ej. *Shield Bash* en un Guerrero), la habilidad se potencia enormemente (aturdiendo más, curando más, o infligiendo más daño base).
+- **Mismatches (Penalización):** Si escoges una Habilidad Activa de otro rol, te será inútil en combate. Si es una Habilidad Pasiva, solo tendrá un 50% de probabilidad de activarse.
+
+### 🔵 El Maná
+Para usar tus habilidades activas dependerás del **Maná**. Es un recurso crucial que puedes incrementar al crear a tu campeón (hasta 99). Ganarás Maná al derrotar monstruos o mediante **Pociones de Maná** azules escondidas en la mazmorra. ¡Administra tu Maná y tus afinidades para sobrevivir!
 ## 💻 Arquitectura y Tecnologías
 
 El proyecto está construido utilizando tecnologías modernas para garantizar un rendimiento óptimo y una reactividad perfecta:
