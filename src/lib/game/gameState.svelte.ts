@@ -30,6 +30,7 @@ class GameState {
 	difficulty = $state<DifficultyMode>('normal');
 	campaign = $state<CampaignType>('dungeon');
 	layoutSize = $state(3);
+	baseLayoutSize = $state(3);
 	showSettings = $state(false);
 
 	// Character
@@ -113,6 +114,7 @@ class GameState {
 	reset() {
 		this.phase = 'title';
 		this.layoutSize = 3;
+		this.baseLayoutSize = 3;
 		this.selectedCharacter = null;
 		this.runSummary = null;
 		this.hp = 0;
@@ -164,6 +166,7 @@ class GameState {
 				difficulty: this.difficulty,
 				campaign: this.campaign,
 				layoutSize: this.layoutSize,
+				baseLayoutSize: this.baseLayoutSize,
 				selectedCharacter: this.selectedCharacter,
 				hp: this.hp,
 				maxHp: this.maxHp,

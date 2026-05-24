@@ -17,6 +17,7 @@ export function startNewGame(
 	game.difficulty = difficulty;
 	game.campaign = campaignType;
 	game.layoutSize = layoutSize;
+	game.baseLayoutSize = layoutSize;
 
 	const mod = DIFFICULTY_MODIFIERS[difficulty];
 	const meta = loadMetaProgress(character.id);

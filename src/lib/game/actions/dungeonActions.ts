@@ -332,5 +332,76 @@ export function delve() {
 		}
 	});
 
+	// Restablecer el tamaño de la mazmorra a su valor base al entrar a una nueva área
+	game.layoutSize = game.baseLayoutSize;
+
 	setupArea();
+}
+
+export function expandDungeon(amount: number) {
+	const oldSize = game.layoutSize;
+	const newSize = Math.min(oldSize + amount, 8); // Max grid size of 8
+	if (newSize === oldSize) return;
+
+	let deck = ROOM_CARDS.filter((c) => c.type !== 'boss');
+	deck = deck.filter((c) => {
+		if (c.type === 'monster') {
+			const mc = c as any;
+			if (mc.campaign && mc.campaign !== game.campaign) return false;
+			if (mc.floor && mc.floor !== game.currentFloor) return false;
+		}
+		return true;
+	});
+	deck = shuffle(deck);
+
+	const cardsNeeded = newSize * newSize - oldSize * oldSize;
+	const gridCards: RoomCard[] = deck.slice(0, cardsNeeded);
+	const scaledGridCards = gridCards.map((c) => scaleCardToLevel(c, game.level, game.currentFloor));
+
+	const oldGrid = game.roomGrid;
+	const newGrid: (RoomCardInstance | null)[][] = Array(newSize)
+		.fill(null)
+		.map(() => Array(newSize).fill(null));
+
+	let cardIndex = 0;
+	for (let r = 0; r < newSize; r++) {
+		for (let c = 0; c < newSize; c++) {
+			if (r < oldSize && c < oldSize) {
+				// Copiamos la celda original
+				newGrid[r][c] = oldGrid[r][c];
+			} else {
+				// Celdas nuevas de la expansión
+				newGrid[r][c] = {
+					card: scaledGridCards[cardIndex++],
+					revealed: false,
+					resolved: false,
+					row: r,
+					col: c
+				};
+			}
+		}
+	}
+
+	// Lanzar la carta que estaba en la esquina de salida (inferior derecha) a la nueva esquina
+	const oldCorner = newGrid[oldSize - 1][oldSize - 1]!;
+	const newCorner = newGrid[newSize - 1][newSize - 1]!;
+
+	newGrid[newSize - 1][newSize - 1] = {
+		...oldCorner,
+		row: newSize - 1,
+		col: newSize - 1
+	};
+
+	newGrid[oldSize - 1][oldSize - 1] = {
+		...newCorner,
+		row: oldSize - 1,
+		col: oldSize - 1
+	};
+
+	game.layoutSize = newSize;
+	game.roomGrid = newGrid;
+
+	if (game.gridHistory.length > 0) {
+		game.gridHistory[game.gridHistory.length - 1].grid = newGrid;
+	}
 }

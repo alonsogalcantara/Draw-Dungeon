@@ -8,7 +8,7 @@ import {
 	rollDungeonDie,
 	isSkillCheckSuccess
 } from '../diceEngine';
-import { revealAdjacentRooms } from './dungeonActions';
+import { revealAdjacentRooms, expandDungeon } from './dungeonActions';
 import { addPotion } from './itemActions';
 import { SKILL_DICTIONARY } from '../skills';
 import { MONSTER_CARDS } from '../../data/cards/monsters';
@@ -312,24 +312,7 @@ export function handleShrine(offering: boolean) {
 		
 		if (reward.addRoomToArea) {
 			game.addLog(`The dungeon shifts... a new area opens up!`, 'info');
-			game.layoutSize = Math.min(game.layoutSize + 1, 8); // Max 8 cols? We just increment layoutSize but wait, we need to add to roomGrid.
-			// Actually, just increasing currentArea doesn't add it. We must add a new column to roomGrid.
-			for (let i = 0; i < 4; i++) {
-				if (game.roomGrid[i]) {
-					game.roomGrid[i].push(null);
-				}
-			}
-			// Better way: simply add a new random card to the current row at the end? 
-			// Let's just grant a free reveal of adjacent rooms and log it if grid expanding is complex.
-			// Wait, the user wanted to add more cards. Let's add 1 column.
-			for (let i = 0; i < game.layoutSize; i++) {
-				if (game.roomGrid[i]) {
-					game.roomGrid[i].push(null); // Just add empty spaces, or we'd need to generate cards.
-				}
-			}
-			game.layoutSize++;
-			// Since generating cards here might be complex without dungeon generator, let's just use revealAdjacentRooms.
-			// Actually, let's implement addExtraCard instead.
+			expandDungeon(1); // Expand the grid size by 1 (e.g. 4x4 to 5x5)
 		}
 
 		game.addLog(`Shrine outcome: ${reward.label}`, 'info');
