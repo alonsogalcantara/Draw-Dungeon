@@ -8,7 +8,7 @@ const translations: Record<string, Record<'en' | 'es', string>> = {
   'campaign.dungeon': { en: 'The Dungeon', es: 'La Mazmorra' },
   
   // Settings
-  'settings.title': { en: 'Settings', es: 'Configuraciones' },
+  'settings.title': { en: 'Settings', es: 'Ajustes' },
   'settings.music': { en: 'Music Volume', es: 'Volumen de Música' },
   'settings.fx': { en: 'SFX Volume', es: 'Volumen de Efectos' },
   'settings.language': { en: 'Language', es: 'Idioma' },
@@ -20,7 +20,7 @@ const translations: Record<string, Record<'en' | 'es', string>> = {
   'game.delve': { en: 'Delve Deeper', es: 'Avanzar' },
   
   // Stats
-  'stat.hp': { en: 'HP', es: 'Salud' },
+  'stat.hp': { en: 'HP', es: 'PV' },
   'stat.xp': { en: 'XP', es: 'EXP' },
   'stat.gold': { en: 'Gold', es: 'Oro' },
   'stat.food': { en: 'Food', es: 'Comida' },
