@@ -12,8 +12,9 @@
 	} from '$lib/game/gameActions';
 
 	function handleKeydown(e: KeyboardEvent) {
-		// Ignore if typing in an input
-		if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+		// Ignore if typing in an input (except range inputs for settings)
+		if (e.target instanceof HTMLInputElement && e.target.type !== 'range') return;
+		if (e.target instanceof HTMLTextAreaElement) return;
 
 		// 1. Toggle Settings with ESC
 		if (e.key === 'Escape') {
@@ -21,26 +22,78 @@
 			return;
 		}
 
-		// Don't process other shortcuts if settings is open
-		if (game.showSettings) return;
+		// 2. UI Focus Navigation and Movement (WASD / Arrows)
+		const keyLow = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+		const isNavKey = ['ArrowUp', 'w', 'ArrowDown', 's', 'ArrowLeft', 'a', 'ArrowRight', 'd'].includes(keyLow);
+		
+		const isDungeonMovementAllowed = !game.showSettings && (game.phase === 'playing' || game.phase === 'scouting');
 
-		// Movement (Playing or Scouting)
-		if (game.phase === 'playing' || game.phase === 'scouting') {
-			if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
-				moveToRoom(game.playerRow, game.playerCol + 1);
-				return;
+		if (isNavKey) {
+			// Try Dungeon Movement First
+			if (isDungeonMovementAllowed && (keyLow === 'arrowright' || keyLow === 'd' || keyLow === 'arrowdown' || keyLow === 's')) {
+				const r = game.playerRow;
+				const c = game.playerCol;
+				const currentRoom = game.roomGrid[r]?.[c];
+				
+				// Validate room is resolved before allowing movement
+				if (currentRoom && currentRoom.resolved) {
+					e.preventDefault();
+					if (keyLow === 'arrowright' || keyLow === 'd') {
+						if (c + 1 < game.layoutSize && game.roomGrid[r]?.[c + 1]) {
+							moveToRoom(r, c + 1);
+						}
+					} else if (keyLow === 'arrowdown' || keyLow === 's') {
+						if (r + 1 < game.layoutSize && game.roomGrid[r + 1]?.[c]) {
+							moveToRoom(r + 1, c);
+						}
+					}
+					return;
+				}
 			}
-			if (e.key === 'ArrowDown' || e.key.toLowerCase() === 's') {
-				moveToRoom(game.playerRow + 1, game.playerCol);
-				return;
+
+			// UI Focus Navigation (Fallback if not moving in dungeon)
+			const focusableElements = Array.from(
+				document.querySelectorAll('button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')
+			).filter(el => {
+				const style = window.getComputedStyle(el);
+				return style.display !== 'none' && style.visibility !== 'hidden' && (el as HTMLElement).offsetWidth > 0;
+			}) as HTMLElement[];
+			
+			if (focusableElements.length > 0) {
+				const currentIndex = focusableElements.indexOf(document.activeElement as HTMLElement);
+				const isNext = ['ArrowDown', 's', 'ArrowRight', 'd'].includes(keyLow);
+				const isPrev = ['ArrowUp', 'w', 'ArrowLeft', 'a'].includes(keyLow);
+
+				if (isNext) {
+					e.preventDefault();
+					const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % focusableElements.length : 0;
+					focusableElements[nextIndex].focus();
+				} else if (isPrev) {
+					e.preventDefault();
+					const prevIndex = currentIndex > 0 ? currentIndex - 1 : focusableElements.length - 1;
+					focusableElements[prevIndex].focus();
+				}
 			}
+			return;
 		}
 
-		// Action Keys: Enter or Space
+		// Don't process Action Keys if settings is open
+		if (game.showSettings) return;
+
+		// 3. Action Keys: Enter or Space
 		if (e.key === 'Enter' || e.key === ' ') {
+			if (e.repeat) return; // Prevenir spam al mantener presionado
+
+			// Si hay algo enfocado, simulamos un clic real (útil para divs con role="button")
+			if (document.activeElement && document.activeElement.tagName !== 'BODY') {
+				e.preventDefault();
+				(document.activeElement as HTMLElement).click();
+				return; 
+			}
+
 			e.preventDefault(); // prevent default scroll for space
 
-			// Title Screen
+			// Title Screen Fallback (if no button focused)
 			if (game.phase === 'title') {
 				if (game.hasSavedState()) {
 					game.loadState();
@@ -63,7 +116,7 @@
 				return;
 			}
 
-			// Combat
+			// Combat Actions
 			if (game.phase === 'combat' && game.combat) {
 				const combat = game.combat;
 				switch (combat.phase) {
@@ -89,13 +142,9 @@
 
 			// Events (Simple acknowledge if generic)
 			if (game.phase === 'event' && game.event) {
-				// Para evitar conflictos con decisiones (tiendas/items),
-				// solo cerramos eventos genéricos si tienen la función resolve (mensajes de daño, etc).
 				if (game.event.resolve) {
 					game.event.resolve();
 				} else {
-					// Fallback for simple events (if we are in a generic message state)
-					// Only close if it's a simple message without complex UI
 					const cardType = game.event.card.type;
 					if (cardType !== 'bonfire' && cardType !== 'merchant' && cardType !== 'shrine' && cardType !== 'treasure' && cardType !== 'tomb' && cardType !== 'item_room' && cardType !== 'mission') {
 						closeGenericEvent();

@@ -126,6 +126,12 @@
 			metaProgress = loadAllMetaProgress(CHARACTERS.map(c => c.id).concat('custom_champion'));
 		}
 	}
+
+	function focusNextBtn(currentStep: number) {
+		setTimeout(() => {
+			document.getElementById(`next-btn-${currentStep}`)?.focus();
+		}, 10);
+	}
 </script>
 
 <div class="flex min-h-screen flex-col items-center bg-gradient-to-b from-stone-950 via-stone-900 to-stone-950 px-4 py-8">
@@ -167,7 +173,10 @@
 				class={['card group relative cursor-pointer rounded-xl border-2 p-5 text-left transition-all duration-300 hover:scale-[1.02]',
 					selectedChar?.id === char.id ? 'card-selected border-amber-400' : 'border-amber-500/30'
 				].join(' ')}
-				onclick={() => (selectedChar = char)}
+				onclick={() => {
+					selectedChar = char;
+					if (char.id !== 'custom_champion') focusNextBtn(1);
+				}}
 			>
 				<!-- Header -->
 				<div class="mb-3 border-b border-amber-900/30 pb-3 flex justify-between items-start">
@@ -361,6 +370,7 @@
 
 	<div class="mt-4">
 		<button
+			id="next-btn-1"
 			class="btn btn-primary px-16 py-4 text-lg tracking-wider uppercase transition-all duration-300 hover:scale-105 disabled:opacity-40 disabled:hover:scale-100"
 			onclick={() => step = 2}
 			disabled={!selectedChar || (selectedChar.id === 'custom_champion' && !isCustomValid)}
@@ -380,7 +390,10 @@
 					class={['rounded-lg border-2 px-4 py-3 text-center transition-all duration-200',
 						difficulty === d.mode ? 'border-amber-500 bg-amber-900/20 text-amber-100' : 'border-stone-700 bg-stone-800/50 text-stone-400'
 					].join(' ')}
-					onclick={() => (difficulty = d.mode)}
+					onclick={() => {
+						difficulty = d.mode;
+						focusNextBtn(2);
+					}}
 				>
 					<div class="text-sm font-bold">{d.label}</div>
 					<div class="mt-1 text-[10px] opacity-70">{d.desc}</div>
@@ -390,6 +403,7 @@
 	</div>
 	<div class="mt-8">
 		<button
+			id="next-btn-2"
 			class="btn btn-primary px-16 py-4 text-lg tracking-wider uppercase transition-all duration-300 hover:scale-105 disabled:opacity-40 disabled:hover:scale-100"
 			onclick={() => step = 3}
 		>
@@ -407,7 +421,10 @@
 				class={['rounded-lg border-2 px-6 py-5 text-center transition-all duration-200',
 					campaignType === 'dungeon' ? 'border-amber-500 bg-amber-900/20 text-amber-100' : 'border-stone-700 bg-stone-800/50 text-stone-400'
 				].join(' ')}
-				onclick={() => (campaignType = 'dungeon')}
+				onclick={() => {
+					campaignType = 'dungeon';
+					focusNextBtn(3);
+				}}
 			>
 				<div class="text-lg font-bold">The Dungeon</div>
 				<div class="mt-2 text-xs opacity-70">Descend into the depths. Fight Og's Remains at the bottom.</div>
@@ -416,7 +433,10 @@
 				class={['rounded-lg border-2 px-6 py-5 text-center transition-all duration-200',
 					campaignType === 'tower' ? 'border-amber-500 bg-amber-900/20 text-amber-100' : 'border-stone-700 bg-stone-800/50 text-stone-400'
 				].join(' ')}
-				onclick={() => (campaignType = 'tower')}
+				onclick={() => {
+					campaignType = 'tower';
+					focusNextBtn(3);
+				}}
 			>
 				<div class="text-lg font-bold">The Tower</div>
 				<div class="mt-2 text-xs opacity-70">Ascend to the summit. Face Og's Blood at the top.</div>
@@ -426,6 +446,7 @@
 
 	<div class="mt-8">
 		<button
+			id="next-btn-3"
 			class="btn btn-primary px-16 py-4 text-lg tracking-wider uppercase transition-all duration-300 hover:scale-105 disabled:opacity-40 disabled:hover:scale-100"
 			onclick={() => step = 4}
 		>
@@ -444,7 +465,10 @@
 					class={['rounded-lg border-2 px-4 py-3 text-center transition-all duration-200',
 						layoutSize === l.size ? 'border-amber-500 bg-amber-900/20 text-amber-100' : 'border-stone-700 bg-stone-800/50 text-stone-400'
 					].join(' ')}
-					onclick={() => (layoutSize = l.size)}
+					onclick={() => {
+						layoutSize = l.size;
+						focusNextBtn(4);
+					}}
 				>
 					<div class="text-sm font-bold">{l.label}</div>
 					<div class="mt-1 text-[10px] opacity-70">{l.desc}</div>
@@ -456,6 +480,7 @@
 	<!-- Begin button -->
 	<div class="mt-8">
 		<button
+			id="next-btn-4"
 			class="btn btn-primary px-16 py-4 text-lg tracking-wider uppercase transition-all duration-300 hover:scale-105 disabled:opacity-40 disabled:hover:scale-100"
 			onclick={handleBegin}
 			disabled={!selectedChar || (selectedChar.id === 'custom_champion' && !isCustomValid)}
