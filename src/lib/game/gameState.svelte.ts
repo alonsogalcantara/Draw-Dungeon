@@ -68,6 +68,13 @@ class GameState {
   log = $state<LogEntry[]>([]);
   logCounter = $state(0);
   
+  // Settings
+  settings = $state({
+    musicVolume: 0.5,
+    fxVolume: 0.5,
+    language: 'es' as 'es' | 'en'
+  });
+  
   // Methods
   addLog(message: string, type: LogEntry['type']) {
     this.logCounter++;
@@ -109,8 +116,8 @@ class GameState {
     this.skillCheck = null;
     this.event = null;
     this.log = [];
-    this.log = [];
     this.logCounter = 0;
+    // Note: settings are preserved across resets.
   }
 
   // --- Persistence ---
@@ -152,7 +159,8 @@ class GameState {
         skillCheck: this.skillCheck,
         event: this.event,
         log: this.log,
-        logCounter: this.logCounter
+        logCounter: this.logCounter,
+        settings: $state.snapshot(this.settings) // clone the settings object
       };
       localStorage.setItem('mini_rogue_save', JSON.stringify(stateToSave));
     } catch (e) {

@@ -31,6 +31,10 @@
 			hasSave = false;
 		}
 	}
+
+	import SettingsModal from './SettingsModal.svelte';
+	import { t } from '$lib/i18n';
+	let showSettings = $state(false);
 </script>
 
 <div class="title-bg relative flex min-h-screen flex-col items-center justify-center overflow-hidden">
@@ -70,14 +74,14 @@
 					class="btn btn-primary px-8 py-4 text-lg tracking-wider uppercase transition-all duration-300 hover:scale-105"
 					onclick={handleContinueGame}
 				>
-					Continue Game
+					{t('play.continue')}
 				</button>
 			{/if}
 			<button
 				class="btn btn-secondary px-8 py-4 text-lg tracking-wider uppercase transition-all duration-300 hover:scale-105"
 				onclick={handleNewGame}
 			>
-				New Game
+				{t('play.new')}
 			</button>
 		</div>
 
@@ -85,7 +89,19 @@
 			A solitaire dungeon-crawling card game
 		</p>
 	</div>
+
+	<!-- Settings Button -->
+	<button
+		class="absolute top-4 right-4 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-stone-900/80 text-lg border border-stone-700 text-stone-300 shadow-lg backdrop-blur-sm transition-all hover:bg-stone-800 hover:scale-110 active:scale-95"
+		onclick={() => showSettings = true}
+		aria-label={t('settings.title')}
+		title={t('settings.title')}
+	>
+		⚙️
+	</button>
 </div>
+
+<SettingsModal open={showSettings} onClose={() => showSettings = false} />
 
 <style>
 	@keyframes torch-flicker {

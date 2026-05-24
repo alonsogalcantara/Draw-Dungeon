@@ -3,6 +3,7 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import MusicPlayer from '$lib/components/MusicPlayer.svelte';
 	import { onMount } from 'svelte';
+	import { game } from '$lib/game/gameState.svelte';
 
 	let { children } = $props();
 
@@ -22,8 +23,10 @@
 			oscillator.frequency.setValueAtTime(300, audioCtx.currentTime);
 			oscillator.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
 			
-			gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-			gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+			// Use fxVolume from settings
+			const baseVolume = 0.1 * game.settings.fxVolume;
+			gainNode.gain.setValueAtTime(baseVolume, audioCtx.currentTime);
+			gainNode.gain.exponentialRampToValueAtTime(0.01 * game.settings.fxVolume, audioCtx.currentTime + 0.1);
 			
 			oscillator.connect(gainNode);
 			gainNode.connect(audioCtx.destination);

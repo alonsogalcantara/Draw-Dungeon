@@ -8,9 +8,11 @@
 	import SkillCheckOverlay from './SkillCheckOverlay.svelte';
 	import EventModal from './EventModal.svelte';
 	import DelvingOverlay from './DelvingOverlay.svelte';
+	import SettingsModal from './SettingsModal.svelte';
 
 	let prevHp = $state(game.hp);
 	let isShaking = $state(false);
+	let showSettings = $state(false);
 
 	$effect(() => {
 		if (game.hp < prevHp) {
@@ -64,3 +66,15 @@
 {#if game.phase === 'delving'}
 	<DelvingOverlay />
 {/if}
+
+<SettingsModal open={showSettings} onClose={() => showSettings = false} />
+
+<!-- Settings Button for GameBoard -->
+<button
+	class="fixed top-4 right-4 z-40 flex h-10 w-10 items-center justify-center rounded-full bg-stone-900/80 text-lg border border-stone-700 text-stone-300 shadow-lg backdrop-blur-sm transition-all hover:bg-stone-800 hover:scale-110 active:scale-95"
+	onclick={() => showSettings = true}
+	aria-label="Settings"
+	title="Settings"
+>
+	⚙️
+</button>

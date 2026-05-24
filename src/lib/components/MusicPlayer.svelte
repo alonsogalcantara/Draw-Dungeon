@@ -1,16 +1,23 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { game } from '$lib/game/gameState.svelte';
 
 	let audio: HTMLAudioElement;
 	let isPlaying = $state(false);
 	let hasInteracted = $state(false);
+
+	$effect(() => {
+		if (audio) {
+			audio.volume = game.settings.musicVolume;
+		}
+	});
 
 	onMount(() => {
 		// Attempt to autoplay when the user clicks anywhere in the document
 		const handleFirstInteraction = () => {
 			if (!hasInteracted && audio) {
 				hasInteracted = true;
-				audio.volume = 0.3; // Set a reasonable background volume
+				audio.volume = game.settings.musicVolume;
 				audio.play().then(() => {
 					isPlaying = true;
 				}).catch(e => {
