@@ -67,7 +67,7 @@
 		<div class="absolute inset-0 pointer-events-none" style="z-index: 20;">
 			
 			<!-- Card Type (Circle) -->
-			<div class="absolute flex items-center justify-center text-[16px]" style="left: 28px; top: 32px; width: 28px; height: 28px;">
+			<div class="absolute flex items-center justify-center text-[16px]" style="left: 30px; top: 32px; width: 28px; height: 28px;">
 				<span class="drop-shadow-md">{roomIcons[card.type] ?? '❓'}</span>
 			</div>
 			
@@ -90,8 +90,8 @@
 			</div>
 
 			<!-- Roll Results & Consequences (Bottom Section) -->
-			<div class="absolute overflow-y-auto text-stone-900 text-[11px] pointer-events-auto" style="left: 18px; top: 305px; width: 284px; height: 125px;">
-				<div class="px-3 pt-3 pb-2">
+			<div class="absolute overflow-y-auto text-stone-900 text-[11px] pointer-events-auto custom-scrollbar" style="left: 22px; top: 305px; width: 276px; height: 100px;">
+				<div class="px-2 pt-2 pb-4">
 					{#if card.type === 'monster' || card.type === 'boss'}
 						{@const m = card as (MonsterCard | BossCard)}
 						<div class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 font-bold">
