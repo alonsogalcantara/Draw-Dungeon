@@ -28,9 +28,9 @@
 	);
 
 	const maxWidthClass = $derived(
-		game.layoutSize === 3 ? 'max-w-3xl' : 
-		game.layoutSize === 4 ? 'max-w-4xl' : 
-		'max-w-5xl'
+		game.layoutSize === 3 ? 'max-w-5xl' : 
+		game.layoutSize === 4 ? 'max-w-6xl' : 
+		'max-w-7xl'
 	);
 </script>
 
