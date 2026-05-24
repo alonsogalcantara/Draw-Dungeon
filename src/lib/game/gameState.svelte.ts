@@ -109,7 +109,81 @@ class GameState {
     this.skillCheck = null;
     this.event = null;
     this.log = [];
+    this.log = [];
     this.logCounter = 0;
+  }
+
+  // --- Persistence ---
+  saveState() {
+    if (typeof localStorage === 'undefined') return;
+    try {
+      const stateToSave = {
+        phase: this.phase,
+        difficulty: this.difficulty,
+        campaign: this.campaign,
+        layoutSize: this.layoutSize,
+        selectedCharacter: this.selectedCharacter,
+        hp: this.hp,
+        maxHp: this.maxHp,
+        level: this.level,
+        xp: this.xp,
+        armor: this.armor,
+        gold: this.gold,
+        food: this.food,
+        potions: this.potions,
+        item: this.item,
+        itemUsesLeft: this.itemUsesLeft,
+        missions: this.missions,
+        skillUsed: this.skillUsed,
+        freeFeatActive: this.freeFeatActive,
+        cursed: this.cursed,
+        poisoned: this.poisoned,
+        blinded: this.blinded,
+        temporaryArmor: this.temporaryArmor,
+        currentFloor: this.currentFloor,
+        currentArea: this.currentArea,
+        currentAreaInFloor: this.currentAreaInFloor,
+        roomGrid: this.roomGrid,
+        gridHistory: this.gridHistory,
+        viewAreaIndex: this.viewAreaIndex,
+        playerRow: this.playerRow,
+        playerCol: this.playerCol,
+        combat: this.combat,
+        skillCheck: this.skillCheck,
+        event: this.event,
+        log: this.log,
+        logCounter: this.logCounter
+      };
+      localStorage.setItem('mini_rogue_save', JSON.stringify(stateToSave));
+    } catch (e) {
+      console.error('Failed to save game state', e);
+    }
+  }
+
+  loadState(): boolean {
+    if (typeof localStorage === 'undefined') return false;
+    try {
+      const saved = localStorage.getItem('mini_rogue_save');
+      if (!saved) return false;
+      const parsed = JSON.parse(saved);
+      
+      // Restore properties
+      Object.assign(this, parsed);
+      return true;
+    } catch (e) {
+      console.error('Failed to load game state', e);
+      return false;
+    }
+  }
+
+  clearState() {
+    if (typeof localStorage === 'undefined') return;
+    localStorage.removeItem('mini_rogue_save');
+  }
+
+  hasSavedState(): boolean {
+    if (typeof localStorage === 'undefined') return false;
+    return localStorage.getItem('mini_rogue_save') !== null;
   }
 
   gainHp(amount: number) {

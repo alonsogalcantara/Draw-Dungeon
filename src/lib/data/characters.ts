@@ -85,7 +85,7 @@ export const VARIS: CharacterDef = {
     {
       name: 'Arcane Bolt',
       type: 'combat',
-      description: 'Deal 4 damage directly to the enemy, bypassing dice.',
+      description: 'Deal 4 damage (+2 per extra level) directly to the enemy, bypassing dice.',
       icon: '⚡',
     },
     {

@@ -374,7 +374,7 @@
 						<div class="mt-3 text-left">
 							<p class="text-xs font-bold text-stone-500">Recompensas por entrega:</p>
 							<ul class="text-xs text-stone-400 mt-1 list-disc pl-4 space-y-1">
-								{#each missionCard.deliveryTargets as target}
+								{#each missionCard.deliveryTargets as target (target.roomType)}
 									<li>{target.rewardDescription}</li>
 								{/each}
 							</ul>

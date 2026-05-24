@@ -44,13 +44,14 @@ export const SKILL_DICTIONARY: Record<string, SkillLogic> = {
 
   // --- Varis (Mage) ---
   'Arcane Bolt': () => {
-    // Deal 4 damage instantly
+    // Deal damage instantly, scaling with level
     if (game.phase !== 'combat' || !game.combat) {
       game.addLog("Can only use Arcane Bolt in combat.", "system");
       return false;
     }
-    game.addLog("Varis casts Arcane Bolt! Deals 4 damage.", "damage");
-    dealDirectDamageToEnemy(4);
+    const damage = 4 + (game.level - 1) * 2;
+    game.addLog(`Varis casts Arcane Bolt! Deals ${damage} damage.`, "damage");
+    dealDirectDamageToEnemy(damage);
     return true;
   },
   'Foresight': () => {

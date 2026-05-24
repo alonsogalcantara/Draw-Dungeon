@@ -8,9 +8,23 @@
 	import SkillCheckOverlay from './SkillCheckOverlay.svelte';
 	import EventModal from './EventModal.svelte';
 	import DelvingOverlay from './DelvingOverlay.svelte';
+
+	let prevHp = $state(game.hp);
+	let isShaking = $state(false);
+
+	$effect(() => {
+		if (game.hp < prevHp) {
+			isShaking = true;
+			setTimeout(() => {
+				isShaking = false;
+			}, 400);
+		}
+		prevHp = game.hp;
+	});
 </script>
 
 <div class="grid min-h-screen bg-gradient-to-b from-stone-950 via-stone-900 to-stone-950"
+	class:animate-damage-shake={isShaking}
 	style="grid-template-columns: 280px 1fr 280px;"
 >
 	<!-- Left panel: Character HUD -->

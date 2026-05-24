@@ -5,6 +5,20 @@
 	import CharacterSelect from '$lib/components/CharacterSelect.svelte';
 	import GameBoard from '$lib/components/GameBoard.svelte';
 	import GameOverScreen from '$lib/components/GameOverScreen.svelte';
+
+	let saveTimeout: ReturnType<typeof setTimeout>;
+
+	$effect(() => {
+		// Acceder a game.phase y otras propiedades para que Svelte trackee los cambios
+		// JSON.stringify tocará todas las propiedades reactivas, suscribiendo al efecto
+		const stateString = JSON.stringify(game);
+		if (game.phase !== 'title' && game.phase !== 'profileSelect') {
+			clearTimeout(saveTimeout);
+			saveTimeout = setTimeout(() => {
+				game.saveState();
+			}, 500); // Debounce de 500ms
+		}
+	});
 </script>
 
 <svelte:head>

@@ -10,8 +10,26 @@
 		size: `${2 + Math.random() * 3}px`
 	}));
 
+	import { onMount } from 'svelte';
+
+	let hasSave = $state(false);
+
+	onMount(() => {
+		hasSave = game.hasSavedState();
+	});
+
 	function handleNewGame() {
+		game.clearState();
+		game.reset();
 		game.phase = 'profileSelect';
+	}
+
+	function handleContinueGame() {
+		if (game.loadState()) {
+			// Partida cargada, el phase de game se actualizó y la vista cambiará automáticamente
+		} else {
+			hasSave = false;
+		}
 	}
 </script>
 
@@ -46,12 +64,22 @@
 			Delve into the dungeon, room after room and floor after floor, in order to find the Og's Blood — a fabled and mysterious artifact rumored to be a ruby gemstone.
 		</p>
 
-		<button
-			class="btn btn-primary mt-8 px-12 py-4 text-lg tracking-wider uppercase transition-all duration-300 hover:scale-105"
-			onclick={handleNewGame}
-		>
-			New Game
-		</button>
+		<div class="mt-8 flex flex-col gap-4 sm:flex-row">
+			{#if hasSave}
+				<button
+					class="btn btn-primary px-8 py-4 text-lg tracking-wider uppercase transition-all duration-300 hover:scale-105"
+					onclick={handleContinueGame}
+				>
+					Continue Game
+				</button>
+			{/if}
+			<button
+				class="btn btn-secondary px-8 py-4 text-lg tracking-wider uppercase transition-all duration-300 hover:scale-105"
+				onclick={handleNewGame}
+			>
+				New Game
+			</button>
+		</div>
 
 		<p class="mt-6 text-xs tracking-widest text-amber-900/40 uppercase">
 			A solitaire dungeon-crawling card game

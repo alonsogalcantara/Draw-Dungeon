@@ -191,7 +191,7 @@
 		</h3>
 		<div class="flex flex-col gap-2">
 			{#if game.selectedCharacter}
-				{#each game.selectedCharacter.skills as skill}
+				{#each game.selectedCharacter.skills as skill (skill.name)}
 					<button 
 						class={['w-full flex items-center gap-3 rounded-xl border p-2.5 text-left transition-all duration-300 relative overflow-hidden group',
 							game.skillUsed && skill.type !== 'passive'
@@ -230,14 +230,25 @@
 				Misiones Activas
 			</h3>
 			<div class="flex flex-col gap-2">
-				{#each game.missions as mission}
-					<div class="w-full flex items-center gap-3 rounded-xl border border-blue-700/30 bg-gradient-to-r from-blue-950/20 to-stone-900/60 p-2 text-left shadow-sm">
-						<div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-stone-950 border border-blue-900/50 text-lg shadow-inner">
+				{#each game.missions as mission (mission.card.id)}
+					<div class="w-full flex items-start gap-3 rounded-xl border border-blue-700/30 bg-gradient-to-r from-blue-950/20 to-stone-900/60 p-2 text-left shadow-sm">
+						<div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-stone-950 border border-blue-900/50 text-lg shadow-inner mt-1">
 							📜
 						</div>
 						<div class="min-w-0 flex-1 z-10">
-							<div class="truncate text-xs font-bold text-blue-200">{mission.card.name}</div>
-							<div class="text-[9px] text-stone-400 line-clamp-1" title={mission.card.description}>{mission.card.description}</div>
+							<div class="text-xs font-bold text-blue-200">{mission.card.name}</div>
+							<div class="text-[9px] text-stone-400 mt-0.5">{mission.card.description}</div>
+							{#if mission.card.passiveEffect}
+								<div class="text-[9px] text-red-400/80 italic mt-1 font-medium">{mission.card.passiveEffect.description}</div>
+							{/if}
+							<div class="mt-2 border-t border-blue-900/30 pt-1">
+								<div class="text-[8px] font-bold tracking-wider text-blue-500/70 uppercase mb-0.5">Entregar en:</div>
+								<ul class="text-[9px] text-stone-400 space-y-0.5">
+									{#each mission.card.deliveryTargets as target (target.roomType)}
+										<li class="flex items-start gap-1"><span class="text-blue-500/50">▶</span> <span>{target.rewardDescription}</span></li>
+									{/each}
+								</ul>
+							</div>
 						</div>
 					</div>
 				{/each}

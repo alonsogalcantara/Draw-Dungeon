@@ -124,8 +124,11 @@
 }
 
 @keyframes dice-spin {
-  0%   { transform: perspective(600px) rotateX(0deg) rotateY(0deg); }
-  100% { transform: perspective(600px) rotateX(720deg) rotateY(360deg); }
+  0%   { transform: perspective(600px) translateY(0) rotateX(0deg) rotateY(0deg) scale(1); }
+  30%  { transform: perspective(600px) translateY(-30px) rotateX(360deg) rotateY(180deg) scale(1.2); }
+  60%  { transform: perspective(600px) translateY(5px) rotateX(720deg) rotateY(360deg) scale(0.9); }
+  80%  { transform: perspective(600px) translateY(-5px) rotateX(720deg) rotateY(360deg) scale(1.05); }
+  100% { transform: perspective(600px) translateY(0) rotateX(720deg) rotateY(360deg) scale(1); }
 }
 
 @keyframes slide-up {
