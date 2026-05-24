@@ -43,12 +43,12 @@
 	</div>
 
 	<!-- Left panel: Character HUD -->
-	<aside class="fixed inset-y-0 left-0 z-50 w-[280px] transform bg-stone-950 border-r border-stone-800/40 p-3 transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 lg:z-auto lg:h-screen lg:w-auto overflow-y-auto shadow-2xl lg:shadow-none"
+	<aside class="fixed top-0 bottom-0 left-0 z-50 w-[280px] transform bg-stone-950 border-r border-stone-800/40 p-3 transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 lg:z-auto lg:h-screen lg:w-auto overflow-y-auto shadow-2xl lg:shadow-none flex flex-col"
 		class:-translate-x-full={!isLeftSidebarOpen}
 		class:translate-x-0={isLeftSidebarOpen}
 	>
-		<button class="lg:hidden absolute top-2 right-2 text-stone-400 hover:text-white" onclick={() => isLeftSidebarOpen = false}>✕</button>
-		<div class="mt-4 lg:mt-0 h-full">
+		<button class="lg:hidden absolute top-2 right-2 text-stone-400 hover:text-white z-10" onclick={() => isLeftSidebarOpen = false}>✕</button>
+		<div class="mt-6 lg:mt-0 flex-1">
 			<CharacterHUD />
 		</div>
 	</aside>

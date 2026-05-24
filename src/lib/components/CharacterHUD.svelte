@@ -31,7 +31,7 @@
 	}
 </script>
 
-<div class="panel panel-hud flex flex-col gap-3 relative overflow-hidden backdrop-blur-md bg-stone-900/60 border border-stone-700/50 shadow-2xl rounded-2xl p-4">
+<div class="panel panel-hud flex flex-col gap-3 relative overflow-hidden backdrop-blur-md bg-stone-900/60 border border-stone-700/50 shadow-2xl rounded-2xl p-4 min-h-full">
 	<!-- Glassmorphism subtle glow -->
 	<div class="absolute -top-24 -right-24 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -278,6 +278,9 @@
 			</div>
 		</div>
 	{/if}
+
+	<!-- Spacer to absorb extra height when stretched on mobile -->
+	<div class="flex-1"></div>
 </div>
 
 <style>
