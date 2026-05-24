@@ -350,7 +350,7 @@
 						<button
 							class="btn btn-primary px-6 py-2"
 							onclick={() => handleItemRoom('take')}
-							disabled={itemCard.cost ? (itemCard.cost.stat === 'gold' ? game.gold < itemCard.cost.value : itemCard.cost.stat === 'xp' ? game.xp < itemCard.cost.value : game.hp <= itemCard.cost.value) : false}
+							disabled={itemCard.cost ? (itemCard.cost.stat === 'gold' ? game.gold < itemCard.cost.value : itemCard.cost.stat === 'xp' ? game.xp < itemCard.cost.value : itemCard.cost.stat === 'food' ? game.food < itemCard.cost.value : game.hp <= itemCard.cost.value) : false}
 						>
 							{itemCard.cost ? 'Pay & Take' : 'Take Item'}
 						</button>

@@ -808,6 +808,7 @@ export function handleItemRoom(action: 'take' | 'ignore') {
       if (card.cost.stat === 'gold' && game.gold >= card.cost.value) game.loseGold(card.cost.value);
       else if (card.cost.stat === 'hp' && game.hp > card.cost.value) game.loseHp(card.cost.value);
       else if (card.cost.stat === 'xp' && game.xp >= card.cost.value) game.loseXp(card.cost.value);
+      else if (card.cost.stat === 'food' && game.food >= card.cost.value) game.loseFood(card.cost.value);
       else return; // Cannot afford
     }
     game.item = card;
