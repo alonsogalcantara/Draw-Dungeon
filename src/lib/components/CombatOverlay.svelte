@@ -2,7 +2,6 @@
 	import { game } from '$lib/game/gameState.svelte';
 	import {
 		rollCombatDice,
-		rerollCritical,
 		performFeat,
 		applyPlayerDamage,
 		executeMonsterAttack,
@@ -125,7 +124,7 @@
 						<!-- Monster Attack Result Display -->
 						<div class="flex flex-col items-center gap-3">
 							<div class="flex flex-wrap items-center justify-center gap-2">
-								{#each combat.monsterRolls || [] as roll}
+								{#each combat.monsterRolls || [] as roll, i (i)}
 									<div class="flex h-12 w-12 flex-col items-center justify-center rounded-lg border-2 border-red-900/50 bg-red-950/80 shadow-md">
 										<span class="text-xl font-bold text-red-300">{roll.die}</span>
 									</div>
@@ -225,7 +224,7 @@
 					{/if}
 
 					{#if game.selectedCharacter && !game.skillUsed}
-						{#each game.selectedCharacter.skills.filter(s => s.type === 'combat') as skill}
+						{#each game.selectedCharacter.skills.filter(s => s.type === 'combat') as skill (skill.name)}
 							<button class="btn btn-secondary px-4 py-2 text-sm border-emerald-700/50 text-emerald-100" onclick={() => useCharacterSkill(skill.name)}>
 								✨ {skill.name}
 							</button>
@@ -266,7 +265,7 @@
 			<!-- Combat log summary -->
 			{#if combat.log && combat.log.length > 0}
 				<div class="mt-4 max-h-24 overflow-y-auto rounded-lg bg-stone-900/80 p-3">
-					{#each combat.log.slice(-6) as entry}
+					{#each combat.log.slice(-6) as entry, i (i)}
 						<p class="text-xs text-stone-400">{entry}</p>
 					{/each}
 				</div>

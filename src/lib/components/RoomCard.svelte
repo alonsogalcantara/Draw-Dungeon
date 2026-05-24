@@ -23,29 +23,7 @@
 	const baseWidth = 320;
 	const scale = $derived(cardWidth > 0 ? cardWidth / baseWidth : 0.5);
 
-	const roomIcons: Record<string, string> = {
-		monster: '⚔️',
-		boss: '💀',
-		trap: '⚡',
-		treasure: '💎',
-		bonfire: '🔥',
-		merchant: '🏪',
-		shrine: '⛩️',
-		tomb: '⚰️',
-		item: '🔧'
-	};
 
-	const roomTypeClass: Record<string, string> = {
-		monster: 'card-monster',
-		boss: 'card-boss',
-		trap: 'card-trap',
-		treasure: 'card-treasure',
-		bonfire: 'card-bonfire',
-		merchant: 'card-merchant',
-		shrine: 'card-shrine',
-		tomb: 'card-tomb',
-		item: 'card-item'
-	};
 
 	function handleClick() {
 		if (game.phase === 'scouting' && isAvailable && !isCurrentPosition) {
@@ -64,8 +42,6 @@
 	}
 
 	const isFlipped = $derived(flipping || instance?.revealed);
-	const icon = $derived(instance?.revealed ? (roomIcons[instance.card.type] ?? '❓') : '');
-	const typeClass = $derived(instance?.revealed ? (roomTypeClass[instance.card.type] ?? '') : '');
 </script>
 
 {#if instance}

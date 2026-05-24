@@ -314,8 +314,8 @@
 					<h4 class="mb-3 text-sm font-semibold uppercase tracking-wider text-amber-500/70">Select Skills</h4>
 					<div class="space-y-4">
 						<div class="rounded-lg bg-stone-800/50 p-4 border border-stone-700/50">
-							<label class="mb-2 block text-xs font-bold text-stone-400 uppercase">Active Skill</label>
-							<select class="w-full rounded bg-stone-900 border border-amber-900/50 p-2 text-sm text-stone-200 outline-none focus:border-amber-500" bind:value={customActiveSkill}>
+							<label for="customActiveSkill" class="mb-2 block text-xs font-bold text-stone-400 uppercase">Active Skill</label>
+							<select id="customActiveSkill" class="w-full rounded bg-stone-900 border border-amber-900/50 p-2 text-sm text-stone-200 outline-none focus:border-amber-500" bind:value={customActiveSkill}>
 								<option value={null} disabled>Select an active skill...</option>
 								{#each activeSkillsList as skill}
 									<option value={skill.name}>{skill.icon} {skill.name}</option>
@@ -329,8 +329,8 @@
 						</div>
 
 						<div class="rounded-lg bg-stone-800/50 p-4 border border-stone-700/50">
-							<label class="mb-2 block text-xs font-bold text-stone-400 uppercase">Passive Skill</label>
-							<select class="w-full rounded bg-stone-900 border border-amber-900/50 p-2 text-sm text-stone-200 outline-none focus:border-amber-500" bind:value={customPassiveSkill}>
+							<label for="customPassiveSkill" class="mb-2 block text-xs font-bold text-stone-400 uppercase">Passive Skill</label>
+							<select id="customPassiveSkill" class="w-full rounded bg-stone-900 border border-amber-900/50 p-2 text-sm text-stone-200 outline-none focus:border-amber-500" bind:value={customPassiveSkill}>
 								<option value={null} disabled>Select a passive skill...</option>
 								{#each passiveSkillsList as skill}
 									<option value={skill.name}>{skill.icon} {skill.name}</option>

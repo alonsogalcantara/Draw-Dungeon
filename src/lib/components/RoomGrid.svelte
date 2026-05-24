@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { game } from '$lib/game/gameState.svelte';
-	import { resolveRoom, revealAdjacentRooms, delve } from '$lib/game/gameActions';
+	import { delve } from '$lib/game/gameActions';
 	import RoomCard from './RoomCard.svelte';
 
 	// Determine which rooms are available to move to (right and below current position)
