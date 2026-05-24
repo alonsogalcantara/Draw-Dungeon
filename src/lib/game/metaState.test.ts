@@ -46,7 +46,7 @@ describe('metaState Profile and Progress System', () => {
       statUpgrades: { hp: 0, armor: 0, gold: 0, food: 0 }
     });
     addVictory('char1');
-    spendVictoryPoint('char1', 'hp');
+    spendVictoryPoint('char1', 'hp', 5);
 
     const p1Stats = loadMetaProgress('char1');
     expect(p1Stats?.victories).toBe(1); // 1 + 1 (addVictory) - 1 (spendVictoryPoint)

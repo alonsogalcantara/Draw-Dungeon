@@ -16,11 +16,12 @@
 			<div class="space-y-6">
 				<!-- Music Volume -->
 				<div>
-					<label class="mb-2 flex justify-between text-sm font-semibold text-stone-300">
+					<label for="music-volume" class="mb-2 flex justify-between text-sm font-semibold text-stone-300">
 						<span>🎵 {t('settings.music')}</span>
 						<span>{Math.round(game.settings.musicVolume * 100)}%</span>
 					</label>
 					<input
+						id="music-volume"
 						type="range"
 						min="0"
 						max="1"
@@ -33,11 +34,12 @@
 
 				<!-- FX Volume -->
 				<div>
-					<label class="mb-2 flex justify-between text-sm font-semibold text-stone-300">
+					<label for="fx-volume" class="mb-2 flex justify-between text-sm font-semibold text-stone-300">
 						<span>🔊 {t('settings.fx')}</span>
 						<span>{Math.round(game.settings.fxVolume * 100)}%</span>
 					</label>
 					<input
+						id="fx-volume"
 						type="range"
 						min="0"
 						max="1"
@@ -50,7 +52,7 @@
 
 				<!-- Language -->
 				<div>
-					<label class="mb-2 block text-sm font-semibold text-stone-300">🌐 {t('settings.language')}</label>
+					<div class="mb-2 block text-sm font-semibold text-stone-300">🌐 {t('settings.language')}</div>
 					<div class="flex gap-2">
 						<button
 							class="flex-1 rounded border py-2 text-sm transition-colors {game.settings.language === 'es' ? 'border-amber-500 bg-amber-900/30 text-amber-300' : 'border-stone-700 bg-stone-800 text-stone-400 hover:bg-stone-700'}"
