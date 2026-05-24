@@ -171,12 +171,19 @@ export function addVictory(characterId: string, amount: number = 1) {
  */
 export function spendVictoryPoint(
 	characterId: string,
-	stat: 'hp' | 'armor' | 'gold' | 'food',
+	stat: 'level' | 'hp' | 'armor' | 'gold' | 'food',
 	currentBaseStat: number
 ) {
 	if (typeof window === 'undefined') return false;
 	const existing = loadMetaProgress(characterId);
 	if (!existing || existing.victories < 1) return false;
+
+	if (stat === 'level') {
+		existing.victories -= 1;
+		existing.level += 1;
+		saveMetaProgress(characterId, existing);
+		return true;
+	}
 
 	if (stat !== 'gold') {
 		if (currentBaseStat + existing.statUpgrades[stat] >= 99) {

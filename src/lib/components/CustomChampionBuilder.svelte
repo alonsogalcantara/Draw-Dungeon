@@ -96,7 +96,11 @@
 	const activeSkillsList = ALL_SKILLS.filter((s) => s.type !== 'passive');
 	const passiveSkillsList = ALL_SKILLS.filter((s) => s.type === 'passive');
 
-	function handleSpendVP(stat: 'hp' | 'armor' | 'gold' | 'food', baseStat: number, event: Event) {
+	function handleSpendVP(
+		stat: 'level' | 'hp' | 'armor' | 'gold' | 'food',
+		baseStat: number,
+		event: Event
+	) {
 		event.stopPropagation();
 		if (spendVictoryPoint('custom_champion', stat, baseStat)) {
 			metaProgress = loadAllMetaProgress(CHARACTERS.map((c) => c.id).concat('custom_champion'));
@@ -428,6 +432,10 @@
 					⭐ {metaProgress['custom_champion'].victories} Puntos de Victoria Disponibles
 				</div>
 				<div class="flex flex-wrap justify-end gap-2">
+					<button
+						class="rounded border border-emerald-500/30 bg-emerald-900/40 px-2 py-1 text-xs text-emerald-200 transition-colors hover:bg-emerald-800/60"
+						onclick={(e) => handleSpendVP('level', metaProgress['custom_champion']?.level ?? 1, e)}>+1 Lv</button
+					>
 					<button
 						class="rounded border border-red-500/30 bg-red-900/40 px-2 py-1 text-xs text-red-200 transition-colors hover:bg-red-800/60"
 						onclick={(e) =>

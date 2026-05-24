@@ -23,7 +23,7 @@
 
 	function handleSpendVP(
 		charId: string,
-		stat: 'hp' | 'armor' | 'gold' | 'food',
+		stat: 'level' | 'hp' | 'armor' | 'gold' | 'food',
 		baseStat: number,
 		event: Event
 	) {
@@ -123,7 +123,12 @@
 					<div class="mb-2 text-xs font-bold text-amber-300">
 						⭐ {metaProgress[char.id].victories} VP available!
 					</div>
-					<div class="grid grid-cols-2 gap-1">
+					<div class="grid grid-cols-2 sm:grid-cols-3 gap-1">
+						<button
+							class="rounded border border-emerald-500/30 bg-emerald-900/40 px-1 py-1 text-[10px] text-emerald-200 transition-colors hover:bg-emerald-800/60"
+							onclick={(e) => handleSpendVP(char.id, 'level', metaProgress[char.id]?.level ?? 1, e)}
+							>+1 Level</button
+						>
 						<button
 							class="rounded border border-red-500/30 bg-red-900/40 px-1 py-1 text-[10px] text-red-200 transition-colors hover:bg-red-800/60"
 							onclick={(e) =>
