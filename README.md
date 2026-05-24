@@ -1,42 +1,80 @@
-# sv
+# Mini Rogue (Mini Dungeon)
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+¡Bienvenido a **Mini Rogue**! Un juego de exploración de mazmorras (dungeon crawler) minimalista, rápido y táctico, diseñado como una aplicación web interactiva.
 
-## Creating a project
+## 📖 Resumen del Juego
 
-If you're seeing this, you've probably already done this step. Congrats!
+En este juego tomas el papel de un valiente aventurero que desciende a las profundidades de la Mazmorra de Og o asciende por La Torre. La aventura se desarrolla en un tablero generado por cartas. Deberás administrar tus recursos vitales:
+- **Salud (HP)**
+- **Comida (Food)**
+- **Oro (Gold)**
+- **Armadura (Armor)**
 
-```sh
-# create a new project
-npx sv create my-app
+A través de las diferentes áreas, revelarás cartas que representan Monstruos, Trampas, Comerciantes, Santuarios, Tesoros y Jefes. Las batallas y decisiones se basan en tiradas de dados y el uso estratégico de habilidades pasivas y activas.
+
+## 💻 Arquitectura y Tecnologías
+
+El proyecto está construido utilizando tecnologías modernas para garantizar un rendimiento óptimo y una reactividad perfecta:
+- **[Svelte 5](https://svelte-5-preview.vercel.app/)**: Utiliza los nuevos *Runes* (`$state`, `$derived`, `$effect`) para manejar el estado global y reactivo del juego sin tiendas (`stores`) complejas.
+- **[SvelteKit](https://kit.svelte.dev/)**: Framework para estructurar la aplicación y gestionar las rutas y el adaptador estático (para exportar como `.exe` con Tauri en el futuro).
+- **[TailwindCSS](https://tailwindcss.com/)**: Motor de estilos para una UI moderna, responsiva y temática oscura/dorada.
+- **[TypeScript](https://www.typescriptlang.org/)**: Tipado estático estricto para las entidades del juego, cartas, eventos y fases de combate.
+
+## 📁 Archivos Importantes
+
+Si deseas modificar la lógica, añadir más contenido o explorar cómo está programado, estos son los archivos clave:
+
+- **`src/lib/data/roomCards.ts`**: **El corazón del contenido**. Aquí se definen todos los objetos de tipo `RoomCard` que conforman los pisos de la mazmorra. Si quieres agregar un nuevo monstruo, trampa o jefe, este es el lugar.
+- **`src/lib/data/characters.ts`**: Define los campeones elegibles (Mago, Cruzado, Mercenario, etc.), sus estadísticas base y sus habilidades.
+- **`src/lib/game/gameState.svelte.ts`**: El controlador maestro del estado. Usa clases con `$state` para guardar el progreso, la vida del jugador, el inventario, el registro de turnos y la fase actual del juego (`title`, `playing`, `combat`, etc.).
+- **`src/lib/game/gameActions.ts`**: Contiene la lógica del motor de juego: resolución de combates, lanzar dados, movimiento en la matriz de la sala, aplicación de daño, y lógica de resolución de cartas individuales.
+- **`src/lib/components/KeyboardController.svelte`**: Un componente invisible global que mapea todas las interacciones de teclado (WASD, Flechas, Enter, Espacio) permitiendo navegar los menús y moverse por la mazmorra sin ratón.
+
+## 🚀 Comandos del Proyecto
+
+El proyecto utiliza **[Bun](https://bun.sh/)** como gestor de paquetes y entorno de ejecución, haciéndolo extremadamente rápido.
+
+Para empezar a desarrollar o jugar localmente:
+
+```bash
+# 1. Instalar dependencias (solo la primera vez)
+bun install
+
+# 2. Iniciar el servidor de desarrollo en local
+bun run dev
 ```
+*(El servidor se abrirá típicamente en http://localhost:5173, y si haces cambios en el código, se recargarán en tiempo real gracias a Vite HMR)*
 
-To recreate this project with the same configuration:
+### Otros comandos útiles:
 
-```sh
-# recreate this project
-bun x sv@0.15.3 create --template minimal --types ts --add prettier eslint tailwindcss="plugins:typography" sveltekit-adapter="adapter:static" --install bun mini-rogue
-```
+- **Construir para producción**:
+  ```bash
+  bun run build
+  ```
+  *Genera los archivos estáticos optimizados en la carpeta `build/` listos para ser empaquetados por Tauri o subidos a un hosting web.*
 
-## Developing
+- **Revisar tipos y errores (Lint/Check)**:
+  ```bash
+  bun run check
+  ```
+  *Ejecuta `svelte-check` y TypeScript para asegurar que no hay errores lógicos o de tipado en el código.*
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## 📦 Compilación de Escritorio (Tauri)
 
-```sh
-npm run dev
+Dado que este proyecto está preparado para convertirse en un ejecutable de escritorio (`.exe`), utilizamos **Tauri**. 
+Para poder compilar la versión de escritorio, debes asegurarte de tener instaladas las dependencias del sistema:
+- **[Rust y Cargo](https://www.rust-lang.org/tools/install)**
+- Las herramientas de compilación de C++ (En Windows: Visual Studio Build Tools).
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+Una vez que tengas Rust instalado, puedes usar los siguientes comandos:
 
-## Building
+- **Iniciar el juego como aplicación de escritorio en modo desarrollo**:
+  ```bash
+  bunx tauri dev
+  ```
 
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+- **Compilar el archivo final `.exe` para producción**:
+  ```bash
+  bunx tauri build
+  ```
+  *Esto primero ejecutará el build estático de Svelte y luego usará Rust para empaquetarlo. El ejecutable resultante se guardará en la carpeta `src-tauri/target/release/bundle/`.*
