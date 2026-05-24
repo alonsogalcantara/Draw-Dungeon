@@ -1,4 +1,4 @@
-import { type GamePhase, type CampaignType, type CharacterDef, type DifficultyMode, type PotionType, type ItemCard, type RoomCardInstance, type CombatState, type SkillCheckState, type EventState, type LogEntry } from './types';
+import { type GamePhase, type CampaignType, type CharacterDef, type DifficultyMode, type PotionType, type ItemCard, type RoomCardInstance, type CombatState, type SkillCheckState, type EventState, type LogEntry, type ActiveMission } from './types';
 import { saveMetaProgress, loadMetaProgress } from './metaState';
 import { MAX_HP, MAX_ARMOR, MAX_GOLD, MAX_FOOD, XP_REQUIREMENTS_PER_LEVEL, POLYHEDRAL_DICE } from '../data/constants';
 import type { RunSummary } from './gameStats';
@@ -23,6 +23,7 @@ class GameState {
   potions = $state<(PotionType | null)[]>([null, null]);
   item = $state<ItemCard | null>(null);
   itemUsesLeft = $state(0);
+  missions = $state<ActiveMission[]>([]);
   skillUsed = $state(false);
   freeFeatActive = $state(false);
   cursed = $state(false);
@@ -89,6 +90,7 @@ class GameState {
     this.potions = [null, null];
     this.item = null;
     this.itemUsesLeft = 0;
+    this.missions = [];
     this.skillUsed = false;
     this.freeFeatActive = false;
     this.cursed = false;

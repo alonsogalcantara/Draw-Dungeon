@@ -35,7 +35,8 @@ export type RoomType =
   | 'merchant'
   | 'shrine'
   | 'tomb'
-  | 'item_room';
+  | 'item_room'
+  | 'mission';
 
 /** Skill usage timing */
 export type SkillType = 'exploration' | 'combat' | 'preparation' | 'passive';
@@ -297,6 +298,34 @@ export interface ItemCard {
   skillType?: SkillType;
 }
 
+/** Mission card that is picked up and delivered to a specific room */
+export interface MissionCard {
+  id: string;
+  name: string;
+  type: 'mission';
+  description: string;
+  image?: string;
+  campaign?: string;
+  /** Targets where this mission can be handed in, and the reward */
+  deliveryTargets: {
+    roomType: RoomType;
+    reward: Reward;
+    rewardDescription: string;
+  }[];
+  /** Optional passive effect applied while the mission is held */
+  passiveEffect?: {
+    type: 'loseFoodOnDelve';
+    amount: number;
+    description: string;
+  };
+}
+
+/** Active mission held by the player */
+export interface ActiveMission {
+  card: MissionCard;
+  turnAcquired: number;
+}
+
 // --- Rewards & Penalties ---
 
 /** Reward gained from successful encounters */
@@ -328,7 +357,8 @@ export type RoomCard =
   | MerchantCard
   | ShrineCard
   | TombCard
-  | ItemCard;
+  | ItemCard
+  | MissionCard;
 
 // --- Room Grid Instance ---
 
@@ -536,4 +566,8 @@ export function isItemCard(card: RoomCard): card is ItemCard {
 
 export function isCombatCard(card: RoomCard): card is MonsterCard | BossCard {
   return card.type === 'monster' || card.type === 'boss';
+}
+
+export function isMissionCard(card: RoomCard): card is MissionCard {
+  return card.type === 'mission';
 }

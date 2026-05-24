@@ -7,6 +7,8 @@
 		handleTreasure,
 		handleTomb,
 		handleItemRoom,
+		handleMission,
+		handInMission,
 		closeGenericEvent,
 		performSkillCheck,
 		usePotion
@@ -18,6 +20,9 @@
 
 	const event = $derived(game.event);
 	const eventType = $derived(event?.type ?? '');
+	const availableMissions = $derived(
+		game.missions.filter(m => m.card.deliveryTargets.some(t => t.roomType === eventType))
+	);
 
 	function closeEvent() {
 		if (event?.resolve) {
@@ -87,6 +92,22 @@
 
 			<!-- Interaction Panel -->
 			<div class="flex-1 overflow-y-auto rounded-2xl border border-amber-900/30 bg-stone-950/95 p-6 shadow-2xl">
+				
+				{#if availableMissions.length > 0}
+					<div class="mb-4 rounded-lg bg-emerald-900/20 border border-emerald-500/30 p-3">
+						<h3 class="text-sm font-bold text-emerald-400 mb-2">Misiones disponibles para entregar:</h3>
+						<div class="grid gap-2">
+							{#each availableMissions as mission}
+								{@const target = mission.card.deliveryTargets.find(t => t.roomType === eventType)}
+								<button class="btn btn-action w-full text-left py-2 px-3 text-sm flex justify-between items-center" onclick={() => handInMission(mission.card.id)}>
+									<span>📜 {mission.card.name}</span>
+									<span class="text-xs text-stone-300 ml-2">{target?.reward.label}</span>
+								</button>
+							{/each}
+						</div>
+					</div>
+				{/if}
+
 				<!-- Bonfire -->
 				{#if eventType === 'bonfire'}
 					<div class="text-center h-full flex flex-col justify-center">
@@ -335,6 +356,42 @@
 						</button>
 						<button class="btn btn-secondary px-6 py-2" onclick={() => handleItemRoom('ignore')}>
 							Ignore
+						</button>
+					</div>
+				</div>
+
+			<!-- Mission -->
+			{:else if eventType === 'mission'}
+				{@const missionCard = event.card as Extract<RoomCard, { type: 'mission' }>}
+				<div class="text-center">
+					<span class="text-5xl">📜</span>
+					<h2 class="title-text mt-3 text-2xl">Misión Encontrada</h2>
+					<div class="card-item mx-auto mt-4 max-w-xs rounded-xl border border-blue-700/40 bg-stone-800/60 p-4">
+						<h3 class="text-lg font-bold text-blue-200">{event.card.name}</h3>
+						{#if event.card.description}
+							<p class="mt-2 text-sm text-stone-400">{event.card.description}</p>
+						{/if}
+						<div class="mt-3 text-left">
+							<p class="text-xs font-bold text-stone-500">Recompensas por entrega:</p>
+							<ul class="text-xs text-stone-400 mt-1 list-disc pl-4 space-y-1">
+								{#each missionCard.deliveryTargets as target}
+									<li>{target.rewardDescription}</li>
+								{/each}
+							</ul>
+						</div>
+						{#if missionCard.passiveEffect}
+							<p class="mt-3 text-xs text-red-400/80 italic text-left border-t border-stone-700 pt-2">Efecto pasivo: {missionCard.passiveEffect.description}</p>
+						{/if}
+					</div>
+					<div class="mt-4 flex items-center justify-center gap-3">
+						<button
+							class="btn btn-primary px-6 py-2"
+							onclick={() => handleMission('take')}
+						>
+							Aceptar Misión
+						</button>
+						<button class="btn btn-secondary px-6 py-2" onclick={() => handleMission('ignore')}>
+							Ignorar
 						</button>
 					</div>
 				</div>

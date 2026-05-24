@@ -1,5 +1,5 @@
 import { game } from './gameState.svelte';
-import type { CharacterDef, DifficultyMode, PotionType, RoomCardInstance, RoomType, MonsterCard, BossCard, RoomCard } from './types';
+import type { CharacterDef, DifficultyMode, PotionType, RoomCardInstance, RoomType, MonsterCard, BossCard, RoomCard, MissionCard } from './types';
 import { loadMetaProgress, addVictory } from './metaState';
 import { generateRunSummary } from './gameStats';
 import { ROOM_CARDS, BOSS_CARDS } from '../data/roomCards';
@@ -826,6 +826,46 @@ export function handleItemRoom(action: 'take' | 'ignore') {
   closeGenericEvent();
 }
 
+export function handleMission(action: 'take' | 'ignore') {
+  if (!game.event || game.event.card.type !== 'mission') return;
+  const card = game.event.card as MissionCard;
+  
+  if (action === 'take') {
+    game.missions.push({ card, turnAcquired: game.currentArea });
+    game.addLog(`Mission accepted: ${card.name}`, 'info');
+  } else {
+    game.addLog(`Mission ignored: ${card.name}`, 'info');
+  }
+  
+  closeGenericEvent();
+}
+
+export function handInMission(missionId: string) {
+  if (!game.event) return;
+  const roomType = game.event.card.type;
+  const missionIndex = game.missions.findIndex(m => m.card.id === missionId);
+  if (missionIndex === -1) return;
+  
+  const mission = game.missions[missionIndex];
+  const target = mission.card.deliveryTargets.find(t => t.roomType === roomType);
+  if (!target) return;
+  
+  target.reward.effects.forEach(e => {
+    if (e.stat === 'hp') e.value > 0 ? game.gainHp(e.value) : game.loseHp(Math.abs(e.value));
+    if (e.stat === 'gold') game.gainGold(e.value);
+    if (e.stat === 'xp') game.gainXp(e.value);
+    if (e.stat === 'armor') game.gainArmor(e.value);
+    if (e.stat === 'food') e.value > 0 ? game.gainFood(e.value) : game.loseFood(Math.abs(e.value));
+  });
+  if (target.reward.potion) addPotion(target.reward.potion);
+  
+  game.addLog(`Mission completed: ${mission.card.name}! ${target.reward.label}`, 'loot');
+  
+  // Remove mission
+  game.missions.splice(missionIndex, 1);
+  game.missions = [...game.missions]; // trigger reactivity
+}
+
 export function closeGenericEvent() {
   if (!game.event) return;
   game.roomGrid[game.playerRow][game.playerCol]!.resolved = true;
@@ -918,6 +958,14 @@ export function delve() {
   if (game.selectedCharacter && game.selectedCharacter.skills.find(s => s.name === 'Blessed')) {
     game.cursed = false; game.poisoned = false; game.blinded = false;
   }
+  
+  // Passive mission effects
+  game.missions.forEach(mission => {
+    if (mission.card.passiveEffect?.type === 'loseFoodOnDelve') {
+      game.loseFood(mission.card.passiveEffect.amount);
+      game.addLog(`Lost food due to ${mission.card.name}`, 'damage');
+    }
+  });
   
   setupArea();
 }

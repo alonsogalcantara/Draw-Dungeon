@@ -223,6 +223,28 @@
 		</div>
 	</div>
 
+	<!-- Active Missions -->
+	{#if game.missions && game.missions.length > 0}
+		<div class="mt-2 relative z-10 border-t border-stone-700/30 pt-3">
+			<h3 class="mb-2 text-[10px] font-bold tracking-wider text-blue-500/70 uppercase">
+				Misiones Activas
+			</h3>
+			<div class="flex flex-col gap-2">
+				{#each game.missions as mission}
+					<div class="w-full flex items-center gap-3 rounded-xl border border-blue-700/30 bg-gradient-to-r from-blue-950/20 to-stone-900/60 p-2 text-left shadow-sm">
+						<div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-stone-950 border border-blue-900/50 text-lg shadow-inner">
+							📜
+						</div>
+						<div class="min-w-0 flex-1 z-10">
+							<div class="truncate text-xs font-bold text-blue-200">{mission.card.name}</div>
+							<div class="text-[9px] text-stone-400 line-clamp-1" title={mission.card.description}>{mission.card.description}</div>
+						</div>
+					</div>
+				{/each}
+			</div>
+		</div>
+	{/if}
+
 	<!-- Active effects -->
 	{#if game.cursed || game.poisoned || game.blinded}
 		<div class="mt-1 relative z-10 border-t border-stone-700/30 pt-3">
