@@ -78,8 +78,10 @@ class GameState {
     this.phase = 'title';
     this.layoutSize = 3;
     this.selectedCharacter = null;
+    this.runSummary = null;
     this.hp = 0;
     this.maxHp = 0;
+    this.level = 1;
     this.xp = 0;
     this.armor = 0;
     this.gold = 0;
