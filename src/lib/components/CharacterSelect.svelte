@@ -98,7 +98,7 @@
 	<!-- Title -->
 	<div class="mb-2 flex w-full max-w-6xl flex-col items-center justify-center text-center">
 		<h1 class="title-text text-4xl tracking-wider">
-			{#if step === 1}Choose Your Champion
+			{#if step === 1}Campeón
 			{:else if step === 2}Choose Difficulty
 			{:else}Choose Dungeon Layout{/if}
 		</h1>

@@ -6,6 +6,8 @@
 	import { CHARACTERS } from '$lib/data/characters';
 	import type { MetaProgress } from '$lib/game/metaState';
 
+	let isSaved = $state(false);
+
 	let { 
 		metaProgress = $bindable(),
 		customHp = $bindable(),
@@ -48,10 +50,10 @@
 	const availablePoints = $derived(TOTAL_BUDGET - spentPoints);
 
 	$effect(() => {
-		isCustomValid = availablePoints === 0 && customActiveSkill !== null && customPassiveSkill !== null && customRole !== null;
+		isCustomValid = isSaved || (availablePoints === 0 && customActiveSkill !== null && customPassiveSkill !== null && customRole !== null);
 		
 		// Auto-save logic if valid
-		if (isCustomValid && customRole) {
+		if (!isSaved && isCustomValid && customRole) {
 			saveCustomChampionDef({
 				role: customRole,
 				hp: customHp,
@@ -76,6 +78,7 @@
 			customMana = savedDef.mana || 0;
 			customActiveSkill = savedDef.activeSkill;
 			customPassiveSkill = savedDef.passiveSkill;
+			isSaved = true;
 		}
 	});
 
@@ -101,6 +104,7 @@
 				activeSkill: customActiveSkill,
 				passiveSkill: customPassiveSkill
 			});
+			isSaved = true;
 			alert("Configuración de Campeón guardada.");
 		}
 	}
@@ -110,12 +114,11 @@
 	<div class="mb-4 flex items-center justify-between border-b border-amber-900/30 pb-4">
 		<div class="flex items-center gap-3">
 			<h3 class="text-xl font-bold text-amber-200">
-				Forge Your Champion
+				Campeón
 				{#if metaProgress['custom_champion']}
 					<span class="ml-2 text-sm text-emerald-400 font-bold">(Lv. {metaProgress['custom_champion'].level})</span>
 				{/if}
 			</h3>
-		</div>
 		</div>
 		<div class="rounded-full bg-stone-950 px-4 py-2 font-mono text-lg font-bold border border-amber-900/50">
 			Points Available: 
@@ -128,16 +131,23 @@
 	<!-- Role Selection -->
 	<div class="mb-6 rounded-lg bg-stone-800/50 p-4 border border-stone-700/50">
 		<h4 class="mb-3 text-sm font-semibold uppercase tracking-wider text-amber-500/70">1. Select Class Role</h4>
-		<div class="flex flex-wrap gap-3">
-			{#each ['Warrior', 'Mage', 'Rogue', 'Cleric'] as role}
-				<button 
-					class="btn px-4 py-2 text-sm {customRole === role ? 'bg-amber-600 text-white shadow-inner' : 'bg-stone-900 text-stone-400 border border-stone-700 hover:bg-stone-800'}"
-					onclick={() => customRole = role as any}
-				>
-					{role}
-				</button>
-			{/each}
-		</div>
+		{#if isSaved}
+			<div class="inline-block rounded px-4 py-2 text-sm bg-amber-600 text-white shadow-inner font-bold">
+				{customRole}
+			</div>
+			<p class="mt-2 text-xs text-stone-400">Class role is locked. To change it, you must clear your profile.</p>
+		{:else}
+			<div class="flex flex-wrap gap-3">
+				{#each ['Warrior', 'Mage', 'Rogue', 'Cleric'] as role}
+					<button 
+						class="btn px-4 py-2 text-sm {customRole === role ? 'bg-amber-600 text-white shadow-inner' : 'bg-stone-900 text-stone-400 border border-stone-700 hover:bg-stone-800'}"
+						onclick={() => customRole = role as any}
+					>
+						{role}
+					</button>
+				{/each}
+			</div>
+		{/if}
 	</div>
 
 	<div class="grid grid-cols-1 gap-8 md:grid-cols-2">
@@ -148,36 +158,36 @@
 				<div class="flex items-center justify-between rounded-lg bg-stone-800/50 p-3 border border-stone-700/50">
 					<div class="flex items-center gap-2"><span class="text-red-400">❤️</span> Health (Base 5)</div>
 					<div class="flex items-center gap-3">
-						<button class="btn btn-secondary h-8 w-8 !p-0" onclick={() => customHp--} disabled={customHp <= 5}>-</button>
+						{#if !isSaved}<button class="btn btn-secondary h-8 w-8 !p-0" onclick={() => customHp--} disabled={customHp <= 5}>-</button>{/if}
 						<span class="w-6 text-center font-bold">{customHp}</span>
-						<button class="btn btn-secondary h-8 w-8 !p-0" onclick={() => customHp++} disabled={customHp >= MAX_HP || availablePoints < COST_HP}>+</button>
+						{#if !isSaved}<button class="btn btn-secondary h-8 w-8 !p-0" onclick={() => customHp++} disabled={customHp >= MAX_HP || availablePoints < COST_HP}>+</button>{/if}
 					</div>
 				</div>
 				<div class="flex items-center justify-between rounded-lg bg-stone-800/50 p-3 border border-stone-700/50">
 					<div class="flex items-center gap-2"><span class="text-amber-400">🍖</span> Food (Base 0)</div>
 					<div class="flex items-center gap-3">
-						<button class="btn btn-secondary h-8 w-8 !p-0" onclick={() => customFood--} disabled={customFood <= 0}>-</button>
+						{#if !isSaved}<button class="btn btn-secondary h-8 w-8 !p-0" onclick={() => customFood--} disabled={customFood <= 0}>-</button>{/if}
 						<span class="w-6 text-center font-bold">{customFood}</span>
-						<button class="btn btn-secondary h-8 w-8 !p-0" onclick={() => customFood++} disabled={customFood >= MAX_FOOD || availablePoints < COST_FOOD}>+</button>
+						{#if !isSaved}<button class="btn btn-secondary h-8 w-8 !p-0" onclick={() => customFood++} disabled={customFood >= MAX_FOOD || availablePoints < COST_FOOD}>+</button>{/if}
 					</div>
 				</div>
 				<div class="flex items-center justify-between rounded-lg bg-stone-800/50 p-3 border border-stone-700/50">
 					<div class="flex items-center gap-2"><span class="text-yellow-400">💰</span> Gold (Base 0)</div>
 					<div class="flex items-center gap-3">
-						<button class="btn btn-secondary h-8 w-8 !p-0" onclick={() => customGold--} disabled={customGold <= 0}>-</button>
+						{#if !isSaved}<button class="btn btn-secondary h-8 w-8 !p-0" onclick={() => customGold--} disabled={customGold <= 0}>-</button>{/if}
 						<span class="w-6 text-center font-bold">{customGold}</span>
-						<button class="btn btn-secondary h-8 w-8 !p-0" onclick={() => customGold++} disabled={customGold >= MAX_GOLD || availablePoints < COST_GOLD}>+</button>
+						{#if !isSaved}<button class="btn btn-secondary h-8 w-8 !p-0" onclick={() => customGold++} disabled={customGold >= MAX_GOLD || availablePoints < COST_GOLD}>+</button>{/if}
 					</div>
 				</div>
 				<div class="flex items-center justify-between rounded-lg bg-stone-800/50 p-3 border border-stone-700/50">
 					<div class="flex items-center gap-2">
 						<span class="text-blue-400">🛡️</span> Armor (Base 0)
-						<span class="text-[10px] text-amber-500/50 ml-1">(Cost: 2)</span>
+						{#if !isSaved}<span class="text-[10px] text-amber-500/50 ml-1">(Cost: 2)</span>{/if}
 					</div>
 					<div class="flex items-center gap-3">
-						<button class="btn btn-secondary h-8 w-8 !p-0" onclick={() => customArmor--} disabled={customArmor <= 0}>-</button>
+						{#if !isSaved}<button class="btn btn-secondary h-8 w-8 !p-0" onclick={() => customArmor--} disabled={customArmor <= 0}>-</button>{/if}
 						<span class="w-6 text-center font-bold">{customArmor}</span>
-						<button class="btn btn-secondary h-8 w-8 !p-0" onclick={() => customArmor++} disabled={customArmor >= MAX_ARMOR || availablePoints < COST_ARMOR}>+</button>
+						{#if !isSaved}<button class="btn btn-secondary h-8 w-8 !p-0" onclick={() => customArmor++} disabled={customArmor >= MAX_ARMOR || availablePoints < COST_ARMOR}>+</button>{/if}
 					</div>
 				</div>
 				<div class="flex items-center justify-between rounded-lg bg-stone-800/50 p-3 border border-stone-700/50">
@@ -185,9 +195,9 @@
 						<span class="text-blue-300">🔵</span> Mana (Base 0)
 					</div>
 					<div class="flex items-center gap-3">
-						<button class="btn btn-secondary h-8 w-8 !p-0" onclick={() => customMana--} disabled={customMana <= 0}>-</button>
+						{#if !isSaved}<button class="btn btn-secondary h-8 w-8 !p-0" onclick={() => customMana--} disabled={customMana <= 0}>-</button>{/if}
 						<span class="w-6 text-center font-bold">{customMana}</span>
-						<button class="btn btn-secondary h-8 w-8 !p-0" onclick={() => customMana++} disabled={customMana >= 99 || availablePoints < COST_MANA}>+</button>
+						{#if !isSaved}<button class="btn btn-secondary h-8 w-8 !p-0" onclick={() => customMana++} disabled={customMana >= 99 || availablePoints < COST_MANA}>+</button>{/if}
 					</div>
 				</div>
 			</div>
@@ -199,12 +209,22 @@
 			<div class="space-y-4">
 				<div class="rounded-lg bg-stone-800/50 p-4 border border-stone-700/50">
 					<label for="customActiveSkill" class="mb-2 block text-xs font-bold text-stone-400 uppercase">Active Skill</label>
-					<select id="customActiveSkill" class="w-full rounded bg-stone-900 border border-amber-900/50 p-2 text-sm text-stone-200 outline-none focus:border-amber-500" bind:value={customActiveSkill}>
-						<option value={null} disabled>Select an active skill...</option>
-						{#each activeSkillsList as skill}
-							<option value={skill.name}>{skill.icon} {skill.name} ({skill.roleAffinity})</option>
-						{/each}
-					</select>
+					{#if isSaved}
+						<div class="w-full rounded bg-stone-900 border border-amber-900/50 p-2 text-sm text-stone-200">
+							{#if customActiveSkill}
+								{@const selectedActive = activeSkillsList.find(s => s.name === customActiveSkill)}
+								{selectedActive?.icon} {selectedActive?.name}
+							{/if}
+						</div>
+					{:else}
+						<select id="customActiveSkill" class="w-full rounded bg-stone-900 border border-amber-900/50 p-2 text-sm text-stone-200 outline-none focus:border-amber-500" bind:value={customActiveSkill}>
+							<option value={null} disabled>Select an active skill...</option>
+							{#each activeSkillsList as skill}
+								<option value={skill.name}>{skill.icon} {skill.name} ({skill.roleAffinity})</option>
+							{/each}
+						</select>
+					{/if}
+					
 					{#if customActiveSkill}
 						{@const selectedActive = activeSkillsList.find(s => s.name === customActiveSkill)}
 						<p class="mt-2 text-[11px] text-stone-500">
@@ -229,12 +249,22 @@
 
 				<div class="rounded-lg bg-stone-800/50 p-4 border border-stone-700/50">
 					<label for="customPassiveSkill" class="mb-2 block text-xs font-bold text-stone-400 uppercase">Passive Skill</label>
-					<select id="customPassiveSkill" class="w-full rounded bg-stone-900 border border-amber-900/50 p-2 text-sm text-stone-200 outline-none focus:border-amber-500" bind:value={customPassiveSkill}>
-						<option value={null} disabled>Select a passive skill...</option>
-						{#each passiveSkillsList as skill}
-							<option value={skill.name}>{skill.icon} {skill.name} ({skill.roleAffinity})</option>
-						{/each}
-					</select>
+					{#if isSaved}
+						<div class="w-full rounded bg-stone-900 border border-amber-900/50 p-2 text-sm text-stone-200">
+							{#if customPassiveSkill}
+								{@const selectedPassive = passiveSkillsList.find(s => s.name === customPassiveSkill)}
+								{selectedPassive?.icon} {selectedPassive?.name}
+							{/if}
+						</div>
+					{:else}
+						<select id="customPassiveSkill" class="w-full rounded bg-stone-900 border border-amber-900/50 p-2 text-sm text-stone-200 outline-none focus:border-amber-500" bind:value={customPassiveSkill}>
+							<option value={null} disabled>Select a passive skill...</option>
+							{#each passiveSkillsList as skill}
+								<option value={skill.name}>{skill.icon} {skill.name} ({skill.roleAffinity})</option>
+							{/each}
+						</select>
+					{/if}
+					
 					{#if customPassiveSkill}
 						{@const selectedPassive = passiveSkillsList.find(s => s.name === customPassiveSkill)}
 						<p class="mt-2 text-[11px] text-stone-500">
@@ -257,13 +287,19 @@
 
 	<!-- Save Button & VP Section -->
 	<div class="mt-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-t border-amber-900/30 pt-4">
-		<button 
-			class="btn px-6 py-2 transition-colors {isCustomValid ? 'bg-amber-600 hover:bg-amber-500 text-white shadow-[0_0_15px_rgba(217,119,6,0.3)]' : 'bg-stone-800 text-stone-500 cursor-not-allowed'}"
-			onclick={handleExplicitSave}
-			disabled={!isCustomValid}
-		>
-			💾 Guardar Configuración
-		</button>
+		{#if !isSaved}
+			<button 
+				class="btn px-6 py-2 transition-colors {isCustomValid ? 'bg-amber-600 hover:bg-amber-500 text-white shadow-[0_0_15px_rgba(217,119,6,0.3)]' : 'bg-stone-800 text-stone-500 cursor-not-allowed'}"
+				onclick={handleExplicitSave}
+				disabled={!isCustomValid}
+			>
+				💾 Guardar Configuración
+			</button>
+		{:else}
+			<div class="text-sm font-bold text-emerald-400 bg-emerald-900/20 px-4 py-2 border border-emerald-500/30 rounded-lg">
+				✅ Campeón Listo para la Aventura
+			</div>
+		{/if}
 
 		{#if metaProgress['custom_champion'] && metaProgress['custom_champion'].victories > 0}
 			<div class="rounded-xl bg-amber-950/20 border border-amber-900/50 p-3 flex-1 w-full md:w-auto text-right">
