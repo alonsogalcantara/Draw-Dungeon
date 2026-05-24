@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { game } from '$lib/game/gameState.svelte';
 	import TitleScreen from '$lib/components/TitleScreen.svelte';
+	import ProfileSelect from '$lib/components/ProfileSelect.svelte';
 	import CharacterSelect from '$lib/components/CharacterSelect.svelte';
 	import GameBoard from '$lib/components/GameBoard.svelte';
 	import GameOverScreen from '$lib/components/GameOverScreen.svelte';
@@ -17,6 +18,8 @@
 <main class="min-h-screen bg-stone-950 text-stone-200" style="font-family: 'Inter', sans-serif;">
 	{#if game.phase === 'title'}
 		<TitleScreen />
+	{:else if game.phase === 'profileSelect'}
+		<ProfileSelect />
 	{:else if game.phase === 'characterSelect'}
 		<CharacterSelect />
 	{:else if game.phase === 'playing' || game.phase === 'combat' || game.phase === 'skillCheck' || game.phase === 'event' || game.phase === 'delving'}

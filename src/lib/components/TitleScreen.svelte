@@ -11,7 +11,7 @@
 	}));
 
 	function handleNewGame() {
-		game.phase = 'characterSelect';
+		game.phase = 'profileSelect';
 	}
 </script>
 

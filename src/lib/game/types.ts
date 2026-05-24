@@ -7,6 +7,7 @@
 /** All possible game phases */
 export type GamePhase =
   | 'title'
+  | 'profileSelect'
   | 'characterSelect'
   | 'playing'
   | 'combat'

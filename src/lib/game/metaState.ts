@@ -1,4 +1,11 @@
-const META_PREFIX = 'mini_rogue_meta_';
+const PROFILES_KEY = 'mini_rogue_profiles';
+const ACTIVE_PROFILE_KEY = 'mini_rogue_active_profile';
+
+export interface Profile {
+  id: string;
+  name: string;
+  createdAt: number;
+}
 
 export interface MetaProgress {
   level: number;
@@ -12,13 +19,79 @@ export interface MetaProgress {
   };
 }
 
+// --- Profiles Management ---
+
+export function getProfiles(): Profile[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const dataStr = window.localStorage.getItem(PROFILES_KEY);
+    if (dataStr) {
+      return JSON.parse(dataStr);
+    }
+  } catch (error) {
+    console.error('Failed to load profiles:', error);
+  }
+  return [];
+}
+
+export function saveProfiles(profiles: Profile[]) {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles));
+  } catch (error) {
+    console.error('Failed to save profiles:', error);
+  }
+}
+
+export function getActiveProfileId(): string | null {
+  if (typeof window === 'undefined') return null;
+  return window.localStorage.getItem(ACTIVE_PROFILE_KEY);
+}
+
+export function setActiveProfileId(id: string | null) {
+  if (typeof window === 'undefined') return;
+  if (id) {
+    window.localStorage.setItem(ACTIVE_PROFILE_KEY, id);
+  } else {
+    window.localStorage.removeItem(ACTIVE_PROFILE_KEY);
+  }
+}
+
+export function createProfile(name: string): Profile {
+  const profiles = getProfiles();
+  const newProfile: Profile = {
+    id: `profile_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    name,
+    createdAt: Date.now()
+  };
+  profiles.push(newProfile);
+  saveProfiles(profiles);
+  return newProfile;
+}
+
+export function deleteProfile(id: string) {
+  let profiles = getProfiles();
+  profiles = profiles.filter(p => p.id !== id);
+  saveProfiles(profiles);
+  if (getActiveProfileId() === id) {
+    setActiveProfileId(null);
+  }
+}
+
+// --- Character Meta Progression ---
+
+function getMetaPrefix() {
+  const profileId = getActiveProfileId() || 'default';
+  return `mini_rogue_${profileId}_meta_`;
+}
+
 /**
  * Save the character's level, XP, and meta-progression to localStorage.
  */
 export function saveMetaProgress(characterId: string, data: MetaProgress) {
   if (typeof window === 'undefined') return;
   try {
-    window.localStorage.setItem(`${META_PREFIX}${characterId}`, JSON.stringify(data));
+    window.localStorage.setItem(`${getMetaPrefix()}${characterId}`, JSON.stringify(data));
   } catch (error) {
     console.error('Failed to save meta progress:', error);
   }
@@ -30,7 +103,7 @@ export function saveMetaProgress(characterId: string, data: MetaProgress) {
 export function loadMetaProgress(characterId: string): MetaProgress | null {
   if (typeof window === 'undefined') return null;
   try {
-    const dataStr = window.localStorage.getItem(`${META_PREFIX}${characterId}`);
+    const dataStr = window.localStorage.getItem(`${getMetaPrefix()}${characterId}`);
     if (dataStr) {
       const parsed = JSON.parse(dataStr) as Partial<MetaProgress>;
       return {
@@ -52,7 +125,7 @@ export function loadMetaProgress(characterId: string): MetaProgress | null {
 export function clearMetaProgress(characterId: string) {
   if (typeof window === 'undefined') return;
   try {
-    window.localStorage.removeItem(`${META_PREFIX}${characterId}`);
+    window.localStorage.removeItem(`${getMetaPrefix()}${characterId}`);
   } catch (error) {
     console.error('Failed to clear meta progress:', error);
   }

@@ -13,9 +13,15 @@
 	let layoutSize = $state<number>(3);
 	let step = $state<number>(1);
 	let metaProgress = $state<Record<string, MetaProgress>>({});
+	import { getProfiles, getActiveProfileId } from '$lib/game/metaState';
+	
+	let activeProfileName = $state('');
 
 	onMount(() => {
 		metaProgress = loadAllMetaProgress(CHARACTERS.map(c => c.id).concat('custom_champion'));
+		const activeId = getActiveProfileId();
+		const profile = getProfiles().find(p => p.id === activeId);
+		if (profile) activeProfileName = profile.name;
 	});
 
 	// Custom Champion State
@@ -108,7 +114,7 @@
 		if (step > 1) {
 			step--;
 		} else {
-			game.phase = 'title';
+			game.phase = 'profileSelect';
 		}
 	}
 
@@ -123,25 +129,30 @@
 </script>
 
 <div class="flex min-h-screen flex-col items-center bg-gradient-to-b from-stone-950 via-stone-900 to-stone-950 px-4 py-8">
-	<!-- Back button -->
-	<div class="mb-4 w-full max-w-6xl">
-		<button class="btn btn-secondary text-sm" onclick={handleBack}>
-			← Back
-		</button>
-	</div>
-
-	<!-- Title & Controls -->
-	<div class="mb-2 flex w-full max-w-6xl items-center justify-between">
-		<h1 class="title-text text-4xl tracking-wider">
-			{#if step === 1}Choose Your Champion
-			{:else if step === 2}Choose Difficulty
-			{:else}Choose Dungeon Layout{/if}
-		</h1>
+	<!-- Top Bar -->
+	<div class="mb-4 flex w-full max-w-6xl items-center justify-between">
+		<div class="flex items-center gap-4">
+			<button class="btn btn-secondary text-sm" onclick={handleBack}>
+				← Back
+			</button>
+			{#if activeProfileName}
+				<p class="text-sm font-bold tracking-widest text-amber-500/80 uppercase">Profile: {activeProfileName}</p>
+			{/if}
+		</div>
 		{#if Object.keys(metaProgress).length > 0 && step === 1}
 			<button class="btn btn-secondary text-xs text-red-400 hover:bg-red-900/30 hover:text-red-300" onclick={handleWipeProgress}>
 				🗑️ Wipe Progress
 			</button>
 		{/if}
+	</div>
+
+	<!-- Title -->
+	<div class="mb-2 flex w-full max-w-6xl flex-col items-center justify-center text-center">
+		<h1 class="title-text text-4xl tracking-wider">
+			{#if step === 1}Choose Your Champion
+			{:else if step === 2}Choose Difficulty
+			{:else}Choose Dungeon Layout{/if}
+		</h1>
 	</div>
 	<div class="mb-8 h-px w-48 bg-gradient-to-r from-transparent via-amber-600/50 to-transparent"></div>
 

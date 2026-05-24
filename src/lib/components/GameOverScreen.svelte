@@ -13,7 +13,7 @@
 	}));
 
 	function handlePlayAgain() {
-		game.phase = 'title';
+		game.phase = 'characterSelect';
 	}
 </script>
 
