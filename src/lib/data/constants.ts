@@ -11,10 +11,10 @@ import type { DungeonFloor, DifficultyMode, DifficultyModifier } from '../game/t
 // Floor 4: 2 areas (boss on area 2)
 
 export const DUNGEON_FLOORS: DungeonFloor[] = [
-  { number: 1, areas: 2, bossArea: 2, dungeonName: 'The Sewers', towerName: 'Tower Entrance' },
-  { number: 2, areas: 2, bossArea: 2, dungeonName: 'The Dungeon', towerName: 'The Grand Hall' },
-  { number: 3, areas: 3, bossArea: 3, dungeonName: 'The Catacombs', towerName: 'The Belfry' },
-  { number: 4, areas: 2, bossArea: 2, dungeonName: 'The Sunken Keep', towerName: 'The Summit' },
+	{ number: 1, areas: 2, bossArea: 2, dungeonName: 'The Sewers', towerName: 'Tower Entrance' },
+	{ number: 2, areas: 2, bossArea: 2, dungeonName: 'The Dungeon', towerName: 'The Grand Hall' },
+	{ number: 3, areas: 3, bossArea: 3, dungeonName: 'The Catacombs', towerName: 'The Belfry' },
+	{ number: 4, areas: 2, bossArea: 2, dungeonName: 'The Sunken Keep', towerName: 'The Summit' }
 ];
 
 /** Total number of areas across all floors */
@@ -74,10 +74,10 @@ export const ROOMS_PER_AREA = GRID_ROWS * GRID_COLS;
 // --- Difficulty Modifiers ---
 
 export const DIFFICULTY_MODIFIERS: Record<DifficultyMode, DifficultyModifier> = {
-  normal:    { food:  0, hp:  0, gold:  0 },
-  hard:      { food: -1, hp: -1, gold:  0 },
-  harder:    { food: -1, hp: -2, gold:  0 },
-  roguelike: { food: -1, hp: -2, gold: -3 },
+	normal: { food: 0, hp: 0, gold: 0 },
+	hard: { food: -1, hp: -1, gold: 0 },
+	harder: { food: -1, hp: -2, gold: 0 },
+	roguelike: { food: -1, hp: -2, gold: -3 }
 };
 
 // --- Combat Constants ---

@@ -20,17 +20,17 @@
 		const targetRoom = game.roomGrid[row]?.[col];
 		return targetRoom !== null && targetRoom !== undefined;
 	}
-	
+
 	const gridClass = $derived(
-		game.layoutSize === 3 ? 'grid-cols-3 grid-rows-3' : 
-		game.layoutSize === 4 ? 'grid-cols-4 grid-rows-4' : 
-		'grid-cols-5 grid-rows-5'
+		game.layoutSize === 3
+			? 'grid-cols-3 grid-rows-3'
+			: game.layoutSize === 4
+				? 'grid-cols-4 grid-rows-4'
+				: 'grid-cols-5 grid-rows-5'
 	);
 
 	const maxWidthClass = $derived(
-		game.layoutSize === 3 ? 'max-w-5xl' : 
-		game.layoutSize === 4 ? 'max-w-6xl' : 
-		'max-w-7xl'
+		game.layoutSize === 3 ? 'max-w-5xl' : game.layoutSize === 4 ? 'max-w-6xl' : 'max-w-7xl'
 	);
 </script>
 
@@ -50,30 +50,32 @@
 	<!-- Carousel Container -->
 	<div class="relative w-full overflow-hidden">
 		<!-- The sliding track -->
-		<div 
+		<div
 			class="flex transition-transform duration-700 ease-in-out"
 			style="transform: translateX(-{game.viewAreaIndex * 100}%)"
 		>
 			{#each game.gridHistory as historyItem, index (index)}
 				{@const isActive = index === game.gridHistory.length - 1}
-				<div class="w-full shrink-0 flex flex-col items-center">
-					<div class="dungeon-map flex justify-center w-full px-2 sm:px-8 {maxWidthClass} mx-auto">
-						<div class="grid {gridClass} gap-4 sm:gap-6 justify-items-center w-full">
-						{#each { length: game.layoutSize } as _, row (row)}
-							{#each { length: game.layoutSize } as _, col (col)}
-								{@const instance = isActive ? game.roomGrid[row]?.[col] ?? null : historyItem.grid[row]?.[col] ?? null}
-								<!-- Only show player position if this is the active grid -->
-								{@const isCurrent = isActive && row === game.playerRow && col === game.playerCol}
-								{@const available = isAvailable(isActive, row, col)}
-								<RoomCard
-									{instance}
-									isCurrentPosition={isCurrent}
-									isAvailable={available}
-									{row}
-									{col}
-								/>
+				<div class="flex w-full shrink-0 flex-col items-center">
+					<div class="dungeon-map flex w-full justify-center px-2 sm:px-8 {maxWidthClass} mx-auto">
+						<div class="grid {gridClass} w-full justify-items-center gap-4 sm:gap-6">
+							{#each { length: game.layoutSize } as _, row (row)}
+								{#each { length: game.layoutSize } as _, col (col)}
+									{@const instance = isActive
+										? (game.roomGrid[row]?.[col] ?? null)
+										: (historyItem.grid[row]?.[col] ?? null)}
+									<!-- Only show player position if this is the active grid -->
+									{@const isCurrent = isActive && row === game.playerRow && col === game.playerCol}
+									{@const available = isAvailable(isActive, row, col)}
+									<RoomCard
+										{instance}
+										isCurrentPosition={isCurrent}
+										isAvailable={available}
+										{row}
+										{col}
+									/>
+								{/each}
 							{/each}
-						{/each}
 						</div>
 					</div>
 				</div>

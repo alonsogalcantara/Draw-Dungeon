@@ -36,11 +36,14 @@
 	}
 </script>
 
-<div class="title-bg relative flex min-h-screen flex-col items-center justify-center overflow-hidden">
+<div
+	class="title-bg relative flex min-h-screen flex-col items-center justify-center overflow-hidden"
+>
 	<!-- Vignette overlay -->
-	<div class="pointer-events-none absolute inset-0 z-0"
-		style="background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.85) 100%);">
-	</div>
+	<div
+		class="pointer-events-none absolute inset-0 z-0"
+		style="background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.85) 100%);"
+	></div>
 
 	<!-- Floating particles -->
 	{#each particles as p (p.id)}
@@ -57,14 +60,15 @@
 			MINI ROGUE
 		</h1>
 
-		<p class="subtitle text-lg tracking-[0.3em] sm:text-xl md:text-2xl">
-			A Dungeon Card Adventure
-		</p>
+		<p class="subtitle text-lg tracking-[0.3em] sm:text-xl md:text-2xl">A Dungeon Card Adventure</p>
 
-		<div class="mx-auto my-4 h-px w-64 bg-gradient-to-r from-transparent via-amber-600/60 to-transparent"></div>
+		<div
+			class="mx-auto my-4 h-px w-64 bg-gradient-to-r from-transparent via-amber-600/60 to-transparent"
+		></div>
 
 		<p class="max-w-md text-sm leading-relaxed text-amber-200/50 italic sm:text-base">
-			Delve into the dungeon, room after room and floor after floor, in order to find the Og's Blood — a fabled and mysterious artifact rumored to be a ruby gemstone.
+			Delve into the dungeon, room after room and floor after floor, in order to find the Og's Blood
+			— a fabled and mysterious artifact rumored to be a ruby gemstone.
 		</p>
 
 		<div class="mt-8 flex flex-col gap-4 sm:flex-row">
@@ -85,8 +89,8 @@
 		</div>
 
 		<button
-			class="mt-2 flex items-center gap-2 text-sm uppercase tracking-widest text-stone-400 hover:text-amber-400 transition-colors"
-			onclick={() => showTutorial = true}
+			class="mt-2 flex items-center gap-2 text-sm tracking-widest text-stone-400 uppercase transition-colors hover:text-amber-400"
+			onclick={() => (showTutorial = true)}
 		>
 			<span class="text-lg">📜</span> Cómo Jugar
 		</button>
@@ -97,9 +101,12 @@
 	</div>
 </div>
 
+<HowToPlayModal open={showTutorial} onClose={() => (showTutorial = false)} />
+
 <style>
 	@keyframes torch-flicker {
-		0%, 100% {
+		0%,
+		100% {
 			text-shadow:
 				0 0 20px rgba(245, 158, 11, 0.6),
 				0 0 40px rgba(245, 158, 11, 0.3),
@@ -133,5 +140,3 @@
 		animation: torch-flicker 3s ease-in-out infinite;
 	}
 </style>
-
-<HowToPlayModal open={showTutorial} onClose={() => showTutorial = false} />

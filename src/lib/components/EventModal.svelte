@@ -21,7 +21,7 @@
 	const event = $derived(game.event);
 	const eventType = $derived(event?.type ?? '');
 	const availableMissions = $derived(
-		game.missions.filter(m => m.card.deliveryTargets.some(t => t.roomType === eventType))
+		game.missions.filter((m) => m.card.deliveryTargets.some((t) => t.roomType === eventType))
 	);
 
 	function closeEvent() {
@@ -68,12 +68,18 @@
 {#snippet outcomesList(outcomes: any, title: string, highlightRoll: number | null = null)}
 	{#if outcomes}
 		<div class="mb-4 rounded-lg bg-stone-900/40 p-3 text-left">
-			<p class="mb-2 text-xs font-bold uppercase tracking-wider text-stone-500">{title}</p>
+			<p class="mb-2 text-xs font-bold tracking-wider text-stone-500 uppercase">{title}</p>
 			<div class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
 				{#each [1, 2, 3, 4, 5, 6] as roll}
 					{#if outcomes[roll]}
-						<div class="font-bold {highlightRoll === roll ? 'text-yellow-400' : 'text-stone-500'}">[{roll}]</div>
-						<div class="{highlightRoll === roll ? 'text-yellow-300 font-semibold' : 'text-stone-300'}">{outcomes[roll].label}</div>
+						<div class="font-bold {highlightRoll === roll ? 'text-yellow-400' : 'text-stone-500'}">
+							[{roll}]
+						</div>
+						<div
+							class={highlightRoll === roll ? 'font-semibold text-yellow-300' : 'text-stone-300'}
+						>
+							{outcomes[roll].label}
+						</div>
 					{/if}
 				{/each}
 			</div>
@@ -82,26 +88,33 @@
 {/snippet}
 
 {#if event}
-	<div class="overlay overlay-event fixed inset-0 z-40 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-		<div class="flex flex-col md:flex-row gap-6 w-full max-w-4xl max-h-[90vh]">
-			
+	<div
+		class="overlay overlay-event fixed inset-0 z-40 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
+	>
+		<div class="flex max-h-[90vh] w-full max-w-4xl flex-col gap-6 md:flex-row">
 			<!-- Card Anatomy UI -->
-			<div class="flex-shrink-0 mx-auto md:mx-0">
+			<div class="mx-auto flex-shrink-0 md:mx-0">
 				<RoomCardDetail card={event.card} />
 			</div>
 
 			<!-- Interaction Panel -->
-			<div class="flex-1 overflow-y-auto rounded-2xl border border-amber-900/30 bg-stone-950/95 p-6 shadow-2xl">
-				
+			<div
+				class="flex-1 overflow-y-auto rounded-2xl border border-amber-900/30 bg-stone-950/95 p-6 shadow-2xl"
+			>
 				{#if availableMissions.length > 0}
-					<div class="mb-4 rounded-lg bg-emerald-900/20 border border-emerald-500/30 p-3">
-						<h3 class="text-sm font-bold text-emerald-400 mb-2">Misiones disponibles para entregar:</h3>
+					<div class="mb-4 rounded-lg border border-emerald-500/30 bg-emerald-900/20 p-3">
+						<h3 class="mb-2 text-sm font-bold text-emerald-400">
+							Misiones disponibles para entregar:
+						</h3>
 						<div class="grid gap-2">
 							{#each availableMissions as mission}
-								{@const target = mission.card.deliveryTargets.find(t => t.roomType === eventType)}
-								<button class="btn btn-action w-full text-left py-2 px-3 text-sm flex justify-between items-center" onclick={() => handInMission(mission.card.id)}>
+								{@const target = mission.card.deliveryTargets.find((t) => t.roomType === eventType)}
+								<button
+									class="btn btn-action flex w-full items-center justify-between px-3 py-2 text-left text-sm"
+									onclick={() => handInMission(mission.card.id)}
+								>
 									<span>📜 {mission.card.name}</span>
-									<span class="text-xs text-stone-300 ml-2">{target?.reward.label}</span>
+									<span class="ml-2 text-xs text-stone-300">{target?.reward.label}</span>
 								</button>
 							{/each}
 						</div>
@@ -110,304 +123,337 @@
 
 				<!-- Bonfire -->
 				{#if eventType === 'bonfire'}
-					<div class="text-center h-full flex flex-col justify-center">
+					<div class="flex h-full flex-col justify-center text-center">
 						<h2 class="title-text text-2xl text-amber-200">Rest & Recover</h2>
-						
-						<div class="divider my-4 h-px bg-gradient-to-r from-transparent via-orange-700/40 to-transparent"></div>
 
+						<div
+							class="divider my-4 h-px bg-gradient-to-r from-transparent via-orange-700/40 to-transparent"
+						></div>
 
-					<p class="mb-4 text-xs text-emerald-400/70">🔄 Skills refreshed</p>
+						<p class="mb-4 text-xs text-emerald-400/70">🔄 Skills refreshed</p>
 
-					<div class="grid gap-2">
-						{#each (event.card as any).actions ?? [] as action, i}
-							<button
-								class="btn btn-secondary w-full py-3 text-left"
-								onclick={() => selectBonfireAction(i)}
-								disabled={action.disabled}
-							>
-								<span class="mr-2">{action.icon ?? '✨'}</span>
-								<span>{action.label}</span>
-								{#if action.description}
-									<span class="ml-auto text-xs text-stone-500">{action.description}</span>
-								{/if}
-							</button>
-						{/each}
+						<div class="grid gap-2">
+							{#each (event.card as any).actions ?? [] as action, i}
+								<button
+									class="btn btn-secondary w-full py-3 text-left"
+									onclick={() => selectBonfireAction(i)}
+									disabled={action.disabled}
+								>
+									<span class="mr-2">{action.icon ?? '✨'}</span>
+									<span>{action.label}</span>
+									{#if action.description}
+										<span class="ml-auto text-xs text-stone-500">{action.description}</span>
+									{/if}
+								</button>
+							{/each}
+						</div>
 					</div>
-				</div>
 
-				<!-- Merchant -->
+					<!-- Merchant -->
 				{:else if eventType === 'merchant'}
 					<div>
 						<div class="mb-4 text-center">
 							<h2 class="title-text text-2xl text-amber-200">Merchant's Wares</h2>
-							<div class="mt-3 inline-flex items-center gap-1 rounded-full bg-yellow-900/30 px-3 py-1 text-sm font-bold text-yellow-300">
+							<div
+								class="mt-3 inline-flex items-center gap-1 rounded-full bg-yellow-900/30 px-3 py-1 text-sm font-bold text-yellow-300"
+							>
 								💰 {game.gold} Gold
 							</div>
 						</div>
 
-					<div class="divider my-4 h-px bg-gradient-to-r from-transparent via-amber-700/40 to-transparent"></div>
+						<div
+							class="divider my-4 h-px bg-gradient-to-r from-transparent via-amber-700/40 to-transparent"
+						></div>
 
-					{#if (event.card as any).items?.length}
-						<div class="grid gap-2">
-							{#each (event.card as any).items as item, i}
-								<div class="flex items-center justify-between rounded-lg border border-stone-700/40 bg-stone-800/40 p-3">
-									<div>
-										<span class="mr-2 text-lg">{item.icon ?? '📦'}</span>
-										<span class="text-sm font-semibold text-amber-200">{item.name}</span>
-										{#if item.description}
-											<p class="mt-0.5 text-xs text-stone-500">{item.description}</p>
-										{/if}
-									</div>
-									<button
-										class="btn btn-primary shrink-0 px-4 py-1 text-xs"
-										onclick={() => buyItem(i)}
-										disabled={game.gold < (item.cost ?? 0)}
+						{#if (event.card as any).items?.length}
+							<div class="grid gap-2">
+								{#each (event.card as any).items as item, i}
+									<div
+										class="flex items-center justify-between rounded-lg border border-stone-700/40 bg-stone-800/40 p-3"
 									>
-										Buy ({item.cost ?? 0}💰)
-									</button>
-								</div>
-							{/each}
+										<div>
+											<span class="mr-2 text-lg">{item.icon ?? '📦'}</span>
+											<span class="text-sm font-semibold text-amber-200">{item.name}</span>
+											{#if item.description}
+												<p class="mt-0.5 text-xs text-stone-500">{item.description}</p>
+											{/if}
+										</div>
+										<button
+											class="btn btn-primary shrink-0 px-4 py-1 text-xs"
+											onclick={() => buyItem(i)}
+											disabled={game.gold < (item.cost ?? 0)}
+										>
+											Buy ({item.cost ?? 0}💰)
+										</button>
+									</div>
+								{/each}
+							</div>
+						{:else}
+							<p class="py-4 text-center text-sm text-stone-500 italic">
+								The merchant has nothing to offer.
+							</p>
+						{/if}
+
+						<div class="mt-4 flex justify-center">
+							<button class="btn btn-secondary px-6 py-2" onclick={closeEvent}> Leave Shop </button>
 						</div>
-					{:else}
-						<p class="py-4 text-center text-sm text-stone-500 italic">The merchant has nothing to offer.</p>
-					{/if}
-
-					<div class="mt-4 flex justify-center">
-						<button class="btn btn-secondary px-6 py-2" onclick={closeEvent}>
-							Leave Shop
-						</button>
 					</div>
-				</div>
 
-			<!-- Shrine -->
-			{:else if eventType === 'shrine'}
-				<div class="text-center">
-					<span class="text-5xl">⛩️</span>
-					<h2 class="title-text mt-3 text-2xl">Shrine</h2>
-					<p class="mt-2 text-sm text-stone-400">An ancient altar emanates divine energy...</p>
+					<!-- Shrine -->
+				{:else if eventType === 'shrine'}
+					<div class="text-center">
+						<span class="text-5xl">⛩️</span>
+						<h2 class="title-text mt-3 text-2xl">Shrine</h2>
+						<p class="mt-2 text-sm text-stone-400">An ancient altar emanates divine energy...</p>
 
-					<div class="divider my-4 h-px bg-gradient-to-r from-transparent via-purple-700/40 to-transparent"></div>
+						<div
+							class="divider my-4 h-px bg-gradient-to-r from-transparent via-purple-700/40 to-transparent"
+						></div>
 
-					{#if !event.rolled}
-						{@render outcomesList((event.card as any).outcomes, 'Possible Boons')}
-						<p class="mb-4 text-xs text-stone-400">Roll the Dungeon die. Offer 1 Gold for +1 to the result.</p>
-						<div class="flex items-center justify-center gap-4">
-							<button class="btn btn-primary px-6 py-2" onclick={() => shrineRoll(false)}>
-								🎲 Roll
-							</button>
-							{#if game.gold >= 1}
-								<button class="btn btn-action px-6 py-2" onclick={() => shrineRoll(true)}>
-									✨ Offer 1💰 & Roll
+						{#if !event.rolled}
+							{@render outcomesList((event.card as any).outcomes, 'Possible Boons')}
+							<p class="mb-4 text-xs text-stone-400">
+								Roll the Dungeon die. Offer 1 Gold for +1 to the result.
+							</p>
+							<div class="flex items-center justify-center gap-4">
+								<button class="btn btn-primary px-6 py-2" onclick={() => shrineRoll(false)}>
+									🎲 Roll
+								</button>
+								{#if game.gold >= 1}
+									<button class="btn btn-action px-6 py-2" onclick={() => shrineRoll(true)}>
+										✨ Offer 1💰 & Roll
+									</button>
+								{/if}
+							</div>
+						{:else}
+							{@render outcomesList((event.card as any).outcomes, 'Boons', event.result)}
+							<div class="mb-4 flex flex-col items-center rounded-lg bg-stone-800/60 px-4 py-3">
+								<p class="mb-2 text-lg font-bold text-amber-300">Result:</p>
+								<div class="mb-2 scale-75">
+									<DiceRoller
+										dice={[]}
+										dungeonDie={event.result ?? 1}
+										rolling={event.result === undefined}
+									/>
+								</div>
+								{#if event.outcome}
+									<p class="mt-1 text-sm text-stone-300">{event.outcome}</p>
+								{/if}
+							</div>
+							<button class="btn btn-primary px-6 py-2" onclick={closeEvent}> Continue </button>
+						{/if}
+					</div>
+
+					<!-- Treasure -->
+				{:else if eventType === 'treasure'}
+					<div class="text-center">
+						<span class="text-5xl">💎</span>
+						<h2 class="title-text mt-3 text-2xl">Treasure</h2>
+						<p class="mt-2 text-sm text-stone-400">A forgotten stash of loot!</p>
+
+						<div
+							class="divider my-4 h-px bg-gradient-to-r from-transparent via-yellow-700/40 to-transparent"
+						></div>
+
+						{#if event.goldGained !== undefined}
+							<div class="mb-4 rounded-lg bg-yellow-900/20 px-4 py-2">
+								<span class="text-lg font-bold text-yellow-300">💰 +{event.goldGained} Gold</span>
+							</div>
+						{/if}
+
+						{#if !event.chestOpened}
+							{@render outcomesList((event.card as any).chestRewards, 'Possible Loot')}
+
+							{#if game.skillCheck}
+								<div class="mt-4 border-t border-amber-900/30 pt-4">
+									<SkillCheckPanel />
+								</div>
+							{:else}
+								<p class="mb-3 text-xs text-stone-400">Try to unlock the treasure chest?</p>
+								<button class="btn btn-primary px-6 py-2" onclick={treasureSkillCheck}>
+									🔓 Skill Check
+								</button>
+								<button class="btn btn-secondary ml-2 px-6 py-2" onclick={closeEvent}>
+									Skip
 								</button>
 							{/if}
-						</div>
-					{:else}
-						{@render outcomesList((event.card as any).outcomes, 'Boons', event.result)}
-						<div class="mb-4 flex flex-col items-center rounded-lg bg-stone-800/60 px-4 py-3">
-							<p class="mb-2 text-lg font-bold text-amber-300">Result:</p>
-							<div class="mb-2 scale-75">
-								<DiceRoller dice={[]} dungeonDie={event.result ?? 1} rolling={event.result === undefined} />
-							</div>
-							{#if event.outcome}
-								<p class="mt-1 text-sm text-stone-300">{event.outcome}</p>
+						{:else}
+							{@render outcomesList((event.card as any).chestRewards, 'Loot', event.dungeonResult)}
+							{#if event.chestReward}
+								<div class="mb-4 rounded-lg bg-emerald-900/20 px-4 py-2">
+									<p class="text-sm text-emerald-300">{event.chestReward}</p>
+								</div>
 							{/if}
-						</div>
-						<button class="btn btn-primary px-6 py-2" onclick={closeEvent}>
-							Continue
-						</button>
-					{/if}
-				</div>
-
-			<!-- Treasure -->
-			{:else if eventType === 'treasure'}
-				<div class="text-center">
-					<span class="text-5xl">💎</span>
-					<h2 class="title-text mt-3 text-2xl">Treasure</h2>
-					<p class="mt-2 text-sm text-stone-400">A forgotten stash of loot!</p>
-
-					<div class="divider my-4 h-px bg-gradient-to-r from-transparent via-yellow-700/40 to-transparent"></div>
-
-					{#if event.goldGained !== undefined}
-						<div class="mb-4 rounded-lg bg-yellow-900/20 px-4 py-2">
-							<span class="text-lg font-bold text-yellow-300">💰 +{event.goldGained} Gold</span>
-						</div>
-					{/if}
-
-					{#if !event.chestOpened}
-						{@render outcomesList((event.card as any).chestRewards, 'Possible Loot')}
-						
-						{#if game.skillCheck}
-							<div class="mt-4 border-t border-amber-900/30 pt-4">
-								<SkillCheckPanel />
-							</div>
-						{:else}
-							<p class="mb-3 text-xs text-stone-400">Try to unlock the treasure chest?</p>
-							<button class="btn btn-primary px-6 py-2" onclick={treasureSkillCheck}>
-								🔓 Skill Check
-							</button>
-							<button class="btn btn-secondary ml-2 px-6 py-2" onclick={closeEvent}>
-								Skip
-							</button>
+							<button class="btn btn-primary px-6 py-2" onclick={closeEvent}> Continue </button>
 						{/if}
-					{:else}
-						{@render outcomesList((event.card as any).chestRewards, 'Loot', event.dungeonResult)}
-						{#if event.chestReward}
-							<div class="mb-4 rounded-lg bg-emerald-900/20 px-4 py-2">
-								<p class="text-sm text-emerald-300">{event.chestReward}</p>
-							</div>
-						{/if}
-						<button class="btn btn-primary px-6 py-2" onclick={closeEvent}>
-							Continue
-						</button>
-					{/if}
-				</div>
+					</div>
 
-			<!-- Tomb -->
-			{:else if eventType === 'tomb'}
-				<div class="text-center">
-					<span class="text-5xl">⚰️</span>
-					<h2 class="title-text mt-3 text-2xl">Tomb</h2>
-					<p class="mt-2 text-sm text-stone-400">An ancient tomb. Who knows what lies within?</p>
+					<!-- Tomb -->
+				{:else if eventType === 'tomb'}
+					<div class="text-center">
+						<span class="text-5xl">⚰️</span>
+						<h2 class="title-text mt-3 text-2xl">Tomb</h2>
+						<p class="mt-2 text-sm text-stone-400">An ancient tomb. Who knows what lies within?</p>
 
-					<div class="divider my-4 h-px bg-gradient-to-r from-transparent via-stone-600/40 to-transparent"></div>
+						<div
+							class="divider my-4 h-px bg-gradient-to-r from-transparent via-stone-600/40 to-transparent"
+						></div>
 
-					{#if !event.rolled}
-						{@render outcomesList((event.card as any).outcomes, 'Possible Outcomes')}
-						
-						{#if game.skillCheck}
-							<div class="mt-4 border-t border-stone-700/50 pt-4">
-								<SkillCheckPanel />
-							</div>
-						{:else}
-							<p class="mb-3 text-xs text-stone-400">Perform a skill check to investigate.</p>
-							<button class="btn btn-primary px-6 py-2" onclick={tombSkillCheck}>
-								🎲 Skill Check
-							</button>
-							<button class="btn btn-secondary ml-2 px-6 py-2" onclick={closeEvent}>
-								Leave
-							</button>
-						{/if}
-					{:else if event.success && !event.modified}
-						{@render outcomesList((event.card as any).outcomes, 'Outcomes', event.dungeonResult)}
-						<div class="mb-4 flex flex-col items-center">
-							<p class="mb-2 text-sm text-emerald-400">✅ Success!</p>
-							<div class="mb-2 scale-75">
-								<DiceRoller dice={[]} dungeonDie={event.dungeonResult ?? null} rolling={false} />
-							</div>
-						</div>
-						<p class="mb-3 text-xs text-stone-400">You may modify the result by +1 or -1.</p>
-						<div class="flex items-center justify-center gap-3">
-							<button class="btn btn-secondary px-4 py-2" onclick={() => tombModify(-1)}>
-								-1 ({Math.max(1, (event.dungeonResult ?? 1) - 1)})
-							</button>
-							<button class="btn btn-primary px-4 py-2" onclick={() => tombModify(0)}>
-								Keep ({event.dungeonResult})
-							</button>
-							<button class="btn btn-secondary px-4 py-2" onclick={() => tombModify(1)}>
-								+1 ({Math.min(6, (event.dungeonResult ?? 6) + 1)})
-							</button>
-						</div>
-					{:else}
-						{@render outcomesList((event.card as any).outcomes, 'Outcomes', event.dungeonResult)}
-						{#if !event.success}
+						{#if !event.rolled}
+							{@render outcomesList((event.card as any).outcomes, 'Possible Outcomes')}
+
+							{#if game.skillCheck}
+								<div class="mt-4 border-t border-stone-700/50 pt-4">
+									<SkillCheckPanel />
+								</div>
+							{:else}
+								<p class="mb-3 text-xs text-stone-400">Perform a skill check to investigate.</p>
+								<button class="btn btn-primary px-6 py-2" onclick={tombSkillCheck}>
+									🎲 Skill Check
+								</button>
+								<button class="btn btn-secondary ml-2 px-6 py-2" onclick={closeEvent}>
+									Leave
+								</button>
+							{/if}
+						{:else if event.success && !event.modified}
+							{@render outcomesList((event.card as any).outcomes, 'Outcomes', event.dungeonResult)}
 							<div class="mb-4 flex flex-col items-center">
-								<p class="mb-2 text-sm text-red-400">❌ Failed.</p>
+								<p class="mb-2 text-sm text-emerald-400">✅ Success!</p>
 								<div class="mb-2 scale-75">
 									<DiceRoller dice={[]} dungeonDie={event.dungeonResult ?? null} rolling={false} />
 								</div>
 							</div>
-						{/if}
-						{#if event.outcome}
-							<div class="mb-4 rounded-lg bg-stone-800/60 px-4 py-2">
-								<p class="text-sm text-stone-300">{event.outcome}</p>
+							<p class="mb-3 text-xs text-stone-400">You may modify the result by +1 or -1.</p>
+							<div class="flex items-center justify-center gap-3">
+								<button class="btn btn-secondary px-4 py-2" onclick={() => tombModify(-1)}>
+									-1 ({Math.max(1, (event.dungeonResult ?? 1) - 1)})
+								</button>
+								<button class="btn btn-primary px-4 py-2" onclick={() => tombModify(0)}>
+									Keep ({event.dungeonResult})
+								</button>
+								<button class="btn btn-secondary px-4 py-2" onclick={() => tombModify(1)}>
+									+1 ({Math.min(6, (event.dungeonResult ?? 6) + 1)})
+								</button>
 							</div>
-						{/if}
-						<button class="btn btn-primary px-6 py-2" onclick={closeEvent}>
-							Continue
-						</button>
-					{/if}
-				</div>
-
-			<!-- Item Room -->
-			{:else if eventType === 'item_room'}
-				{@const itemCard = event.card as Extract<RoomCard, { type: 'item_room' }>}
-				<div class="text-center">
-					<span class="text-5xl">🔧</span>
-					<h2 class="title-text mt-3 text-2xl">Item Found</h2>
-					<div class="card-item mx-auto mt-4 max-w-xs rounded-xl border border-amber-700/40 bg-stone-800/60 p-4">
-						<h3 class="text-lg font-bold text-amber-200">{event.card.name}</h3>
-						{#if event.card.description}
-							<p class="mt-2 text-sm text-stone-400">{event.card.description}</p>
-						{/if}
-						{#if itemCard.cost}
-							<p class="mt-2 text-xs text-amber-500/60">Cost: {itemCard.cost.value} {itemCard.cost.stat}</p>
-						{/if}
-						{#if itemCard.ignoreCost}
-							<p class="mt-2 text-xs text-red-500/60">Ignore Penalty: {itemCard.ignoreCost.label}</p>
+						{:else}
+							{@render outcomesList((event.card as any).outcomes, 'Outcomes', event.dungeonResult)}
+							{#if !event.success}
+								<div class="mb-4 flex flex-col items-center">
+									<p class="mb-2 text-sm text-red-400">❌ Failed.</p>
+									<div class="mb-2 scale-75">
+										<DiceRoller
+											dice={[]}
+											dungeonDie={event.dungeonResult ?? null}
+											rolling={false}
+										/>
+									</div>
+								</div>
+							{/if}
+							{#if event.outcome}
+								<div class="mb-4 rounded-lg bg-stone-800/60 px-4 py-2">
+									<p class="text-sm text-stone-300">{event.outcome}</p>
+								</div>
+							{/if}
+							<button class="btn btn-primary px-6 py-2" onclick={closeEvent}> Continue </button>
 						{/if}
 					</div>
-					<div class="mt-4 flex items-center justify-center gap-3">
-						<button
-							class="btn btn-primary px-6 py-2"
-							onclick={() => handleItemRoom('take')}
-							disabled={itemCard.cost ? (itemCard.cost.stat === 'gold' ? game.gold < itemCard.cost.value : itemCard.cost.stat === 'xp' ? game.xp < itemCard.cost.value : itemCard.cost.stat === 'food' ? game.food < itemCard.cost.value : game.hp <= itemCard.cost.value) : false}
+
+					<!-- Item Room -->
+				{:else if eventType === 'item_room'}
+					{@const itemCard = event.card as Extract<RoomCard, { type: 'item_room' }>}
+					<div class="text-center">
+						<span class="text-5xl">🔧</span>
+						<h2 class="title-text mt-3 text-2xl">Item Found</h2>
+						<div
+							class="card-item mx-auto mt-4 max-w-xs rounded-xl border border-amber-700/40 bg-stone-800/60 p-4"
 						>
-							{itemCard.cost ? 'Pay & Take' : 'Take Item'}
-						</button>
-						<button class="btn btn-secondary px-6 py-2" onclick={() => handleItemRoom('ignore')}>
-							Ignore
-						</button>
-					</div>
-				</div>
-
-			<!-- Mission -->
-			{:else if eventType === 'mission'}
-				{@const missionCard = event.card as Extract<RoomCard, { type: 'mission' }>}
-				<div class="text-center">
-					<span class="text-5xl">📜</span>
-					<h2 class="title-text mt-3 text-2xl">Misión Encontrada</h2>
-					<div class="card-item mx-auto mt-4 max-w-xs rounded-xl border border-blue-700/40 bg-stone-800/60 p-4">
-						<h3 class="text-lg font-bold text-blue-200">{event.card.name}</h3>
-						{#if event.card.description}
-							<p class="mt-2 text-sm text-stone-400">{event.card.description}</p>
-						{/if}
-						<div class="mt-3 text-left">
-							<p class="text-xs font-bold text-stone-500">Recompensas por entrega:</p>
-							<ul class="text-xs text-stone-400 mt-1 list-disc pl-4 space-y-1">
-								{#each missionCard.deliveryTargets as target (target.roomType)}
-									<li>{target.rewardDescription}</li>
-								{/each}
-							</ul>
+							<h3 class="text-lg font-bold text-amber-200">{event.card.name}</h3>
+							{#if event.card.description}
+								<p class="mt-2 text-sm text-stone-400">{event.card.description}</p>
+							{/if}
+							{#if itemCard.cost}
+								<p class="mt-2 text-xs text-amber-500/60">
+									Cost: {itemCard.cost.value}
+									{itemCard.cost.stat}
+								</p>
+							{/if}
+							{#if itemCard.ignoreCost}
+								<p class="mt-2 text-xs text-red-500/60">
+									Ignore Penalty: {itemCard.ignoreCost.label}
+								</p>
+							{/if}
 						</div>
-						{#if missionCard.passiveEffect}
-							<p class="mt-3 text-xs text-red-400/80 italic text-left border-t border-stone-700 pt-2">Efecto pasivo: {missionCard.passiveEffect.description}</p>
-						{/if}
+						<div class="mt-4 flex items-center justify-center gap-3">
+							<button
+								class="btn btn-primary px-6 py-2"
+								onclick={() => handleItemRoom('take')}
+								disabled={itemCard.cost
+									? itemCard.cost.stat === 'gold'
+										? game.gold < itemCard.cost.value
+										: itemCard.cost.stat === 'xp'
+											? game.xp < itemCard.cost.value
+											: itemCard.cost.stat === 'food'
+												? game.food < itemCard.cost.value
+												: game.hp <= itemCard.cost.value
+									: false}
+							>
+								{itemCard.cost ? 'Pay & Take' : 'Take Item'}
+							</button>
+							<button class="btn btn-secondary px-6 py-2" onclick={() => handleItemRoom('ignore')}>
+								Ignore
+							</button>
+						</div>
 					</div>
-					<div class="mt-4 flex items-center justify-center gap-3">
-						<button
-							class="btn btn-primary px-6 py-2"
-							onclick={() => handleMission('take')}
-						>
-							Aceptar Misión
-						</button>
-						<button class="btn btn-secondary px-6 py-2" onclick={() => handleMission('ignore')}>
-							Ignorar
-						</button>
-					</div>
-				</div>
 
-			<!-- Generic fallback -->
-			{:else}
-				<div class="text-center">
-					<span class="text-5xl">📜</span>
-					<h2 class="title-text mt-3 text-2xl">Event</h2>
-					{#if event.message}
-						<p class="mt-2 text-sm text-stone-300">{event.message}</p>
-					{/if}
-					<button class="btn btn-primary mt-4 px-6 py-2" onclick={closeEvent}>
-						Continue
-					</button>
-				</div>
+					<!-- Mission -->
+				{:else if eventType === 'mission'}
+					{@const missionCard = event.card as Extract<RoomCard, { type: 'mission' }>}
+					<div class="text-center">
+						<span class="text-5xl">📜</span>
+						<h2 class="title-text mt-3 text-2xl">Misión Encontrada</h2>
+						<div
+							class="card-item mx-auto mt-4 max-w-xs rounded-xl border border-blue-700/40 bg-stone-800/60 p-4"
+						>
+							<h3 class="text-lg font-bold text-blue-200">{event.card.name}</h3>
+							{#if event.card.description}
+								<p class="mt-2 text-sm text-stone-400">{event.card.description}</p>
+							{/if}
+							<div class="mt-3 text-left">
+								<p class="text-xs font-bold text-stone-500">Recompensas por entrega:</p>
+								<ul class="mt-1 list-disc space-y-1 pl-4 text-xs text-stone-400">
+									{#each missionCard.deliveryTargets as target (target.roomType)}
+										<li>{target.rewardDescription}</li>
+									{/each}
+								</ul>
+							</div>
+							{#if missionCard.passiveEffect}
+								<p
+									class="mt-3 border-t border-stone-700 pt-2 text-left text-xs text-red-400/80 italic"
+								>
+									Efecto pasivo: {missionCard.passiveEffect.description}
+								</p>
+							{/if}
+						</div>
+						<div class="mt-4 flex items-center justify-center gap-3">
+							<button class="btn btn-primary px-6 py-2" onclick={() => handleMission('take')}>
+								Aceptar Misión
+							</button>
+							<button class="btn btn-secondary px-6 py-2" onclick={() => handleMission('ignore')}>
+								Ignorar
+							</button>
+						</div>
+					</div>
+
+					<!-- Generic fallback -->
+				{:else}
+					<div class="text-center">
+						<span class="text-5xl">📜</span>
+						<h2 class="title-text mt-3 text-2xl">Event</h2>
+						{#if event.message}
+							<p class="mt-2 text-sm text-stone-300">{event.message}</p>
+						{/if}
+						<button class="btn btn-primary mt-4 px-6 py-2" onclick={closeEvent}> Continue </button>
+					</div>
 				{/if}
 			</div>
 		</div>

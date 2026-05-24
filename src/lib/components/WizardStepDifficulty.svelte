@@ -15,12 +15,17 @@
 </script>
 
 <div class="mb-8 w-full max-w-2xl">
-	<h2 class="mb-4 text-center text-lg font-semibold tracking-wider text-amber-200/70 uppercase">Difficulty</h2>
+	<h2 class="mb-4 text-center text-lg font-semibold tracking-wider text-amber-200/70 uppercase">
+		Difficulty
+	</h2>
 	<div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
 		{#each difficulties as d (d.mode)}
 			<button
-				class={['rounded-lg border-2 px-4 py-3 text-center transition-all duration-200',
-					difficulty === d.mode ? 'border-amber-500 bg-amber-900/20 text-amber-100' : 'border-stone-700 bg-stone-800/50 text-stone-400'
+				class={[
+					'rounded-lg border-2 px-4 py-3 text-center transition-all duration-200',
+					difficulty === d.mode
+						? 'border-amber-500 bg-amber-900/20 text-amber-100'
+						: 'border-stone-700 bg-stone-800/50 text-stone-400'
 				].join(' ')}
 				onclick={() => {
 					difficulty = d.mode;

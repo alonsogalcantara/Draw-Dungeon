@@ -11,26 +11,29 @@
 		const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
 		if (!AudioContextClass) return;
 		const audioCtx = new AudioContextClass();
-		
+
 		function playClick() {
 			if (audioCtx.state === 'suspended') {
 				audioCtx.resume();
 			}
 			const oscillator = audioCtx.createOscillator();
 			const gainNode = audioCtx.createGain();
-			
+
 			oscillator.type = 'triangle';
 			oscillator.frequency.setValueAtTime(300, audioCtx.currentTime);
 			oscillator.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
-			
+
 			// Use fxVolume from settings
 			const baseVolume = 0.1 * game.settings.fxVolume;
 			gainNode.gain.setValueAtTime(baseVolume, audioCtx.currentTime);
-			gainNode.gain.exponentialRampToValueAtTime(0.01 * game.settings.fxVolume, audioCtx.currentTime + 0.1);
-			
+			gainNode.gain.exponentialRampToValueAtTime(
+				0.01 * game.settings.fxVolume,
+				audioCtx.currentTime + 0.1
+			);
+
 			oscillator.connect(gainNode);
 			gainNode.connect(audioCtx.destination);
-			
+
 			oscillator.start();
 			oscillator.stop(audioCtx.currentTime + 0.1);
 		}

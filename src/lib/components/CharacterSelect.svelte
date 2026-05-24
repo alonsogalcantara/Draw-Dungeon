@@ -6,7 +6,7 @@
 	import { loadAllMetaProgress, clearMetaProgress, type MetaProgress } from '$lib/game/metaState';
 	import type { CharacterDef, DifficultyMode, CampaignType } from '$lib/game/types';
 	import { getProfiles, getActiveProfileId } from '$lib/game/metaState';
-	
+
 	import CustomChampionBuilder from './CustomChampionBuilder.svelte';
 	import WizardStepDifficulty from './WizardStepDifficulty.svelte';
 	import WizardStepCampaign from './WizardStepCampaign.svelte';
@@ -18,13 +18,13 @@
 	let layoutSize = $state<number>(3);
 	let step = $state<number>(1);
 	let metaProgress = $state<Record<string, MetaProgress>>({});
-	
+
 	let activeProfileName = $state('');
 
 	onMount(() => {
-		metaProgress = loadAllMetaProgress(CHARACTERS.map(c => c.id).concat('custom_champion'));
+		metaProgress = loadAllMetaProgress(CHARACTERS.map((c) => c.id).concat('custom_champion'));
 		const activeId = getActiveProfileId();
-		const profile = getProfiles().find(p => p.id === activeId);
+		const profile = getProfiles().find((p) => p.id === activeId);
 		if (profile) activeProfileName = profile.name;
 	});
 
@@ -39,16 +39,16 @@
 	let customPassiveSkill = $state<string | null>(null);
 	let isCustomValid = $state(false);
 
-	const activeSkillsList = ALL_SKILLS.filter(s => s.type !== 'passive');
-	const passiveSkillsList = ALL_SKILLS.filter(s => s.type === 'passive');
+	const activeSkillsList = ALL_SKILLS.filter((s) => s.type !== 'passive');
+	const passiveSkillsList = ALL_SKILLS.filter((s) => s.type === 'passive');
 
 	function handleBegin() {
 		if (selectedChar) {
 			let charToStart = selectedChar;
 			if (selectedChar.id === 'custom_champion') {
-				const activeObj = activeSkillsList.find(s => s.name === customActiveSkill)!;
-				const passiveObj = passiveSkillsList.find(s => s.name === customPassiveSkill)!;
-				
+				const activeObj = activeSkillsList.find((s) => s.name === customActiveSkill)!;
+				const passiveObj = passiveSkillsList.find((s) => s.name === customPassiveSkill)!;
+
 				charToStart = {
 					...selectedChar,
 					className: customRole || 'Wanderer',
@@ -82,15 +82,17 @@
 	}
 </script>
 
-<div class="flex min-h-screen flex-col items-center bg-gradient-to-b from-stone-950 via-stone-900 to-stone-950 px-4 py-8">
+<div
+	class="flex min-h-screen flex-col items-center bg-gradient-to-b from-stone-950 via-stone-900 to-stone-950 px-4 py-8"
+>
 	<!-- Top Bar -->
 	<div class="mb-4 flex w-full max-w-6xl items-center justify-between">
 		<div class="flex items-center gap-4">
-			<button class="btn btn-secondary text-sm" onclick={handleBack}>
-				← Back
-			</button>
+			<button class="btn btn-secondary text-sm" onclick={handleBack}> ← Back </button>
 			{#if activeProfileName}
-				<p class="text-sm font-bold tracking-widest text-amber-500/80 uppercase">Profile: {activeProfileName}</p>
+				<p class="text-sm font-bold tracking-widest text-amber-500/80 uppercase">
+					Profile: {activeProfileName}
+				</p>
 			{/if}
 		</div>
 	</div>
@@ -103,10 +105,12 @@
 			{:else}Choose Dungeon Layout{/if}
 		</h1>
 	</div>
-	<div class="mb-8 h-px w-48 bg-gradient-to-r from-transparent via-amber-600/50 to-transparent"></div>
+	<div
+		class="mb-8 h-px w-48 bg-gradient-to-r from-transparent via-amber-600/50 to-transparent"
+	></div>
 
 	{#if step === 1}
-		<CustomChampionBuilder 
+		<CustomChampionBuilder
 			bind:metaProgress
 			bind:customHp
 			bind:customFood
@@ -123,7 +127,7 @@
 			<button
 				id="next-btn-1"
 				class="btn btn-primary px-16 py-4 text-lg tracking-wider uppercase transition-all duration-300 hover:scale-105 disabled:opacity-40 disabled:hover:scale-100"
-				onclick={() => step = 2}
+				onclick={() => (step = 2)}
 				disabled={!selectedChar || (selectedChar.id === 'custom_champion' && !isCustomValid)}
 			>
 				Next: Difficulty
@@ -137,7 +141,7 @@
 			<button
 				id="next-btn-2"
 				class="btn btn-primary px-16 py-4 text-lg tracking-wider uppercase transition-all duration-300 hover:scale-105 disabled:opacity-40 disabled:hover:scale-100"
-				onclick={() => step = 3}
+				onclick={() => (step = 3)}
 			>
 				Next: Campaign
 			</button>
@@ -150,7 +154,7 @@
 			<button
 				id="next-btn-3"
 				class="btn btn-primary px-16 py-4 text-lg tracking-wider uppercase transition-all duration-300 hover:scale-105 disabled:opacity-40 disabled:hover:scale-100"
-				onclick={() => step = 4}
+				onclick={() => (step = 4)}
 			>
 				Next: Layout
 			</button>

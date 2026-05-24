@@ -24,17 +24,30 @@
 
 		// 2. UI Focus Navigation and Movement (WASD / Arrows)
 		const keyLow = e.key.length === 1 ? e.key.toLowerCase() : e.key;
-		const isNavKey = ['ArrowUp', 'w', 'ArrowDown', 's', 'ArrowLeft', 'a', 'ArrowRight', 'd'].includes(keyLow);
-		
-		const isDungeonMovementAllowed = !game.showSettings && (game.phase === 'playing' || game.phase === 'scouting');
+		const isNavKey = [
+			'ArrowUp',
+			'w',
+			'ArrowDown',
+			's',
+			'ArrowLeft',
+			'a',
+			'ArrowRight',
+			'd'
+		].includes(keyLow);
+
+		const isDungeonMovementAllowed =
+			!game.showSettings && (game.phase === 'playing' || game.phase === 'scouting');
 
 		if (isNavKey) {
 			// Try Dungeon Movement First
-			if (isDungeonMovementAllowed && (keyLow === 'arrowright' || keyLow === 'd' || keyLow === 'arrowdown' || keyLow === 's')) {
+			if (
+				isDungeonMovementAllowed &&
+				(keyLow === 'arrowright' || keyLow === 'd' || keyLow === 'arrowdown' || keyLow === 's')
+			) {
 				const r = game.playerRow;
 				const c = game.playerCol;
 				const currentRoom = game.roomGrid[r]?.[c];
-				
+
 				// Validate room is resolved before allowing movement
 				if (currentRoom && currentRoom.resolved) {
 					e.preventDefault();
@@ -53,12 +66,18 @@
 
 			// UI Focus Navigation (Fallback if not moving in dungeon)
 			const focusableElements = Array.from(
-				document.querySelectorAll('button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')
-			).filter(el => {
+				document.querySelectorAll(
+					'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+				)
+			).filter((el) => {
 				const style = window.getComputedStyle(el);
-				return style.display !== 'none' && style.visibility !== 'hidden' && (el as HTMLElement).offsetWidth > 0;
+				return (
+					style.display !== 'none' &&
+					style.visibility !== 'hidden' &&
+					(el as HTMLElement).offsetWidth > 0
+				);
 			}) as HTMLElement[];
-			
+
 			if (focusableElements.length > 0) {
 				const currentIndex = focusableElements.indexOf(document.activeElement as HTMLElement);
 				const isNext = ['ArrowDown', 's', 'ArrowRight', 'd'].includes(keyLow);
@@ -88,7 +107,7 @@
 			if (document.activeElement && document.activeElement.tagName !== 'BODY') {
 				e.preventDefault();
 				(document.activeElement as HTMLElement).click();
-				return; 
+				return;
 			}
 
 			e.preventDefault(); // prevent default scroll for space
@@ -146,7 +165,15 @@
 					game.event.resolve();
 				} else {
 					const cardType = game.event.card.type;
-					if (cardType !== 'bonfire' && cardType !== 'merchant' && cardType !== 'shrine' && cardType !== 'treasure' && cardType !== 'tomb' && cardType !== 'item_room' && cardType !== 'mission') {
+					if (
+						cardType !== 'bonfire' &&
+						cardType !== 'merchant' &&
+						cardType !== 'shrine' &&
+						cardType !== 'treasure' &&
+						cardType !== 'tomb' &&
+						cardType !== 'item_room' &&
+						cardType !== 'mission'
+					) {
 						closeGenericEvent();
 					}
 				}

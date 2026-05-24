@@ -1,316 +1,362 @@
-import { type GamePhase, type CampaignType, type CharacterDef, type DifficultyMode, type PotionType, type ItemCard, type RoomCardInstance, type CombatState, type SkillCheckState, type EventState, type LogEntry, type ActiveMission } from './types';
+import {
+	type GamePhase,
+	type CampaignType,
+	type CharacterDef,
+	type DifficultyMode,
+	type PotionType,
+	type ItemCard,
+	type RoomCardInstance,
+	type CombatState,
+	type SkillCheckState,
+	type EventState,
+	type LogEntry,
+	type ActiveMission
+} from './types';
 import { saveMetaProgress, loadMetaProgress, getActiveProfileId } from './metaState';
-import { MAX_HP, MAX_ARMOR, MAX_GOLD, MAX_FOOD, MAX_MANA, XP_REQUIREMENTS_PER_LEVEL, POLYHEDRAL_DICE } from '../data/constants';
+import {
+	MAX_HP,
+	MAX_ARMOR,
+	MAX_GOLD,
+	MAX_FOOD,
+	MAX_MANA,
+	XP_REQUIREMENTS_PER_LEVEL,
+	POLYHEDRAL_DICE
+} from '../data/constants';
 import type { RunSummary } from './gameStats';
 
 class GameState {
-  // Meta
-  phase = $state<GamePhase>('title');
-  difficulty = $state<DifficultyMode>('normal');
-  campaign = $state<CampaignType>('dungeon');
-  layoutSize = $state(3);
-  showSettings = $state(false);
-  
-  // Character
-  selectedCharacter = $state<CharacterDef | null>(null);
-  runSummary = $state<RunSummary | null>(null);
-  hp = $state(0);
-  maxHp = $state(0);
-  level = $state(1);
-  xp = $state(0);
-  armor = $state(0);
-  gold = $state(0);
-  food = $state(0);
-  mana = $state(0);
-  maxMana = $state(0);
-  potions = $state<(PotionType | null)[]>([null, null]);
-  item = $state<ItemCard | null>(null);
-  itemUsesLeft = $state(0);
-  missions = $state<ActiveMission[]>([]);
-  skillUsed = $state(false);
-  freeFeatActive = $state(false);
-  cursed = $state(false);
-  poisoned = $state(false);
-  blinded = $state(false);
-  temporaryArmor = $state(0);
-  
-  // Derived
-  maxXp = $derived(XP_REQUIREMENTS_PER_LEVEL[Math.min(this.level - 1, XP_REQUIREMENTS_PER_LEVEL.length - 1)] || 120);
-  
-  characterDieFaces = $derived(POLYHEDRAL_DICE[Math.min(this.level - 1, POLYHEDRAL_DICE.length - 1)]);
-  characterDiceCount = $derived.by(() => {
-    const ratio = this.xp / this.maxXp;
-    if (ratio >= 0.666) return 3;
-    if (ratio >= 0.333) return 2;
-    return 1;
-  });
-  isDead = $derived(this.hp <= 0);
-  
-  // Dungeon
-  currentFloor = $state(1);
-  currentArea = $state(1);
-  currentAreaInFloor = $state(1);
-  
-  // Room grid
-  roomGrid = $state<(RoomCardInstance | null)[][]>([]);
-  gridHistory = $state<{ floor: number, area: number, grid: (RoomCardInstance | null)[][] }[]>([]);
-  viewAreaIndex = $state(0);
-  playerRow = $state(0);
-  playerCol = $state(0);
-  
-  // Combat
-  combat = $state<CombatState | null>(null);
-  
-  // Skill check
-  skillCheck = $state<SkillCheckState | null>(null);
-  
-  // Event
-  event = $state<EventState | null>(null);
-  
-  // Log
-  log = $state<LogEntry[]>([]);
-  logCounter = $state(0);
-  
-  // Settings
-  settings = $state({
-    musicVolume: 0.5,
-    fxVolume: 0.5,
-    language: 'es' as 'es' | 'en'
-  });
-  
-  // Methods
-  addLog(message: string, type: LogEntry['type']) {
-    this.logCounter++;
-    this.log = [...this.log, { id: this.logCounter, message, type, timestamp: Date.now() }];
-    if (this.log.length > 50) this.log.shift();
-  }
-  
-  reset() {
-    this.phase = 'title';
-    this.layoutSize = 3;
-    this.selectedCharacter = null;
-    this.runSummary = null;
-    this.hp = 0;
-    this.maxHp = 0;
-    this.level = 1;
-    this.xp = 0;
-    this.armor = 0;
-    this.gold = 0;
-    this.food = 0;
-    this.mana = 0;
-    this.maxMana = 0;
-    this.potions = [null, null];
-    this.item = null;
-    this.itemUsesLeft = 0;
-    this.missions = [];
-    this.skillUsed = false;
-    this.freeFeatActive = false;
-    this.cursed = false;
-    this.poisoned = false;
-    this.blinded = false;
-    this.temporaryArmor = 0;
-    this.currentFloor = 1;
-    this.currentArea = 1;
-    this.currentAreaInFloor = 1;
-    this.roomGrid = [];
-    this.gridHistory = [];
-    this.viewAreaIndex = 0;
-    this.playerRow = 0;
-    this.playerCol = 0;
-    this.combat = null;
-    this.skillCheck = null;
-    this.event = null;
-    this.log = [];
-    this.logCounter = 0;
-    // Note: settings are preserved across resets.
-  }
+	// Meta
+	phase = $state<GamePhase>('title');
+	difficulty = $state<DifficultyMode>('normal');
+	campaign = $state<CampaignType>('dungeon');
+	layoutSize = $state(3);
+	showSettings = $state(false);
 
-  // --- Persistence ---
-  private getSaveKey() {
-    const profileId = getActiveProfileId() || 'default';
-    return `mini_rogue_save_${profileId}`;
-  }
+	// Character
+	selectedCharacter = $state<CharacterDef | null>(null);
+	runSummary = $state<RunSummary | null>(null);
+	hp = $state(0);
+	maxHp = $state(0);
+	level = $state(1);
+	xp = $state(0);
+	armor = $state(0);
+	gold = $state(0);
+	food = $state(0);
+	mana = $state(0);
+	maxMana = $state(0);
+	potions = $state<(PotionType | null)[]>([null, null]);
+	item = $state<ItemCard | null>(null);
+	itemUsesLeft = $state(0);
+	missions = $state<ActiveMission[]>([]);
+	skillUsed = $state(false);
+	freeFeatActive = $state(false);
+	cursed = $state(false);
+	poisoned = $state(false);
+	blinded = $state(false);
+	temporaryArmor = $state(0);
 
-  saveState() {
-    if (typeof localStorage === 'undefined') return;
-    try {
-      const stateToSave = {
-        phase: this.phase,
-        difficulty: this.difficulty,
-        campaign: this.campaign,
-        layoutSize: this.layoutSize,
-        selectedCharacter: this.selectedCharacter,
-        hp: this.hp,
-        maxHp: this.maxHp,
-        level: this.level,
-        xp: this.xp,
-        armor: this.armor,
-        gold: this.gold,
-        food: this.food,
-        mana: this.mana,
-        maxMana: this.maxMana,
-        potions: this.potions,
-        item: this.item,
-        itemUsesLeft: this.itemUsesLeft,
-        missions: this.missions,
-        skillUsed: this.skillUsed,
-        freeFeatActive: this.freeFeatActive,
-        cursed: this.cursed,
-        poisoned: this.poisoned,
-        blinded: this.blinded,
-        temporaryArmor: this.temporaryArmor,
-        currentFloor: this.currentFloor,
-        currentArea: this.currentArea,
-        currentAreaInFloor: this.currentAreaInFloor,
-        roomGrid: this.roomGrid,
-        gridHistory: this.gridHistory,
-        viewAreaIndex: this.viewAreaIndex,
-        playerRow: this.playerRow,
-        playerCol: this.playerCol,
-        combat: this.combat,
-        skillCheck: this.skillCheck,
-        event: this.event,
-        log: this.log,
-        logCounter: this.logCounter,
-        settings: $state.snapshot(this.settings) // clone the settings object
-      };
-      localStorage.setItem(this.getSaveKey(), JSON.stringify(stateToSave));
-    } catch (e) {
-      console.error('Failed to save game state', e);
-    }
-  }
+	// Derived
+	maxXp = $derived(
+		XP_REQUIREMENTS_PER_LEVEL[Math.min(this.level - 1, XP_REQUIREMENTS_PER_LEVEL.length - 1)] || 120
+	);
 
-  loadState(): boolean {
-    if (typeof localStorage === 'undefined') return false;
-    try {
-      const saved = localStorage.getItem(this.getSaveKey());
-      if (!saved) return false;
-      const parsed = JSON.parse(saved);
-      
-      console.log("Loading state:", parsed);
-      
-      // Restore properties explicitly to guarantee reactivity in Svelte 5
-      for (const key in parsed) {
-        if (key in this && typeof (this as any)[key] !== 'function') {
-          (this as any)[key] = parsed[key];
-        }
-      }
-      return true;
-    } catch (e) {
-      console.error('Failed to load game state', e);
-      return false;
-    }
-  }
+	characterDieFaces = $derived(
+		POLYHEDRAL_DICE[Math.min(this.level - 1, POLYHEDRAL_DICE.length - 1)]
+	);
+	characterDiceCount = $derived.by(() => {
+		const ratio = this.xp / this.maxXp;
+		if (ratio >= 0.666) return 3;
+		if (ratio >= 0.333) return 2;
+		return 1;
+	});
+	isDead = $derived(this.hp <= 0);
 
-  clearState() {
-    if (typeof localStorage === 'undefined') return;
-    localStorage.removeItem(this.getSaveKey());
-  }
+	// Dungeon
+	currentFloor = $state(1);
+	currentArea = $state(1);
+	currentAreaInFloor = $state(1);
 
-  hasSavedState(): boolean {
-    if (typeof localStorage === 'undefined') return false;
-    return localStorage.getItem(this.getSaveKey()) !== null;
-  }
+	// Room grid
+	roomGrid = $state<(RoomCardInstance | null)[][]>([]);
+	gridHistory = $state<{ floor: number; area: number; grid: (RoomCardInstance | null)[][] }[]>([]);
+	viewAreaIndex = $state(0);
+	playerRow = $state(0);
+	playerCol = $state(0);
 
-  gainHp(amount: number) {
-    this.hp = Math.min(this.hp + amount, this.maxHp);
-  }
+	// Combat
+	combat = $state<CombatState | null>(null);
 
-  loseHp(amount: number) {
-    this.hp = Math.max(0, this.hp - amount);
-  }
+	// Skill check
+	skillCheck = $state<SkillCheckState | null>(null);
 
-  gainXp(amount: number) {
-    this.xp += amount;
-    
-    // Level up while XP is greater than or equal to required XP for next level
-    while (this.xp >= this.maxXp && this.level < POLYHEDRAL_DICE.length) {
-      this.xp -= this.maxXp;
-      this.level += 1;
-      
-      this.maxHp += 5;
-      this.gainHp(5);
-      
-      const newDieCount = Math.min(3, this.level);
-      const newFaces = POLYHEDRAL_DICE[Math.min(this.level - 1, POLYHEDRAL_DICE.length - 1)];
-      this.addLog(`Leveled up to ${this.level}! Max HP +5, Rolling ${newDieCount}D${newFaces}`, 'info');
-    }
-    
-    // If we are at max level, excess XP above maxXp heals us
-    if (this.level >= POLYHEDRAL_DICE.length && this.xp > this.maxXp) {
-      const excess = this.xp - this.maxXp;
-      this.gainHp(excess);
-      this.addLog(`Max Level! Converted ${excess} excess XP into HP.`, 'info');
-      this.xp = this.maxXp;
-    }
-    
-    if (this.selectedCharacter) {
-      const existing = loadMetaProgress(this.selectedCharacter.id) || { level: 1, xp: 0, victories: 0, statUpgrades: { hp: 0, armor: 0, gold: 0, food: 0 } };
-      existing.level = this.level;
-      existing.xp = this.xp;
-      saveMetaProgress(this.selectedCharacter.id, existing);
-    }
-  }
+	// Event
+	event = $state<EventState | null>(null);
 
-  loseXp(amount: number) {
-    this.xp = Math.max(0, this.xp - amount);
-    if (this.selectedCharacter) {
-      const existing = loadMetaProgress(this.selectedCharacter.id) || { level: 1, xp: 0, victories: 0, statUpgrades: { hp: 0, armor: 0, gold: 0, food: 0 } };
-      existing.level = this.level;
-      existing.xp = this.xp;
-      saveMetaProgress(this.selectedCharacter.id, existing);
-    }
-  }
+	// Log
+	log = $state<LogEntry[]>([]);
+	logCounter = $state(0);
 
-  gainGold(amount: number) {
-    this.gold = Math.min(this.gold + amount, MAX_GOLD);
-  }
+	// Settings
+	settings = $state({
+		musicVolume: 0.5,
+		fxVolume: 0.5,
+		language: 'es' as 'es' | 'en'
+	});
 
-  loseGold(amount: number) {
-    if (this.gold >= amount) {
-      this.gold -= amount;
-    } else {
-      const missing = amount - this.gold;
-      this.gold = 0;
-      this.loseHp(missing);
-    }
-  }
+	// Methods
+	addLog(message: string, type: LogEntry['type']) {
+		this.logCounter++;
+		this.log = [...this.log, { id: this.logCounter, message, type, timestamp: Date.now() }];
+		if (this.log.length > 50) this.log.shift();
+	}
 
-  gainFood(amount: number) {
-    this.food = Math.min(this.food + amount, MAX_FOOD);
-  }
+	reset() {
+		this.phase = 'title';
+		this.layoutSize = 3;
+		this.selectedCharacter = null;
+		this.runSummary = null;
+		this.hp = 0;
+		this.maxHp = 0;
+		this.level = 1;
+		this.xp = 0;
+		this.armor = 0;
+		this.gold = 0;
+		this.food = 0;
+		this.mana = 0;
+		this.maxMana = 0;
+		this.potions = [null, null];
+		this.item = null;
+		this.itemUsesLeft = 0;
+		this.missions = [];
+		this.skillUsed = false;
+		this.freeFeatActive = false;
+		this.cursed = false;
+		this.poisoned = false;
+		this.blinded = false;
+		this.temporaryArmor = 0;
+		this.currentFloor = 1;
+		this.currentArea = 1;
+		this.currentAreaInFloor = 1;
+		this.roomGrid = [];
+		this.gridHistory = [];
+		this.viewAreaIndex = 0;
+		this.playerRow = 0;
+		this.playerCol = 0;
+		this.combat = null;
+		this.skillCheck = null;
+		this.event = null;
+		this.log = [];
+		this.logCounter = 0;
+		// Note: settings are preserved across resets.
+	}
 
-  loseFood(amount: number) {
-    if (this.food >= amount) {
-      this.food -= amount;
-    } else {
-      const missing = amount - this.food;
-      this.food = 0;
-      this.loseHp(missing * 3); // 1 missing food = 1 HP? Wait, manual says: if you must lose resource, lose 1 HP. But starving is lose 3 HP. For general loss, 1 HP per missing. Let's assume 1 HP per missing resource. Wait, the manual says 1 HP per missing resource.
-    }
-  }
+	// --- Persistence ---
+	private getSaveKey() {
+		const profileId = getActiveProfileId() || 'default';
+		return `mini_rogue_save_${profileId}`;
+	}
 
-  gainArmor(amount: number) {
-    this.armor = Math.min(this.armor + amount, MAX_ARMOR);
-  }
+	saveState() {
+		if (typeof localStorage === 'undefined') return;
+		try {
+			const stateToSave = {
+				phase: this.phase,
+				difficulty: this.difficulty,
+				campaign: this.campaign,
+				layoutSize: this.layoutSize,
+				selectedCharacter: this.selectedCharacter,
+				hp: this.hp,
+				maxHp: this.maxHp,
+				level: this.level,
+				xp: this.xp,
+				armor: this.armor,
+				gold: this.gold,
+				food: this.food,
+				mana: this.mana,
+				maxMana: this.maxMana,
+				potions: this.potions,
+				item: this.item,
+				itemUsesLeft: this.itemUsesLeft,
+				missions: this.missions,
+				skillUsed: this.skillUsed,
+				freeFeatActive: this.freeFeatActive,
+				cursed: this.cursed,
+				poisoned: this.poisoned,
+				blinded: this.blinded,
+				temporaryArmor: this.temporaryArmor,
+				currentFloor: this.currentFloor,
+				currentArea: this.currentArea,
+				currentAreaInFloor: this.currentAreaInFloor,
+				roomGrid: this.roomGrid,
+				gridHistory: this.gridHistory,
+				viewAreaIndex: this.viewAreaIndex,
+				playerRow: this.playerRow,
+				playerCol: this.playerCol,
+				combat: this.combat,
+				skillCheck: this.skillCheck,
+				event: this.event,
+				log: this.log,
+				logCounter: this.logCounter,
+				settings: $state.snapshot(this.settings) // clone the settings object
+			};
+			localStorage.setItem(this.getSaveKey(), JSON.stringify(stateToSave));
+		} catch (e) {
+			console.error('Failed to save game state', e);
+		}
+	}
 
-  loseArmor(amount: number) {
-    if (this.armor >= amount) {
-      this.armor -= amount;
-    } else {
-      const missing = amount - this.armor;
-      this.armor = 0;
-      this.loseHp(missing);
-    }
-  }
+	loadState(): boolean {
+		if (typeof localStorage === 'undefined') return false;
+		try {
+			const saved = localStorage.getItem(this.getSaveKey());
+			if (!saved) return false;
+			const parsed = JSON.parse(saved);
 
-  gainMana(amount: number) {
-    this.mana = Math.min(this.mana + amount, this.maxMana);
-  }
+			console.log('Loading state:', parsed);
 
-  loseMana(amount: number) {
-    this.mana = Math.max(0, this.mana - amount);
-  }
+			// Restore properties explicitly to guarantee reactivity in Svelte 5
+			for (const key in parsed) {
+				if (key in this && typeof (this as any)[key] !== 'function') {
+					(this as any)[key] = parsed[key];
+				}
+			}
+			return true;
+		} catch (e) {
+			console.error('Failed to load game state', e);
+			return false;
+		}
+	}
+
+	clearState() {
+		if (typeof localStorage === 'undefined') return;
+		try {
+			localStorage.removeItem(this.getSaveKey());
+		} catch (e) {
+			console.error('Failed to clear game state', e);
+		}
+	}
+
+	hasSavedState(): boolean {
+		if (typeof localStorage === 'undefined') return false;
+		try {
+			return localStorage.getItem(this.getSaveKey()) !== null;
+		} catch (e) {
+			return false;
+		}
+	}
+
+	gainHp(amount: number) {
+		this.hp = Math.min(this.hp + amount, this.maxHp);
+	}
+
+	loseHp(amount: number) {
+		this.hp = Math.max(0, this.hp - amount);
+	}
+
+	gainXp(amount: number) {
+		this.xp += amount;
+
+		// Level up while XP is greater than or equal to required XP for next level
+		while (this.xp >= this.maxXp && this.level < POLYHEDRAL_DICE.length) {
+			this.xp -= this.maxXp;
+			this.level += 1;
+
+			this.maxHp += 5;
+			this.gainHp(5);
+
+			const newDieCount = Math.min(3, this.level);
+			const newFaces = POLYHEDRAL_DICE[Math.min(this.level - 1, POLYHEDRAL_DICE.length - 1)];
+			this.addLog(
+				`Leveled up to ${this.level}! Max HP +5, Rolling ${newDieCount}D${newFaces}`,
+				'info'
+			);
+		}
+
+		// If we are at max level, excess XP above maxXp heals us
+		if (this.level >= POLYHEDRAL_DICE.length && this.xp > this.maxXp) {
+			const excess = this.xp - this.maxXp;
+			this.gainHp(excess);
+			this.addLog(`Max Level! Converted ${excess} excess XP into HP.`, 'info');
+			this.xp = this.maxXp;
+		}
+
+		if (this.selectedCharacter) {
+			const existing = loadMetaProgress(this.selectedCharacter.id) || {
+				level: 1,
+				xp: 0,
+				victories: 0,
+				statUpgrades: { hp: 0, armor: 0, gold: 0, food: 0 }
+			};
+			existing.level = this.level;
+			existing.xp = this.xp;
+			saveMetaProgress(this.selectedCharacter.id, existing);
+		}
+	}
+
+	loseXp(amount: number) {
+		this.xp = Math.max(0, this.xp - amount);
+		if (this.selectedCharacter) {
+			const existing = loadMetaProgress(this.selectedCharacter.id) || {
+				level: 1,
+				xp: 0,
+				victories: 0,
+				statUpgrades: { hp: 0, armor: 0, gold: 0, food: 0 }
+			};
+			existing.level = this.level;
+			existing.xp = this.xp;
+			saveMetaProgress(this.selectedCharacter.id, existing);
+		}
+	}
+
+	gainGold(amount: number) {
+		this.gold = Math.min(this.gold + amount, MAX_GOLD);
+	}
+
+	loseGold(amount: number) {
+		if (this.gold >= amount) {
+			this.gold -= amount;
+		} else {
+			const missing = amount - this.gold;
+			this.gold = 0;
+			this.loseHp(missing);
+		}
+	}
+
+	gainFood(amount: number) {
+		this.food = Math.min(this.food + amount, MAX_FOOD);
+	}
+
+	loseFood(amount: number) {
+		if (this.food >= amount) {
+			this.food -= amount;
+		} else {
+			const missing = amount - this.food;
+			this.food = 0;
+			this.loseHp(missing * 3); // 1 missing food = 1 HP? Wait, manual says: if you must lose resource, lose 1 HP. But starving is lose 3 HP. For general loss, 1 HP per missing. Let's assume 1 HP per missing resource. Wait, the manual says 1 HP per missing resource.
+		}
+	}
+
+	gainArmor(amount: number) {
+		this.armor = Math.min(this.armor + amount, MAX_ARMOR);
+	}
+
+	loseArmor(amount: number) {
+		if (this.armor >= amount) {
+			this.armor -= amount;
+		} else {
+			const missing = amount - this.armor;
+			this.armor = 0;
+			this.loseHp(missing);
+		}
+	}
+
+	gainMana(amount: number) {
+		this.mana = Math.min(this.mana + amount, this.maxMana);
+	}
+
+	loseMana(amount: number) {
+		this.mana = Math.max(0, this.mana - amount);
+	}
 }
 
 export const game = new GameState();

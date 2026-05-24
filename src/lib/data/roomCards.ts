@@ -12,16 +12,16 @@ import { ITEM_CARDS } from './cards/items';
 import { MISSION_CARDS } from './cards/missions';
 
 export {
-  MONSTER_CARDS,
-  BOSS_CARDS,
-  TRAP_CARDS,
-  TREASURE_CARDS,
-  BONFIRE_CARDS,
-  MERCHANT_CARDS,
-  SHRINE_CARDS,
-  TOMB_CARDS,
-  ITEM_CARDS,
-  MISSION_CARDS
+	MONSTER_CARDS,
+	BOSS_CARDS,
+	TRAP_CARDS,
+	TREASURE_CARDS,
+	BONFIRE_CARDS,
+	MERCHANT_CARDS,
+	SHRINE_CARDS,
+	TOMB_CARDS,
+	ITEM_CARDS,
+	MISSION_CARDS
 };
 
 /**
@@ -29,13 +29,13 @@ export {
  * Bosses are placed separately on the dungeon mat.
  */
 export const ROOM_CARDS: RoomCard[] = [
-  ...MONSTER_CARDS,
-  ...TRAP_CARDS,
-  ...TREASURE_CARDS,
-  ...BONFIRE_CARDS,
-  ...MERCHANT_CARDS,
-  ...SHRINE_CARDS,
-  ...TOMB_CARDS,
-  ...ITEM_CARDS,
-  ...MISSION_CARDS,
+	...MONSTER_CARDS,
+	...TRAP_CARDS,
+	...TREASURE_CARDS,
+	...BONFIRE_CARDS,
+	...MERCHANT_CARDS,
+	...SHRINE_CARDS,
+	...TOMB_CARDS,
+	...ITEM_CARDS,
+	...MISSION_CARDS
 ];

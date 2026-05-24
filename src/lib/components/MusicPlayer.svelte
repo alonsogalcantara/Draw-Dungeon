@@ -17,10 +17,10 @@
 			if (!hasInteracted && audio) {
 				hasInteracted = true;
 				audio.volume = game.settings.musicVolume;
-				audio.play().catch(e => {
-					console.log("Audio autoplay prevented by browser:", e);
+				audio.play().catch((e) => {
+					console.log('Audio autoplay prevented by browser:', e);
 				});
-				
+
 				// Remove listeners after first interaction
 				document.removeEventListener('click', handleFirstInteraction);
 				document.removeEventListener('keydown', handleFirstInteraction);
@@ -37,9 +37,4 @@
 	});
 </script>
 
-<audio
-	bind:this={audio}
-	src="/music/One_Final_Shuffle.mp3"
-	loop
-	preload="auto"
-></audio>
+<audio bind:this={audio} src="/music/One_Final_Shuffle.mp3" loop preload="auto"></audio>

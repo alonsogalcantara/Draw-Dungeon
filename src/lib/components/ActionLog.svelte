@@ -26,7 +26,9 @@
 </script>
 
 <div class="panel panel-log flex flex-col">
-	<h3 class="mb-2 border-b border-amber-900/30 pb-2 text-sm font-bold tracking-wider text-amber-400/70 uppercase">
+	<h3
+		class="mb-2 border-b border-amber-900/30 pb-2 text-sm font-bold tracking-wider text-amber-400/70 uppercase"
+	>
 		Adventure Log
 	</h3>
 	<div
@@ -42,9 +44,7 @@
 		{/each}
 
 		{#if visibleEntries.length === 0}
-			<p class="py-4 text-center text-xs text-stone-600 italic">
-				Your adventure awaits...
-			</p>
+			<p class="py-4 text-center text-xs text-stone-600 italic">Your adventure awaits...</p>
 		{/if}
 	</div>
 </div>

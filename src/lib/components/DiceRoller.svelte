@@ -1,7 +1,12 @@
 <script lang="ts">
 	import type { DieResult } from '$lib/game/types';
 
-	let { dice = [], dungeonDie = null, rolling = false, onDieClick }: {
+	let {
+		dice = [],
+		dungeonDie = null,
+		rolling = false,
+		onDieClick
+	}: {
 		dice: DieResult[];
 		dungeonDie: number | null;
 		rolling: boolean;
@@ -17,7 +22,8 @@
 
 	function getDieDisplayValue(die: DieResult): string {
 		if (die.value === 0) return '❌';
-		if (die.isCritical || (die.type !== 'character' && die.type !== 'dungeon' && die.value === 6)) return '💥';
+		if (die.isCritical || (die.type !== 'character' && die.type !== 'dungeon' && die.value === 6))
+			return '💥';
 		return String(die.value);
 	}
 </script>
@@ -25,7 +31,7 @@
 <div class="flex flex-wrap items-center justify-center gap-3">
 	{#each dice as die, i (i)}
 		<button
-			class="relative die flex h-16 w-16 items-center justify-center rounded-xl text-2xl font-bold shadow-lg transition-all duration-300"
+			class="die relative flex h-16 w-16 items-center justify-center rounded-xl text-2xl font-bold shadow-lg transition-all duration-300"
 			class:cursor-pointer={onDieClick}
 			class:hover:scale-105={onDieClick && !rolling}
 			onclick={() => onDieClick && onDieClick(i)}
@@ -48,13 +54,17 @@
 				<span class="drop-shadow-lg">{getDieDisplayValue(die)}</span>
 			{/if}
 			{#if die.type === 'character'}
-				<span class="absolute -bottom-1 -right-1 rounded bg-stone-900/80 px-1 py-0.5 text-[0.55rem] font-bold text-stone-300 border border-stone-700 backdrop-blur-sm">D{die.faces ?? 6}</span>
+				<span
+					class="absolute -right-1 -bottom-1 rounded border border-stone-700 bg-stone-900/80 px-1 py-0.5 text-[0.55rem] font-bold text-stone-300 backdrop-blur-sm"
+					>D{die.faces ?? 6}</span
+				>
 			{/if}
 		</button>
 	{/each}
 
 	{#if dungeonDie !== null}
-		<div class="die die-dungeon flex h-16 w-16 items-center justify-center rounded-xl text-2xl font-bold shadow-lg"
+		<div
+			class="die die-dungeon flex h-16 w-16 items-center justify-center rounded-xl text-2xl font-bold shadow-lg"
 			class:die-rolling={rolling}
 		>
 			{#if rolling}

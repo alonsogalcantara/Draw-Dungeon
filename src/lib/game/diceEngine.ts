@@ -10,63 +10,63 @@ import { CHARACTER_DIE_FACES, EFFECT_DIE_TRIGGER_MAX } from '../data/constants';
 
 /** Generate a random integer between min and max (inclusive) */
 function randomInt(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 // --- Character Die ---
 
 export function rollCharacterDie(faces: number = 6): DieResult {
-  // If it's the standard D6, we use the original mapping to preserve the exact Mini Rogue probabilities:
-  // [Miss(0), 1, 2, 3, 5, 6] (notice there is no 4)
-  if (faces === 6) {
-    const faceIndex = randomInt(0, 5);
-    const value = CHARACTER_DIE_FACES[faceIndex];
+	// If it's the standard D6, we use the original mapping to preserve the exact Mini Rogue probabilities:
+	// [Miss(0), 1, 2, 3, 5, 6] (notice there is no 4)
+	if (faces === 6) {
+		const faceIndex = randomInt(0, 5);
+		const value = CHARACTER_DIE_FACES[faceIndex];
 
-    return {
-      type: 'character' as DieType,
-      value,
-      isStar: value >= 5,
-      isCritical: value === 6,
-      isMiss: value === 0,
-      setAside: false,
-      rerolled: false,
-      faces: 6
-    };
-  }
+		return {
+			type: 'character' as DieType,
+			value,
+			isStar: value >= 5,
+			isCritical: value === 6,
+			isMiss: value === 0,
+			setAside: false,
+			rerolled: false,
+			faces: 6
+		};
+	}
 
-  // For polyhedral dice (D8, D10, D12, D16, D18, D20), we use linear 1-N mapping
-  const roll = randomInt(1, faces);
-  
-  let value = roll;
-  let isMiss = false;
-  
-  // Rule: 1 is always a miss (0 value)
-  if (roll === 1) {
-    value = 0;
-    isMiss = true;
-  }
-  
-  // Rule: Success (Star) is the top 2 values for D8-D12, top 4 values for D16-D20
-  let isStar = false;
-  if (faces <= 12) {
-    isStar = roll >= faces - 1;
-  } else {
-    isStar = roll >= faces - 3;
-  }
-  
-  // Rule: Critical is always the max value
-  const isCritical = roll === faces;
+	// For polyhedral dice (D8, D10, D12, D16, D18, D20), we use linear 1-N mapping
+	const roll = randomInt(1, faces);
 
-  return {
-    type: 'character' as DieType,
-    value,
-    isStar,
-    isCritical,
-    isMiss,
-    setAside: false,
-    rerolled: false,
-    faces
-  };
+	let value = roll;
+	let isMiss = false;
+
+	// Rule: 1 is always a miss (0 value)
+	if (roll === 1) {
+		value = 0;
+		isMiss = true;
+	}
+
+	// Rule: Success (Star) is the top 2 values for D8-D12, top 4 values for D16-D20
+	let isStar = false;
+	if (faces <= 12) {
+		isStar = roll >= faces - 1;
+	} else {
+		isStar = roll >= faces - 3;
+	}
+
+	// Rule: Critical is always the max value
+	const isCritical = roll === faces;
+
+	return {
+		type: 'character' as DieType,
+		value,
+		isStar,
+		isCritical,
+		isMiss,
+		setAside: false,
+		rerolled: false,
+		faces
+	};
 }
 
 // --- Dungeon Die ---
@@ -76,7 +76,7 @@ export function rollCharacterDie(faces: number = 6): DieResult {
  * Used for monster attack resolution, trap/shrine/tomb outcomes, etc.
  */
 export function rollDungeonDie(): number {
-  return randomInt(1, 6);
+	return randomInt(1, 6);
 }
 
 // --- Poison Die ---
@@ -87,25 +87,25 @@ export function rollDungeonDie(): number {
  * Results 4-6 are safe.
  */
 export function rollPoisonDie(): DieResult {
-  const value = randomInt(1, 6);
-  const triggered = value <= EFFECT_DIE_TRIGGER_MAX;
+	const value = randomInt(1, 6);
+	const triggered = value <= EFFECT_DIE_TRIGGER_MAX;
 
-  return {
-    type: 'poison' as DieType,
-    value,
-    isStar: false,
-    isCritical: false,
-    isMiss: false,
-    setAside: false,
-    rerolled: false,
-  };
+	return {
+		type: 'poison' as DieType,
+		value,
+		isStar: false,
+		isCritical: false,
+		isMiss: false,
+		setAside: false,
+		rerolled: false
+	};
 }
 
 /**
  * Check if a poison die result triggers the poison effect.
  */
 export function isPoisonTriggered(die: DieResult): boolean {
-  return die.type === 'poison' && die.value <= EFFECT_DIE_TRIGGER_MAX;
+	return die.type === 'poison' && die.value <= EFFECT_DIE_TRIGGER_MAX;
 }
 
 // --- Curse Die ---
@@ -116,33 +116,33 @@ export function isPoisonTriggered(die: DieResult): boolean {
  * Results 4-6 are safe.
  */
 export function rollCurseDie(): DieResult {
-  const value = randomInt(1, 6);
+	const value = randomInt(1, 6);
 
-  return {
-    type: 'curse' as DieType,
-    value,
-    isStar: false,
-    isCritical: false,
-    isMiss: false,
-    setAside: false,
-    rerolled: false,
-  };
+	return {
+		type: 'curse' as DieType,
+		value,
+		isStar: false,
+		isCritical: false,
+		isMiss: false,
+		setAside: false,
+		rerolled: false
+	};
 }
 
 /**
  * Check if a curse die result triggers the curse effect.
  */
 export function isCurseTriggered(die: DieResult): boolean {
-  return die.type === 'curse' && die.value <= EFFECT_DIE_TRIGGER_MAX;
+	return die.type === 'curse' && die.value <= EFFECT_DIE_TRIGGER_MAX;
 }
 
 // --- Roll All Dice ---
 
 export interface DiceRollResult {
-  characterDice: DieResult[];
-  dungeonDie: number;
-  poisonDie: DieResult | null;
-  curseDie: DieResult | null;
+	characterDice: DieResult[];
+	dungeonDie: number;
+	poisonDie: DieResult | null;
+	curseDie: DieResult | null;
 }
 
 /**
@@ -154,26 +154,26 @@ export interface DiceRollResult {
  * @returns All dice results
  */
 export function rollAllDice(
-  characterDiceCount: number,
-  characterDieFaces: number,
-  hasPoisonDie: boolean,
-  hasCurseDie: boolean
+	characterDiceCount: number,
+	characterDieFaces: number,
+	hasPoisonDie: boolean,
+	hasCurseDie: boolean
 ): DiceRollResult {
-  const characterDice: DieResult[] = [];
-  for (let i = 0; i < characterDiceCount; i++) {
-    characterDice.push(rollCharacterDie(characterDieFaces));
-  }
+	const characterDice: DieResult[] = [];
+	for (let i = 0; i < characterDiceCount; i++) {
+		characterDice.push(rollCharacterDie(characterDieFaces));
+	}
 
-  const dungeonDie = rollDungeonDie();
-  const poisonDie = hasPoisonDie ? rollPoisonDie() : null;
-  const curseDie = hasCurseDie ? rollCurseDie() : null;
+	const dungeonDie = rollDungeonDie();
+	const poisonDie = hasPoisonDie ? rollPoisonDie() : null;
+	const curseDie = hasCurseDie ? rollCurseDie() : null;
 
-  return {
-    characterDice,
-    dungeonDie,
-    poisonDie,
-    curseDie,
-  };
+	return {
+		characterDice,
+		dungeonDie,
+		poisonDie,
+		curseDie
+	};
 }
 
 // --- Reroll ---
@@ -186,11 +186,11 @@ export function rollAllDice(
  * @returns New DieResult with updated values
  */
 export function rerollDie(die: DieResult): DieResult {
-  const newDie = rollCharacterDie(die.faces ?? 6);
-  return {
-    ...newDie,
-    rerolled: true,
-  };
+	const newDie = rollCharacterDie(die.faces ?? 6);
+	return {
+		...newDie,
+		rerolled: true
+	};
 }
 
 // --- Curse Effect ---
@@ -208,46 +208,46 @@ export function rerollDie(die: DieResult): DieResult {
  * @returns New array with curse applied
  */
 export function applyCurseEffect(dice: DieResult[]): DieResult[] {
-  return dice.map((die) => {
-    if (die.type !== 'character') return die;
-    if (die.setAside) return die;
+	return dice.map((die) => {
+		if (die.type !== 'character') return die;
+		if (die.setAside) return die;
 
-    // Subtract 1 from value
-    let newValue = die.value - 1;
+		// Subtract 1 from value
+		let newValue = die.value - 1;
 
-    // If value goes below 0 or reaches 0, it becomes a miss
-    if (newValue <= 0) {
-      newValue = 0;
-    }
+		// If value goes below 0 or reaches 0, it becomes a miss
+		if (newValue <= 0) {
+			newValue = 0;
+		}
 
-    const faces = die.faces ?? 6;
+		const faces = die.faces ?? 6;
 
-    // For D6 with the missing '4', we must preserve the 5->4 mapping explicitly
-    // to maintain the original game feel.
-    if (faces === 6 && die.value === 5) {
-      newValue = 4;
-    }
+		// For D6 with the missing '4', we must preserve the 5->4 mapping explicitly
+		// to maintain the original game feel.
+		if (faces === 6 && die.value === 5) {
+			newValue = 4;
+		}
 
-    // Determine new star/critical thresholds based on faces
-    let isStar = false;
-    let isCritical = newValue === faces;
+		// Determine new star/critical thresholds based on faces
+		let isStar = false;
+		let isCritical = newValue === faces;
 
-    if (faces === 6) {
-      isStar = newValue >= 5;
-    } else if (faces <= 12) {
-      isStar = newValue >= faces - 1;
-    } else {
-      isStar = newValue >= faces - 3;
-    }
+		if (faces === 6) {
+			isStar = newValue >= 5;
+		} else if (faces <= 12) {
+			isStar = newValue >= faces - 1;
+		} else {
+			isStar = newValue >= faces - 3;
+		}
 
-    return {
-      ...die,
-      value: newValue,
-      isStar,
-      isCritical,
-      isMiss: newValue === 0,
-    };
-  });
+		return {
+			...die,
+			value: newValue,
+			isStar,
+			isCritical,
+			isMiss: newValue === 0
+		};
+	});
 }
 
 // --- Damage Calculation ---
@@ -260,11 +260,11 @@ export function applyCurseEffect(dice: DieResult[]): DieResult[] {
  * @returns Total damage value
  */
 export function calculateDamage(dice: DieResult[]): number {
-  return dice.reduce((total, die) => {
-    if (die.type !== 'character') return total;
-    if (die.isMiss || die.setAside) return total;
-    return total + die.value;
-  }, 0);
+	return dice.reduce((total, die) => {
+		if (die.type !== 'character') return total;
+		if (die.isMiss || die.setAside) return total;
+		return total + die.value;
+	}, 0);
 }
 
 // --- Skill Check ---
@@ -277,7 +277,7 @@ export function calculateDamage(dice: DieResult[]): number {
  * @returns True if the skill check succeeds
  */
 export function isSkillCheckSuccess(dice: DieResult[]): boolean {
-  return dice.some((die) => die.type === 'character' && die.isStar && !die.setAside);
+	return dice.some((die) => die.type === 'character' && die.isStar && !die.setAside);
 }
 
 // --- Critical Hit Processing ---
@@ -292,30 +292,30 @@ export function isSkillCheckSuccess(dice: DieResult[]): boolean {
  * @returns Updated die with accumulated value, or set aside on miss
  */
 export function processCriticalHit(die: DieResult): DieResult {
-  if (!die.isCritical || die.type !== 'character') return die;
+	if (!die.isCritical || die.type !== 'character') return die;
 
-  const reroll = rollCharacterDie(die.faces ?? 6);
+	const reroll = rollCharacterDie(die.faces ?? 6);
 
-  if (reroll.isMiss) {
-    // Miss on critical reroll: die is set aside
-    return {
-      ...die,
-      setAside: true,
-      rerolled: true,
-    };
-  }
+	if (reroll.isMiss) {
+		// Miss on critical reroll: die is set aside
+		return {
+			...die,
+			setAside: true,
+			rerolled: true
+		};
+	}
 
-  // Add the new value to the previous value
-  const newValue = die.value + reroll.value;
+	// Add the new value to the previous value
+	const newValue = die.value + reroll.value;
 
-  return {
-    ...die,
-    value: newValue,
-    isStar: false, // Combined value isn't a "star" for skill checks
-    isCritical: reroll.isCritical, // Can chain criticals if the reroll is also a 6
-    isMiss: false,
-    rerolled: true,
-  };
+	return {
+		...die,
+		value: newValue,
+		isStar: false, // Combined value isn't a "star" for skill checks
+		isCritical: reroll.isCritical, // Can chain criticals if the reroll is also a 6
+		isMiss: false,
+		rerolled: true
+	};
 }
 
 // --- Set Aside Misses ---
@@ -327,12 +327,12 @@ export function processCriticalHit(die: DieResult): DieResult {
  * @returns Updated array with miss dice set aside
  */
 export function setAsideMisses(dice: DieResult[]): DieResult[] {
-  return dice.map((die) => {
-    if (die.type === 'character' && die.isMiss) {
-      return { ...die, setAside: true };
-    }
-    return die;
-  });
+	return dice.map((die) => {
+		if (die.type === 'character' && die.isMiss) {
+			return { ...die, setAside: true };
+		}
+		return die;
+	});
 }
 
 // --- Utility ---
@@ -341,16 +341,14 @@ export function setAsideMisses(dice: DieResult[]): DieResult[] {
  * Count the number of active (non-set-aside) character dice.
  */
 export function countActiveDice(dice: DieResult[]): number {
-  return dice.filter((d) => d.type === 'character' && !d.setAside).length;
+	return dice.filter((d) => d.type === 'character' && !d.setAside).length;
 }
 
 /**
  * Check if any character die has a critical hit that hasn't been rerolled.
  */
 export function hasUnresolvedCriticals(dice: DieResult[]): boolean {
-  return dice.some(
-    (d) => d.type === 'character' && d.isCritical && !d.setAside && !d.rerolled
-  );
+	return dice.some((d) => d.type === 'character' && d.isCritical && !d.setAside && !d.rerolled);
 }
 
 /**
@@ -358,11 +356,11 @@ export function hasUnresolvedCriticals(dice: DieResult[]): boolean {
  * Any character die (even misses) can be rerolled via feat, once per die.
  */
 export function getRerollableDice(dice: DieResult[]): number[] {
-  const indices: number[] = [];
-  dice.forEach((die, index) => {
-    if (die.type === 'character' && !die.rerolled) {
-      indices.push(index);
-    }
-  });
-  return indices;
+	const indices: number[] = [];
+	dice.forEach((die, index) => {
+		if (die.type === 'character' && !die.rerolled) {
+			indices.push(index);
+		}
+	});
+	return indices;
 }

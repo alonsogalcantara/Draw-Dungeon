@@ -17,15 +17,20 @@
 	}
 </script>
 
-<div class={['relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 bg-gradient-to-b',
-	victory ? 'from-stone-950 via-amber-950/20 to-stone-950' : ''
-].filter(Boolean).join(' ')}
+<div
+	class={[
+		'relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-gradient-to-b px-4',
+		victory ? 'from-stone-950 via-amber-950/20 to-stone-950' : ''
+	]
+		.filter(Boolean)
+		.join(' ')}
 	style={!victory ? 'background: linear-gradient(to bottom, #1c0a0a, #0c0404, #1c0a0a)' : ''}
 >
 	<!-- Vignette -->
-	<div class="pointer-events-none absolute inset-0"
-		style="background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.9) 100%);">
-	</div>
+	<div
+		class="pointer-events-none absolute inset-0"
+		style="background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.9) 100%);"
+	></div>
 
 	<!-- Floating particles -->
 	{#each particles as p (p.id)}
@@ -41,21 +46,22 @@
 		{#if victory}
 			<!-- Victory -->
 			<div class="mb-4 animate-bounce text-7xl">💎</div>
-			<h1 class="title-text text-5xl tracking-widest sm:text-6xl"
+			<h1
+				class="title-text text-5xl tracking-widest sm:text-6xl"
 				style="text-shadow: 0 0 30px rgba(245, 158, 11, 0.6), 0 0 60px rgba(245, 158, 11, 0.3);"
 			>
 				Victory!
 			</h1>
-			<p class="subtitle mt-2 text-lg tracking-wider text-amber-300/80">
-				The Og's Blood is yours!
-			</p>
+			<p class="subtitle mt-2 text-lg tracking-wider text-amber-300/80">The Og's Blood is yours!</p>
 			<p class="max-w-md text-sm text-amber-200/40 italic">
-				Victorious, you pick up the fabled ruby gemstone and leave this cursed dungeon. Your legend will be told for ages to come.
+				Victorious, you pick up the fabled ruby gemstone and leave this cursed dungeon. Your legend
+				will be told for ages to come.
 			</p>
 		{:else}
 			<!-- Defeat -->
 			<div class="mb-4 text-7xl opacity-60">💀</div>
-			<h1 class="title-text text-5xl tracking-widest text-red-400 sm:text-6xl"
+			<h1
+				class="title-text text-5xl tracking-widest text-red-400 sm:text-6xl"
 				style="text-shadow: 0 0 30px rgba(220, 38, 38, 0.4), 0 0 60px rgba(220, 38, 38, 0.2);"
 			>
 				Defeated...
@@ -64,14 +70,17 @@
 				Your adventure ends here...
 			</p>
 			<p class="max-w-md text-sm text-red-200/30 italic">
-				The dungeon claims another soul. Perhaps another adventurer will succeed where you have fallen.
+				The dungeon claims another soul. Perhaps another adventurer will succeed where you have
+				fallen.
 			</p>
 		{/if}
 
 		<!-- Stats summary -->
-		<div class={['divider my-2 h-px w-64 bg-gradient-to-r from-transparent to-transparent',
-			victory ? 'via-amber-600/40' : 'via-red-800/40'
-		].join(' ')}
+		<div
+			class={[
+				'divider my-2 h-px w-64 bg-gradient-to-r from-transparent to-transparent',
+				victory ? 'via-amber-600/40' : 'via-red-800/40'
+			].join(' ')}
 		></div>
 
 		<div class="grid grid-cols-2 gap-6 text-center sm:grid-cols-4">
@@ -120,14 +129,17 @@
 		</div>
 
 		{#if victory}
-			<div class="mt-4 rounded bg-amber-900/30 px-6 py-2 text-sm text-amber-200 border border-amber-500/30">
+			<div
+				class="mt-4 rounded border border-amber-500/30 bg-amber-900/30 px-6 py-2 text-sm text-amber-200"
+			>
 				⭐ +1 Victory Point awarded! Spend it to upgrade your character.
 			</div>
 		{/if}
 
 		<!-- Play again -->
 		<button
-			class={['btn mt-8 px-12 py-4 text-lg tracking-wider uppercase transition-all duration-300 hover:scale-105',
+			class={[
+				'btn mt-8 px-12 py-4 text-lg tracking-wider uppercase transition-all duration-300 hover:scale-105',
 				victory ? 'btn-primary' : 'btn-danger'
 			].join(' ')}
 			onclick={handlePlayAgain}

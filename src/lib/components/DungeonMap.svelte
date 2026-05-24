@@ -15,19 +15,24 @@
 </script>
 
 <div class="panel panel-map flex flex-col">
-	<h3 class="mb-3 border-b border-amber-900/30 pb-2 text-sm font-bold tracking-wider text-amber-400/70 uppercase">
+	<h3
+		class="mb-3 border-b border-amber-900/30 pb-2 text-sm font-bold tracking-wider text-amber-400/70 uppercase"
+	>
 		{game.campaign === 'tower' ? 'The Tower' : 'The Dungeon'}
 	</h3>
 
 	<div class="flex flex-1 flex-col gap-1 overflow-y-auto">
-		{#each (game.campaign === 'tower' ? [...floors].reverse() : floors) as floor (floor.number)}
+		{#each game.campaign === 'tower' ? [...floors].reverse() : floors as floor (floor.number)}
 			{@const isTower = game.campaign === 'tower'}
 			{#snippet floorHeader()}
 				<!-- Floor header -->
-				<div class={['floor-marker flex items-center gap-2 text-xs font-bold tracking-wider uppercase',
-					game.currentFloor === floor.number ? 'text-amber-400' : 'text-stone-500',
-					isTower ? 'mt-1' : 'mb-1'
-				].join(' ')}>
+				<div
+					class={[
+						'floor-marker flex items-center gap-2 text-xs font-bold tracking-wider uppercase',
+						game.currentFloor === floor.number ? 'text-amber-400' : 'text-stone-500',
+						isTower ? 'mt-1' : 'mb-1'
+					].join(' ')}
+				>
 					<span class="h-px flex-1 bg-stone-700/50"></span>
 					<span>Floor {floor.number}: {isTower ? floor.towerName : floor.dungeonName}</span>
 					<span class="h-px flex-1 bg-stone-700/50"></span>
@@ -40,27 +45,37 @@
 
 			<!-- Area nodes -->
 			<div class="flex flex-col items-center gap-0">
-				{#each (isTower ? Array.from({ length: floor.areas }, (_, i) => floor.areas - 1 - i) : Array.from({ length: floor.areas }, (_, i) => i)) as ai, loopIndex}
-					{@const areaGlobalIndex = DUNGEON_FLOORS.slice(0, floor.number - 1).reduce((sum, f) => sum + f.areas, 0) + ai + 1}
-					{@const isCurrent = game.currentFloor === floor.number && game.currentAreaInFloor === ai + 1}
-					{@const isCompleted = game.currentFloor > floor.number || (game.currentFloor === floor.number && game.currentAreaInFloor > ai + 1)}
+				{#each isTower ? Array.from({ length: floor.areas }, (_, i) => floor.areas - 1 - i) : Array.from({ length: floor.areas }, (_, i) => i) as ai, loopIndex}
+					{@const areaGlobalIndex =
+						DUNGEON_FLOORS.slice(0, floor.number - 1).reduce((sum, f) => sum + f.areas, 0) + ai + 1}
+					{@const isCurrent =
+						game.currentFloor === floor.number && game.currentAreaInFloor === ai + 1}
+					{@const isCompleted =
+						game.currentFloor > floor.number ||
+						(game.currentFloor === floor.number && game.currentAreaInFloor > ai + 1)}
 					{@const isBossArea = ai + 1 === floor.bossArea}
 
 					<!-- Connection line -->
 					{#if loopIndex > 0}
-						<div class={['connection-line h-3 w-0.5',
-							isCompleted ? 'bg-amber-500/40' : 'bg-stone-700/40'
-						].join(' ')}></div>
+						<div
+							class={[
+								'connection-line h-3 w-0.5',
+								isCompleted ? 'bg-amber-500/40' : 'bg-stone-700/40'
+							].join(' ')}
+						></div>
 					{/if}
 
 					<!-- Area node -->
 					<div
-						class={['area-node flex h-8 w-8 items-center justify-center rounded-full border-2 text-xs font-bold transition-all duration-300',
+						class={[
+							'area-node flex h-8 w-8 items-center justify-center rounded-full border-2 text-xs font-bold transition-all duration-300',
 							isCurrent ? 'area-current' : '',
 							isCompleted ? 'area-completed' : '',
 							!isCurrent && !isCompleted ? 'area-upcoming' : '',
 							isBossArea ? 'area-boss' : ''
-						].filter(Boolean).join(' ')}
+						]
+							.filter(Boolean)
+							.join(' ')}
 					>
 						{#if isBossArea && !isCompleted}
 							💀

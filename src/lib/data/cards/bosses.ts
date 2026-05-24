@@ -2,79 +2,79 @@ import type { BossCard } from '../../game/types';
 import { getImageUrl } from './utils';
 
 export const BOSS_CARDS: BossCard[] = [
-  {
-    id: 'boss_gorgath',
-    name: 'Gorgath the Defiler',
-    type: 'boss',
-    image: getImageUrl('tower', 'boss', 'Gorgath the Defiler'),
-    campaign: 'tower',
-    description:
-      'A towering demon lord cloaked in chains of cursed iron. His very presence warps reality, and his strikes shatter both body and soul.',
-    hp: 18,
-    damage: 6,
-    effects: ['curse', 'ignoreArmor'],
-    phases: 1,
-    isFinal: false,
-    reward: { xp: 5, gold: 3 },
-  },
-  {
-    id: 'boss_queen_arachnia',
-    name: 'Queen Arachnia',
-    type: 'boss',
-    image: getImageUrl('tower', 'boss', 'Queen Arachnia'),
-    campaign: 'tower',
-    description:
-      'Mother of the spider-brood, her abdomen swollen with a thousand unborn horrors. Venomous silk lines her throne room, and her bite withers muscle and bone.',
-    hp: 22,
-    damage: 6,
-    effects: ['poison', 'weaken'],
-    phases: 1,
-    isFinal: false,
-    reward: { xp: 6, gold: 4 },
-  },
-  {
-    id: 'boss_dreadlord_morvain',
-    name: 'Dreadlord Morvain',
-    type: 'boss',
-    image: getImageUrl('tower', 'boss', 'Dreadlord Morvain'),
-    campaign: 'tower',
-    description:
-      'Once the dungeon\'s architect, Morvain sold his sight to the void in exchange for dominion over shadow. His blind eyes see everything, and his curses linger long after death.',
-    hp: 25,
-    damage: 7,
-    effects: ['curse', 'blindness'],
-    phases: 1,
-    isFinal: false,
-    reward: { xp: 7, gold: 5 },
-  },
-  {
-    id: 'boss_ogs_remains',
-    name: "Og's Remains",
-    type: 'boss',
-    image: getImageUrl('tower', 'boss', "Og's Remains"),
-    campaign: 'tower',
-    description:
-      'The shattered skeleton of the primordial titan Og, reanimated by the blood-ruby lodged in its ribcage. It fights with the fury of a dead god, and defeating it once only awakens its true form.',
-    hp: 30,
-    damage: 8,
-    effects: ['curse', 'ignoreArmor', 'regeneration'],
-    phases: 2,
-    isFinal: true,
-    reward: { xp: 10, gold: 10 },
-  },
-  {
-    id: 'boss_ogs_blood',
-    name: "Og's Blood",
-    type: 'boss',
-    image: getImageUrl('dungeon', 'boss', "Og's Blood"),
-    campaign: 'dungeon',
-    description:
-      'The ancient blood of the primordial titan Og, coalesced into a terrifying physical form. It burns with the fury of a dead god, and defeating it once only awakens its true form.',
-    hp: 30,
-    damage: 8,
-    effects: ['curse', 'ignoreArmor', 'regeneration'],
-    phases: 2,
-    isFinal: true,
-    reward: { xp: 10, gold: 10 },
-  },
+	{
+		id: 'boss_gorgath',
+		name: 'Gorgath the Defiler',
+		type: 'boss',
+		image: getImageUrl('tower', 'boss', 'Gorgath the Defiler'),
+		campaign: 'tower',
+		description:
+			'A towering demon lord cloaked in chains of cursed iron. His very presence warps reality, and his strikes shatter both body and soul.',
+		hp: 18,
+		damage: 6,
+		effects: ['curse', 'ignoreArmor'],
+		phases: 1,
+		isFinal: false,
+		reward: { xp: 5, gold: 3 }
+	},
+	{
+		id: 'boss_queen_arachnia',
+		name: 'Queen Arachnia',
+		type: 'boss',
+		image: getImageUrl('tower', 'boss', 'Queen Arachnia'),
+		campaign: 'tower',
+		description:
+			'Mother of the spider-brood, her abdomen swollen with a thousand unborn horrors. Venomous silk lines her throne room, and her bite withers muscle and bone.',
+		hp: 22,
+		damage: 6,
+		effects: ['poison', 'weaken'],
+		phases: 1,
+		isFinal: false,
+		reward: { xp: 6, gold: 4 }
+	},
+	{
+		id: 'boss_dreadlord_morvain',
+		name: 'Dreadlord Morvain',
+		type: 'boss',
+		image: getImageUrl('tower', 'boss', 'Dreadlord Morvain'),
+		campaign: 'tower',
+		description:
+			"Once the dungeon's architect, Morvain sold his sight to the void in exchange for dominion over shadow. His blind eyes see everything, and his curses linger long after death.",
+		hp: 25,
+		damage: 7,
+		effects: ['curse', 'blindness'],
+		phases: 1,
+		isFinal: false,
+		reward: { xp: 7, gold: 5 }
+	},
+	{
+		id: 'boss_ogs_remains',
+		name: "Og's Remains",
+		type: 'boss',
+		image: getImageUrl('tower', 'boss', "Og's Remains"),
+		campaign: 'tower',
+		description:
+			'The shattered skeleton of the primordial titan Og, reanimated by the blood-ruby lodged in its ribcage. It fights with the fury of a dead god, and defeating it once only awakens its true form.',
+		hp: 30,
+		damage: 8,
+		effects: ['curse', 'ignoreArmor', 'regeneration'],
+		phases: 2,
+		isFinal: true,
+		reward: { xp: 10, gold: 10 }
+	},
+	{
+		id: 'boss_ogs_blood',
+		name: "Og's Blood",
+		type: 'boss',
+		image: getImageUrl('dungeon', 'boss', "Og's Blood"),
+		campaign: 'dungeon',
+		description:
+			'The ancient blood of the primordial titan Og, coalesced into a terrifying physical form. It burns with the fury of a dead god, and defeating it once only awakens its true form.',
+		hp: 30,
+		damage: 8,
+		effects: ['curse', 'ignoreArmor', 'regeneration'],
+		phases: 2,
+		isFinal: true,
+		reward: { xp: 10, gold: 10 }
+	}
 ];
