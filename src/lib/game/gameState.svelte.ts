@@ -1,6 +1,7 @@
 import { type GamePhase, type CampaignType, type CharacterDef, type DifficultyMode, type PotionType, type ItemCard, type RoomCardInstance, type CombatState, type SkillCheckState, type EventState, type LogEntry } from './types';
-import { saveMetaProgress } from './metaState';
+import { saveMetaProgress, loadMetaProgress } from './metaState';
 import { MAX_HP, MAX_ARMOR, MAX_GOLD, MAX_FOOD, XP_REQUIREMENTS_PER_LEVEL, POLYHEDRAL_DICE } from '../data/constants';
+import type { RunSummary } from './gameStats';
 
 class GameState {
   // Meta
@@ -11,6 +12,7 @@ class GameState {
   
   // Character
   selectedCharacter = $state<CharacterDef | null>(null);
+  runSummary = $state<RunSummary | null>(null);
   hp = $state(0);
   maxHp = $state(0);
   level = $state(1);
@@ -139,14 +141,20 @@ class GameState {
     }
     
     if (this.selectedCharacter) {
-      saveMetaProgress(this.selectedCharacter.id, this.level, this.xp);
+      const existing = loadMetaProgress(this.selectedCharacter.id) || { level: 1, xp: 0, victories: 0, statUpgrades: { hp: 0, armor: 0, gold: 0, food: 0 } };
+      existing.level = this.level;
+      existing.xp = this.xp;
+      saveMetaProgress(this.selectedCharacter.id, existing);
     }
   }
 
   loseXp(amount: number) {
     this.xp = Math.max(0, this.xp - amount);
     if (this.selectedCharacter) {
-      saveMetaProgress(this.selectedCharacter.id, this.level, this.xp);
+      const existing = loadMetaProgress(this.selectedCharacter.id) || { level: 1, xp: 0, victories: 0, statUpgrades: { hp: 0, armor: 0, gold: 0, food: 0 } };
+      existing.level = this.level;
+      existing.xp = this.xp;
+      saveMetaProgress(this.selectedCharacter.id, existing);
     }
   }
 

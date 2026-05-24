@@ -4,7 +4,7 @@
 	import { startNewGame } from '$lib/game/gameActions';
 	import { CHARACTERS, ALL_SKILLS } from '$lib/data/characters';
 	import { MAX_HP, MAX_FOOD, MAX_GOLD, MAX_ARMOR } from '$lib/data/constants';
-	import { loadAllMetaProgress, clearMetaProgress, type MetaProgress } from '$lib/game/metaState';
+	import { loadAllMetaProgress, clearMetaProgress, spendVictoryPoint, type MetaProgress } from '$lib/game/metaState';
 	import type { CharacterDef, DifficultyMode, CampaignType } from '$lib/game/types';
 
 	let selectedChar = $state<CharacterDef | null>(null);
@@ -72,6 +72,13 @@
 		event.stopPropagation();
 		clearMetaProgress(charId);
 		metaProgress = loadAllMetaProgress(CHARACTERS.map(c => c.id).concat('custom_champion'));
+	}
+
+	function handleSpendVP(charId: string, stat: 'hp' | 'armor' | 'gold' | 'food', event: Event) {
+		event.stopPropagation();
+		if (spendVictoryPoint(charId, stat)) {
+			metaProgress = loadAllMetaProgress(CHARACTERS.map(c => c.id).concat('custom_champion'));
+		}
 	}
 
 	function handleBegin() {
@@ -169,25 +176,25 @@
 
 				<!-- Stats -->
 				<div class="mb-3 grid grid-cols-3 gap-2 text-center text-xs">
-					<div class="rounded bg-emerald-900/30 px-2 py-1 border border-emerald-900/50">
+					<div class="rounded bg-emerald-900/30 px-2 py-1 border border-emerald-900/50" title="Level">
 						<span class="text-emerald-400 font-bold">Lv.</span> {metaProgress[char.id]?.level ?? 1}
 					</div>
-					<div class="rounded bg-red-900/30 px-2 py-1">
-						<span class="text-red-400">❤️</span> {char.startingStats.hp + ((metaProgress[char.id]?.level ?? 1) - 1) * 5}
+					<div class="rounded bg-red-900/30 px-2 py-1" title="Starting HP">
+						<span class="text-red-400">❤️</span> {char.startingStats.hp + ((metaProgress[char.id]?.level ?? 1) - 1) * 5 + (metaProgress[char.id]?.statUpgrades?.hp ?? 0)}
 					</div>
-					<div class="rounded bg-amber-900/30 px-2 py-1">
-						<span class="text-amber-400">🍖</span> {char.startingStats.food}
+					<div class="rounded bg-amber-900/30 px-2 py-1" title="Starting Food">
+						<span class="text-amber-400">🍖</span> {char.startingStats.food + (metaProgress[char.id]?.statUpgrades?.food ?? 0)}
 					</div>
-					<div class="rounded bg-yellow-900/30 px-2 py-1">
-						<span class="text-yellow-400">💰</span> {char.startingStats.gold}
+					<div class="rounded bg-yellow-900/30 px-2 py-1" title="Starting Gold">
+						<span class="text-yellow-400">💰</span> {char.startingStats.gold + (metaProgress[char.id]?.statUpgrades?.gold ?? 0)}
 					</div>
-					{#if char.startingStats.armor}
-						<div class="rounded bg-blue-900/30 px-2 py-1">
-							<span class="text-blue-400">🛡️</span> {char.startingStats.armor}
+					{#if char.startingStats.armor > 0 || (metaProgress[char.id]?.statUpgrades?.armor ?? 0) > 0}
+						<div class="rounded bg-blue-900/30 px-2 py-1" title="Starting Armor">
+							<span class="text-blue-400">🛡️</span> {char.startingStats.armor + (metaProgress[char.id]?.statUpgrades?.armor ?? 0)}
 						</div>
 					{/if}
 					{#if char.startingStats.xp}
-						<div class="rounded bg-purple-900/30 px-2 py-1">
+						<div class="rounded bg-purple-900/30 px-2 py-1" title="Starting XP">
 							<span class="text-purple-400">⭐</span> {char.startingStats.xp}
 						</div>
 					{/if}
@@ -211,6 +218,21 @@
 					<p class="mt-auto border-t border-amber-900/20 pt-3 text-xs leading-relaxed text-stone-500 italic">
 						{char.lore}
 					</p>
+				{/if}
+
+				<!-- Victory Points -->
+				{#if (metaProgress[char.id]?.victories ?? 0) > 0}
+					<div class="mt-3 border-t border-amber-500/50 pt-3">
+						<div class="text-xs text-amber-300 font-bold mb-2">
+							⭐ {metaProgress[char.id].victories} VP available!
+						</div>
+						<div class="grid grid-cols-2 gap-1">
+							<button class="text-[10px] bg-red-900/40 hover:bg-red-800/60 border border-red-500/30 rounded py-1 px-1 text-red-200 transition-colors" onclick={(e) => handleSpendVP(char.id, 'hp', e)}>+1 HP</button>
+							<button class="text-[10px] bg-amber-900/40 hover:bg-amber-800/60 border border-amber-500/30 rounded py-1 px-1 text-amber-200 transition-colors" onclick={(e) => handleSpendVP(char.id, 'food', e)}>+1 Food</button>
+							<button class="text-[10px] bg-yellow-900/40 hover:bg-yellow-800/60 border border-yellow-500/30 rounded py-1 px-1 text-yellow-200 transition-colors" onclick={(e) => handleSpendVP(char.id, 'gold', e)}>+1 Gold</button>
+							<button class="text-[10px] bg-blue-900/40 hover:bg-blue-800/60 border border-blue-500/30 rounded py-1 px-1 text-blue-200 transition-colors" onclick={(e) => handleSpendVP(char.id, 'armor', e)}>+1 Armor</button>
+						</div>
+					</div>
 				{/if}
 			</div>
 		{/each}

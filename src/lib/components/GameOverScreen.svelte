@@ -74,28 +74,56 @@
 		].join(' ')}
 		></div>
 
-		<div class="grid grid-cols-3 gap-6 text-center">
-			<div>
-				<div class={['text-2xl font-black', victory ? 'text-amber-300' : 'text-red-400'].join(' ')}
-				>
-					{game.currentFloor}
-				</div>
-				<div class="text-xs text-stone-500">Floor</div>
-			</div>
-			<div>
-				<div class={['text-2xl font-black', victory ? 'text-amber-300' : 'text-red-400'].join(' ')}
-				>
-					{game.currentArea}
-				</div>
-				<div class="text-xs text-stone-500">Areas</div>
-			</div>
+		<div class="grid grid-cols-2 gap-6 text-center sm:grid-cols-4">
 			<div>
 				<div class={['text-2xl font-black', victory ? 'text-amber-300' : 'text-red-400'].join(' ')}>
 					{game.level}
 				</div>
 				<div class="text-xs text-stone-500">Level</div>
 			</div>
+			<div>
+				<div class={['text-2xl font-black', victory ? 'text-amber-300' : 'text-red-400'].join(' ')}>
+					{game.runSummary?.monstersSlain || 0}
+				</div>
+				<div class="text-xs text-stone-500">Kills</div>
+			</div>
+			<div>
+				<div class={['text-2xl font-black', victory ? 'text-amber-300' : 'text-red-400'].join(' ')}>
+					{game.runSummary?.damageDealt || 0}
+				</div>
+				<div class="text-xs text-stone-500">Dmg Dealt</div>
+			</div>
+			<div>
+				<div class={['text-2xl font-black', victory ? 'text-amber-300' : 'text-red-400'].join(' ')}>
+					{game.runSummary?.damageTaken || 0}
+				</div>
+				<div class="text-xs text-stone-500">Dmg Taken</div>
+			</div>
+			<div>
+				<div class={['text-2xl font-black', victory ? 'text-amber-300' : 'text-red-400'].join(' ')}>
+					{game.runSummary?.hpHealed || 0}
+				</div>
+				<div class="text-xs text-stone-500">Healed</div>
+			</div>
+			<div>
+				<div class={['text-2xl font-black', victory ? 'text-amber-300' : 'text-red-400'].join(' ')}>
+					{game.gold}
+				</div>
+				<div class="text-xs text-stone-500">Gold</div>
+			</div>
+			<div class="col-span-2">
+				<div class={['text-2xl font-black', victory ? 'text-amber-300' : 'text-red-400'].join(' ')}>
+					{game.currentFloor}-{game.currentArea}
+				</div>
+				<div class="text-xs text-stone-500">Floor - Area</div>
+			</div>
 		</div>
+
+		{#if victory}
+			<div class="mt-4 rounded bg-amber-900/30 px-6 py-2 text-sm text-amber-200 border border-amber-500/30">
+				⭐ +1 Victory Point awarded! Spend it to upgrade your character.
+			</div>
+		{/if}
 
 		<!-- Play again -->
 		<button

@@ -1,6 +1,7 @@
 import { game } from './gameState.svelte';
 import type { CharacterDef, DifficultyMode, PotionType, RoomCardInstance, RoomType, MonsterCard, BossCard, RoomCard } from './types';
-import { loadMetaProgress } from './metaState';
+import { loadMetaProgress, addVictory } from './metaState';
+import { generateRunSummary } from './gameStats';
 import { ROOM_CARDS, BOSS_CARDS } from '../data/roomCards';
 import { DUNGEON_FLOORS, DIFFICULTY_MODIFIERS, MAX_HP } from '../data/constants';
 import { rollAllDice, applyCurseEffect, calculateDamage, rollDungeonDie, isSkillCheckSuccess, isPoisonTriggered, isCurseTriggered } from './diceEngine';
@@ -25,12 +26,14 @@ export function startNewGame(character: CharacterDef, difficulty: DifficultyMode
   game.layoutSize = layoutSize;
   
   const mod = DIFFICULTY_MODIFIERS[difficulty];
+  const meta = loadMetaProgress(character.id);
+  const upg = meta?.statUpgrades || { hp: 0, armor: 0, gold: 0, food: 0 };
   
-  game.hp = character.startingStats.hp + mod.hp;
+  game.hp = character.startingStats.hp + mod.hp + upg.hp;
   game.maxHp = MAX_HP; // Assuming max hp is 20 initially or constant
-  game.food = character.startingStats.food + mod.food;
-  game.gold = character.startingStats.gold + mod.gold;
-  game.armor = character.startingStats.armor;
+  game.food = character.startingStats.food + mod.food + upg.food;
+  game.gold = character.startingStats.gold + mod.gold + upg.gold;
+  game.armor = character.startingStats.armor + upg.armor;
   game.xp = character.startingStats.xp;
   
   const progress = loadMetaProgress(character.id);
@@ -451,6 +454,7 @@ export function executeMonsterAttack() {
 export function finishMonsterAttack() {
   if (!game.combat) return;
   if (game.hp <= 0) {
+    game.runSummary = generateRunSummary(game.log);
     game.combat.phase = 'defeat';
     game.phase = 'gameOver';
   } else {
@@ -470,6 +474,10 @@ export function endCombat() {
     game.addLog(`Defeated ${enemy.name}! Gained ${xpReward} XP.`, 'loot');
   } else if (enemy.type === 'boss') {
     if ((enemy as BossCard).isFinal) {
+      game.runSummary = generateRunSummary(game.log);
+      if (game.selectedCharacter) {
+        addVictory(game.selectedCharacter.id);
+      }
       game.phase = 'victory';
       return;
     }
@@ -889,6 +897,7 @@ export function delve() {
   }
   
   if (game.hp <= 0) {
+    game.runSummary = generateRunSummary(game.log);
     game.phase = 'gameOver';
     return;
   }
@@ -914,7 +923,10 @@ export function delve() {
 }
 
 export function checkGameEnd() {
-  if (game.hp <= 0) game.phase = 'gameOver';
+  if (game.hp <= 0) {
+    game.runSummary = generateRunSummary(game.log);
+    game.phase = 'gameOver';
+  }
 }
 
 export function heal(amount: number) {
