@@ -181,8 +181,14 @@ class GameState {
       if (!saved) return false;
       const parsed = JSON.parse(saved);
       
-      // Restore properties
-      Object.assign(this, parsed);
+      console.log("Loading state:", parsed);
+      
+      // Restore properties explicitly to guarantee reactivity in Svelte 5
+      for (const key in parsed) {
+        if (key in this && typeof (this as any)[key] !== 'function') {
+          (this as any)[key] = parsed[key];
+        }
+      }
       return true;
     } catch (e) {
       console.error('Failed to load game state', e);

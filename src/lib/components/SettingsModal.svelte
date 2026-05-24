@@ -8,7 +8,7 @@
 {#if open}
 	<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
 		<div class="w-full max-w-sm rounded-xl border border-amber-900/40 bg-stone-950 p-6 shadow-2xl">
-			<h2 class="title-text text-center text-2xl text-amber-200 mb-6">{t('settings.title')}</h2>
+			<h2 class="title-text text-center text-xl sm:text-2xl text-amber-200 mb-6">{t('settings.title')}</h2>
 
 			<div class="space-y-6">
 				<!-- Music Volume -->
