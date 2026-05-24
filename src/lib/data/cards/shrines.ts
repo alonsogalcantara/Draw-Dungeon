@@ -88,5 +88,26 @@ export const SHRINE_CARDS: ShrineCard[] = [
 				]
 			}
 		}
+	},
+	{
+		id: 'shrine_altar_of_extension',
+		name: 'Altar of Extension',
+		type: 'shrine',
+		image: getImageUrl('tower', 'shrine', 'Altar of Shadows'),
+		campaign: 'tower',
+		description:
+			'A massive stone altar depicting an endless labyrinth. Touching it gives you a sense of vast, unexplored paths.',
+		outcomes: {
+			1: { label: 'The labyrinth shifts', effects: [{ stat: 'hp', value: -2 }] },
+			2: { label: 'A dead end', effects: [{ stat: 'gold', value: -1 }] },
+			3: { label: 'Small insight', effects: [{ stat: 'xp', value: 2 }] },
+			4: { label: 'A hidden path revealed', effects: [], addRoomToArea: true },
+			5: { label: 'A hidden path revealed', effects: [], addRoomToArea: true },
+			6: {
+				label: 'Dungeon expands',
+				effects: [{ stat: 'xp', value: 2 }],
+				addRoomToArea: true
+			}
+		}
 	}
 ];

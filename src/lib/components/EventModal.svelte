@@ -11,7 +11,8 @@
 		handInMission,
 		closeGenericEvent,
 		performSkillCheck,
-		usePotion
+		usePotion,
+		payBloodPrice
 	} from '$lib/game/gameActions';
 	import type { RoomCard } from '$lib/game/types';
 	import DiceRoller from './DiceRoller.svelte';
@@ -270,12 +271,24 @@
 								</div>
 							{:else}
 								<p class="mb-3 text-xs text-stone-400">Try to unlock the treasure chest?</p>
-								<button class="btn btn-primary px-6 py-2" onclick={treasureSkillCheck}>
-									🔓 Skill Check
-								</button>
-								<button class="btn btn-secondary ml-2 px-6 py-2" onclick={closeEvent}>
-									Skip
-								</button>
+								<div class="flex justify-center items-center gap-2">
+									{#if (event.card as any).bloodPrice}
+										<button
+											class="btn btn-action px-6 py-2"
+											onclick={() => payBloodPrice((event.card as any).bloodPrice)}
+											disabled={game.hp <= (event.card as any).bloodPrice}
+										>
+											🩸 Pay {(event.card as any).bloodPrice} HP
+										</button>
+									{:else}
+										<button class="btn btn-primary px-6 py-2" onclick={treasureSkillCheck}>
+											🔓 Skill Check
+										</button>
+									{/if}
+									<button class="btn btn-secondary px-6 py-2" onclick={closeEvent}>
+										Skip
+									</button>
+								</div>
 							{/if}
 						{:else}
 							{@render outcomesList((event.card as any).chestRewards, 'Loot', event.dungeonResult)}

@@ -70,5 +70,17 @@ export const ITEM_DICTIONARY: Record<string, ItemLogic> = {
 		game.temporaryArmor += 2;
 		game.addLog('You brace the Rusty Shield, gaining +2 temporary Armor.', 'combat');
 		return true;
+	},
+
+	item_mana_elixir: () => {
+		game.gainMana(10);
+		game.addLog('You drink the Mana Elixir and recover 10 Mana.', 'info');
+		return true;
+	},
+
+	item_armor_plating: () => {
+		game.armor += 1;
+		game.addLog('You attach the Armor Plating, gaining +1 permanent Armor.', 'info');
+		return true;
 	}
 };

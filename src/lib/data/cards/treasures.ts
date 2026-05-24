@@ -114,5 +114,25 @@ export const TREASURE_CARDS: TreasureCard[] = [
 				]
 			}
 		}
+	},
+	{
+		id: 'treasure_blood_chest',
+		name: 'Blood Chest',
+		type: 'treasure',
+		image: getImageUrl('tower', 'treasure', 'Cursed Reliquary'),
+		campaign: 'tower',
+		description:
+			'A disturbing chest that breathes slowly. It has no keyhole, only a rusted needle extending from the latch. It demands a sacrifice.',
+		goldBase: 0,
+		goldIfCombat: 0,
+		bloodPrice: 3,
+		chestRewards: {
+			1: { label: 'Sturdy defenses', effects: [], item: 'item_armor_plating' },
+			2: { label: 'Arcane reserve', effects: [], item: 'item_mana_elixir' },
+			3: { label: 'Sturdy defenses', effects: [], item: 'item_armor_plating' },
+			4: { label: 'Arcane reserve', effects: [], item: 'item_mana_elixir' },
+			5: { label: 'Ancient powers', effects: [], item: 'item_ancient_codex' },
+			6: { label: 'Ancient powers', effects: [], item: 'item_ancient_codex' }
+		}
 	}
 ];

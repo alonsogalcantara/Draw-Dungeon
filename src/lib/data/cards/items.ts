@@ -81,5 +81,31 @@ export const ITEM_CARDS: ItemCard[] = [
 		itemEffect: 'Gain +2 Armor for the next combat encounter.',
 		uses: 1,
 		skillType: 'combat'
+	},
+	{
+		id: 'item_mana_elixir',
+		name: 'Mana Elixir',
+		type: 'item_room',
+		image: getImageUrl('tower', 'item_room', 'Mana Elixir'),
+		campaign: 'tower',
+		description:
+			'A vial of pure, condensed magical energy. It glows with a faint blue light in the darkness.',
+		cost: { stat: 'gold', value: 2 },
+		itemEffect: 'Recover 10 Mana immediately.',
+		uses: 1,
+		skillType: 'exploration'
+	},
+	{
+		id: 'item_armor_plating',
+		name: 'Armor Plating',
+		type: 'item_room',
+		image: getImageUrl('tower', 'item_room', 'Armor Plating'),
+		campaign: 'tower',
+		description:
+			'A well-forged piece of steel plating that can be attached to your gear to reinforce your defenses permanently.',
+		cost: { stat: 'gold', value: 3 },
+		itemEffect: 'Gain +1 permanent Armor.',
+		uses: 1,
+		skillType: 'exploration'
 	}
 ];

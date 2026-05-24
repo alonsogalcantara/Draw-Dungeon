@@ -241,5 +241,30 @@ export const TRAP_CARDS: TrapCard[] = [
 			},
 			6: { label: 'Nearly consumed', effects: [{ stat: 'hp', value: -4 }], statusEffect: 'weaken' }
 		}
+	},
+	{
+		id: 'trap_summoning_rune',
+		name: 'Summoning Rune',
+		type: 'trap',
+		image: getImageUrl('tower', 'trap', 'Arcane Tripwire'),
+		campaign: 'tower',
+		description:
+			'A glowing sigil on the floor pulses with dark energy. A misstep could bring something terrible from the void.',
+		successRewards: {
+			1: { label: 'Stepped carefully', effects: [{ stat: 'xp', value: 1 }] },
+			2: { label: 'Erased part of rune', effects: [{ stat: 'xp', value: 2 }] },
+			3: { label: 'Disrupted magic', effects: [{ stat: 'xp', value: 2 }] },
+			4: { label: 'Absorbed rune power', effects: [{ stat: 'xp', value: 3 }] },
+			5: { label: 'Captured void essence', effects: [{ stat: 'xp', value: 3 }], potion: 'mana' },
+			6: { label: 'Captured void essence', effects: [{ stat: 'xp', value: 3 }], potion: 'mana' }
+		},
+		failurePenalties: {
+			1: { label: 'Summoned a Fiend', effects: [], spawnMonster: 'monster_infernal_imp' },
+			2: { label: 'Summoned a Fiend', effects: [], spawnMonster: 'monster_infernal_imp' },
+			3: { label: 'Summoned a Fiend', effects: [], spawnMonster: 'monster_infernal_imp' },
+			4: { label: 'Summoned an Abomination', effects: [], spawnMonster: 'monster_abyssal_crawler' },
+			5: { label: 'Summoned an Abomination', effects: [], spawnMonster: 'monster_abyssal_crawler' },
+			6: { label: 'Summoned an Abomination', effects: [], spawnMonster: 'monster_abyssal_crawler' }
+		}
 	}
 ];

@@ -237,6 +237,8 @@ export interface TreasureCard {
 	goldBase: number;
 	/** Gold gained if combat/traps were encountered this area */
 	goldIfCombat: number;
+	/** If present, the chest requires paying this amount of HP to open instead of a skill check */
+	bloodPrice?: number;
 	/** Chest rewards on successful skill check, keyed by dungeon die result 1-6 */
 	chestRewards: Record<number, Reward>;
 }
@@ -362,6 +364,8 @@ export interface Reward {
 	potion?: PotionType;
 	/** Item card id gained */
 	item?: string;
+	/** If true, expands the current area by adding a new card */
+	addRoomToArea?: boolean;
 }
 
 /** Penalty suffered from failed encounters */
@@ -370,6 +374,8 @@ export interface Penalty {
 	effects: StatModifier[];
 	/** Status effect inflicted */
 	statusEffect?: EffectType;
+	/** Id of a monster to spawn if this penalty triggers a combat encounter */
+	spawnMonster?: string;
 }
 
 // --- Union of all room card types ---
@@ -437,6 +443,8 @@ export interface CombatState {
 	rewards?: { gold?: number; xp?: number };
 	log?: string[];
 	monsterRolls?: { die: number; damage: number }[];
+	/** Indicates if the monster was summoned by a trap, meaning it may drop less/no gold */
+	isSummoned?: boolean;
 }
 
 // --- Skill Checks ---
