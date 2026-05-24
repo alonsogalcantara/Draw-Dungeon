@@ -1,6 +1,6 @@
 <script lang="ts">
 	import './layout.css';
-	import favicon from '$lib/assets/favicon.svg';
+	import favicon from '$lib/assets/favicon.png';
 	import MusicPlayer from '$lib/components/MusicPlayer.svelte';
 	import { onMount } from 'svelte';
 	import { game } from '$lib/game/gameState.svelte';
