@@ -42,7 +42,16 @@ export type RoomType =
 export type SkillType = 'exploration' | 'combat' | 'preparation' | 'passive';
 
 /** Potion types - offensive (combat only) and defensive (anytime) */
-export type PotionType = 'fire' | 'frost' | 'poison' | 'healing' | 'holy' | 'perception' | 'mana';
+export type PotionType =
+	| 'fire'
+	| 'frost'
+	| 'poison'
+	| 'healing'
+	| 'holy'
+	| 'perception'
+	| 'mana'
+	| 'evasion'
+	| 'transmutation';
 
 /** Status effects that can afflict the player */
 export type EffectType =
@@ -165,6 +174,19 @@ export interface MonsterCard {
 	effects: EffectType[];
 	/** XP reward indexed by floor (0-3 for floors 1-4) */
 	xpRewardPerFloor: [number, number, number, number];
+	/** Optional Elite affix applied to this monster instance */
+	affix?: MonsterAffix;
+}
+
+/** Monster modifier affix for Elite monsters */
+export interface MonsterAffix {
+	id: string;
+	/** E.g., "Venomous", "Armored" - used to construct full name "Venomous Skeleton" */
+	nameModifier: string;
+	hpBonus: number;
+	damageBonus: number;
+	effects: EffectType[];
+	xpBonus: number;
 }
 
 /** Boss monster guarding each floor's exit */
@@ -504,6 +526,8 @@ export interface PotionDef {
 	autoSucceedSkillCheck?: boolean;
 	curesBlindness?: boolean;
 	ongoingDamage?: number;
+	evadesCombat?: boolean;
+	transmutes?: boolean;
 }
 
 // --- Difficulty ---

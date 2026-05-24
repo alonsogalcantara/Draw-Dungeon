@@ -302,3 +302,12 @@ export function endCombat() {
 	game.phase = 'playing';
 	revealAdjacentRooms();
 }
+
+export function evadeCombat() {
+	if (!game.combat) return;
+	game.addLog(`Evaded combat using a Potion!`, 'info');
+	game.roomGrid[game.playerRow][game.playerCol]!.resolved = true;
+	game.combat = null;
+	game.phase = 'playing';
+	revealAdjacentRooms();
+}

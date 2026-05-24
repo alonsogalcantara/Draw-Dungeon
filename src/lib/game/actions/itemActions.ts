@@ -1,6 +1,7 @@
 import { game } from '../gameState.svelte';
 import type { PotionType } from '../types';
 import { ITEM_DICTIONARY } from '../items';
+import { evadeCombat } from './combatActions';
 
 export function usePotion(slotIndex: number) {
 	const potion = game.potions[slotIndex];
@@ -28,6 +29,16 @@ export function usePotion(slotIndex: number) {
 		game.combat.frostPotionActive = true;
 	} else if (potion === 'poison' && game.combat) {
 		game.combat.poisonPotionActive = true;
+	} else if (potion === 'transmutation') {
+		if (game.food >= 1) {
+			game.loseFood(1);
+			game.gainGold(3);
+		} else {
+			game.addLog('Not enough food for Transmutation', 'system');
+			game.potions[slotIndex] = 'transmutation';
+		}
+	} else if (potion === 'evasion' && game.combat) {
+		evadeCombat();
 	}
 }
 

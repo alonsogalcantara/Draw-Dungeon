@@ -64,16 +64,38 @@ export const POTIONS: Record<PotionType, PotionDef> = {
 		icon: '🔵',
 		description: 'Restore your Mana to maximum.',
 		isOffensive: false
+	},
+	evasion: {
+		type: 'evasion',
+		name: 'Potion of Evasion',
+		icon: '💨',
+		description: 'Evade an ongoing combat instantly without taking further damage.',
+		isOffensive: true,
+		evadesCombat: true
+	},
+	transmutation: {
+		type: 'transmutation',
+		name: 'Potion of Transmutation',
+		icon: '⚗️',
+		description: 'Transmute 1 Food into 3 Gold instantly.',
+		isOffensive: false,
+		transmutes: true
 	}
 };
 
 // --- Categorization Helpers ---
 
 /** Potion types that can only be used during combat */
-export const OFFENSIVE_POTIONS: PotionType[] = ['fire', 'frost', 'poison'];
+export const OFFENSIVE_POTIONS: PotionType[] = ['fire', 'frost', 'poison', 'evasion'];
 
 /** Potion types that can be used at any time */
-export const DEFENSIVE_POTIONS: PotionType[] = ['healing', 'holy', 'perception', 'mana'];
+export const DEFENSIVE_POTIONS: PotionType[] = [
+	'healing',
+	'holy',
+	'perception',
+	'mana',
+	'transmutation'
+];
 
 /**
  * Check if a potion can be used outside of combat.

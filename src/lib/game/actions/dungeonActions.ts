@@ -28,6 +28,25 @@ export function scaleCardToLevel(card: RoomCard, level: number, floor: number): 
 		m.damage += dmgL;
 		m.hpPerFloor = m.hpPerFloor.map((hp: number) => hp + hpL);
 		m.xpRewardPerFloor = m.xpRewardPerFloor.map((xp: number) => xp + xpL);
+
+		// Elite Affix (20% chance)
+		if (Math.random() < 0.2) {
+			const affixes = [
+				{ id: 'venomous', nameModifier: 'Venenoso', hpBonus: 0, damageBonus: 0, effects: ['poison'], xpBonus: 1 },
+				{ id: 'armored', nameModifier: 'Acorazado', hpBonus: 2, damageBonus: 0, effects: [], xpBonus: 1 },
+				{ id: 'rabid', nameModifier: 'Rabioso', hpBonus: -1, damageBonus: 1, effects: [], xpBonus: 1 },
+				{ id: 'cursed', nameModifier: 'Maldito', hpBonus: 0, damageBonus: 0, effects: ['curse'], xpBonus: 1 }
+			];
+			const chosen = affixes[Math.floor(Math.random() * affixes.length)];
+			m.affix = chosen;
+			m.name = `${m.name} ${chosen.nameModifier}`;
+			m.hpPerFloor = m.hpPerFloor.map((hp: number) => hp + chosen.hpBonus);
+			m.damage += chosen.damageBonus;
+			m.xpRewardPerFloor = m.xpRewardPerFloor.map((xp: number) => xp + chosen.xpBonus);
+			chosen.effects.forEach((eff: string) => {
+				if (!m.effects.includes(eff)) m.effects.push(eff);
+			});
+		}
 	} else if (scaledCard.type === 'boss') {
 		const b = scaledCard as any;
 		b.damage += dmgL;
