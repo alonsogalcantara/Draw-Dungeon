@@ -1,6 +1,6 @@
 import { type GamePhase, type CampaignType, type CharacterDef, type DifficultyMode, type PotionType, type ItemCard, type RoomCardInstance, type CombatState, type SkillCheckState, type EventState, type LogEntry, type ActiveMission } from './types';
 import { saveMetaProgress, loadMetaProgress, getActiveProfileId } from './metaState';
-import { MAX_HP, MAX_ARMOR, MAX_GOLD, MAX_FOOD, XP_REQUIREMENTS_PER_LEVEL, POLYHEDRAL_DICE } from '../data/constants';
+import { MAX_HP, MAX_ARMOR, MAX_GOLD, MAX_FOOD, MAX_MANA, XP_REQUIREMENTS_PER_LEVEL, POLYHEDRAL_DICE } from '../data/constants';
 import type { RunSummary } from './gameStats';
 
 class GameState {
@@ -21,6 +21,8 @@ class GameState {
   armor = $state(0);
   gold = $state(0);
   food = $state(0);
+  mana = $state(0);
+  maxMana = $state(0);
   potions = $state<(PotionType | null)[]>([null, null]);
   item = $state<ItemCard | null>(null);
   itemUsesLeft = $state(0);
@@ -95,6 +97,8 @@ class GameState {
     this.armor = 0;
     this.gold = 0;
     this.food = 0;
+    this.mana = 0;
+    this.maxMana = 0;
     this.potions = [null, null];
     this.item = null;
     this.itemUsesLeft = 0;
@@ -143,6 +147,8 @@ class GameState {
         armor: this.armor,
         gold: this.gold,
         food: this.food,
+        mana: this.mana,
+        maxMana: this.maxMana,
         potions: this.potions,
         item: this.item,
         itemUsesLeft: this.itemUsesLeft,
@@ -296,6 +302,14 @@ class GameState {
       this.armor = 0;
       this.loseHp(missing);
     }
+  }
+
+  gainMana(amount: number) {
+    this.mana = Math.min(this.mana + amount, this.maxMana);
+  }
+
+  loseMana(amount: number) {
+    this.mana = Math.max(0, this.mana - amount);
   }
 }
 

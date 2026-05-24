@@ -70,7 +70,14 @@ export function performFeat(dieIndex: number, costType: 'xp' | 'hp' | 'free') {
   if (xpCost > 0) game.loseXp(xpCost);
   
   if (costType === 'free') {
-    game.freeFeatActive = false;
+    if (game.combat.freeRerolls && game.combat.freeRerolls > 0) {
+      game.combat.freeRerolls--;
+      if (game.combat.freeRerolls <= 0) {
+        game.freeFeatActive = false;
+      }
+    } else {
+      game.freeFeatActive = false;
+    }
     game.addLog(`Performed Free Feat!`, 'combat');
   } else {
     game.addLog(`Performed Feat! Lost ${hpCost > 0 ? hpCost + ' HP' : xpCost + ' XP'}`, 'combat');
@@ -124,6 +131,15 @@ export function applyPlayerDamage() {
 export function executeMonsterAttack() {
   if (!game.combat) return;
   
+  if (game.combat.stunTurns && game.combat.stunTurns > 0) {
+    game.combat.stunTurns--;
+    game.addLog(`Monster attack skipped (Stunned - ${game.combat.stunTurns} turns left)`, 'info');
+    game.combat.phase = 'rolling';
+    game.combat.rolled = false;
+    game.combat.turnCount++;
+    return;
+  }
+
   if (game.combat.frostPotionActive) {
     game.combat.frostPotionActive = false;
     game.addLog('Monster attack skipped due to Frost Potion', 'info');
@@ -193,17 +209,21 @@ export function endCombat() {
   if (enemy.type === 'monster') {
     const xpReward = enemy.xpRewardPerFloor[game.currentFloor - 1];
     game.gainXp(xpReward);
-    game.addLog(`Defeated ${enemy.name}! Gained ${xpReward} XP.`, 'loot');
+    game.gainMana(1);
+    game.addLog(`Defeated ${enemy.name}! Gained ${xpReward} XP and 1 Mana.`, 'loot');
   } else if (enemy.type === 'boss') {
     if ((enemy as BossCard).isFinal) {
       game.runSummary = generateRunSummary(game.log);
       if (game.selectedCharacter) {
-        addVictory(game.selectedCharacter.id);
+        addVictory(game.selectedCharacter.id, 3);
       }
       game.phase = 'victory';
       return;
     }
     const boss = enemy as BossCard;
+    if (game.selectedCharacter) {
+      addVictory(game.selectedCharacter.id, 1);
+    }
     const xpReward = boss.reward?.xp || 3;
     game.gainXp(xpReward);
     if (boss.reward?.gold) {

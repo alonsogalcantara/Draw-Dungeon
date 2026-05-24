@@ -24,6 +24,8 @@ export function initCombat(enemy: MonsterCard | BossCard, floor: number, level: 
     bossPhase: 1,
     frostPotionActive: false,
     combatSkillUsedThisTurn: false,
+    stunTurns: 0,
+    freeRerolls: 0,
   };
 }
 

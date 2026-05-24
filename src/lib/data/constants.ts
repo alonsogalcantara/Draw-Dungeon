@@ -28,6 +28,7 @@ export const MAX_GOLD = 15;
 export const MAX_FOOD = 6;
 export const MAX_POTIONS = 2;
 export const MAX_ITEMS = 1;
+export const MAX_MANA = 99;
 
 // --- XP & Leveling ---
 // Level 1: XP 0-5  (1 character die)

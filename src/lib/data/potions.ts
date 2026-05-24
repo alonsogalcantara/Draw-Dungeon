@@ -58,6 +58,13 @@ export const POTIONS: Record<PotionType, PotionDef> = {
     autoSucceedSkillCheck: true,
     curesBlindness: true,
   },
+  mana: {
+    type: 'mana',
+    name: 'Mana Potion',
+    icon: '🔵',
+    description: 'Restore your Mana to maximum.',
+    isOffensive: false,
+  },
 };
 
 // --- Categorization Helpers ---
@@ -66,7 +73,7 @@ export const POTIONS: Record<PotionType, PotionDef> = {
 export const OFFENSIVE_POTIONS: PotionType[] = ['fire', 'frost', 'poison'];
 
 /** Potion types that can be used at any time */
-export const DEFENSIVE_POTIONS: PotionType[] = ['healing', 'holy', 'perception'];
+export const DEFENSIVE_POTIONS: PotionType[] = ['healing', 'holy', 'perception', 'mana'];
 
 /**
  * Check if a potion can be used outside of combat.

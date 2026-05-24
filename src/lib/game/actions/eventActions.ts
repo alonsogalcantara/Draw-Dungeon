@@ -172,6 +172,22 @@ export function handleBonfire(actionIndex: number) {
   });
   
   game.skillUsed = false; // Refresh skills
+  
+  if (game.selectedCharacter) {
+    const blessedSkill = game.selectedCharacter.skills.find(s => s.name === 'Blessed');
+    if (blessedSkill) {
+      if (game.selectedCharacter.className === blessedSkill.roleAffinity) {
+        game.cursed = false; game.poisoned = false; game.blinded = false;
+        game.gainHp(1); // Boosted
+      } else if (Math.random() > 0.5) {
+        game.cursed = false; game.poisoned = false; game.blinded = false;
+        game.addLog("Mismatched Passive (Blessed) activated successfully!", "info");
+      } else {
+        game.addLog("Mismatched Passive (Blessed) failed to activate.", "system");
+      }
+    }
+  }
+  
   game.addLog(`Rested at bonfire: ${action.label}`, 'info');
   
   game.roomGrid[game.playerRow][game.playerCol]!.resolved = true;
@@ -362,10 +378,30 @@ export function useCharacterSkill(skillName: string) {
     game.addLog("Skill already used this area.", "system");
     return;
   }
+  
+  const skillDef = game.selectedCharacter?.skills.find(s => s.name === skillName);
+  if (!skillDef) return;
+  
+  const roleMatch = game.selectedCharacter?.className === skillDef.roleAffinity;
+  
+  // If no role match, we warn and fail unless it's a passive? Wait, passives are not activated here.
+  // Actually, the user says if it doesn't match, it cannot be used or fails.
+  if (!roleMatch) {
+    game.addLog(`Your class (${game.selectedCharacter?.className}) cannot effectively use ${skillName}.`, "system");
+    return;
+  }
+  
+  const manaCost = skillDef.manaCost || 0;
+  if (game.mana < manaCost) {
+    game.addLog(`Not enough Mana! Requires ${manaCost}.`, "system");
+    return;
+  }
+  
   const logic = SKILL_DICTIONARY[skillName];
   if (logic) {
-    const success = logic();
+    const success = logic(roleMatch); // Always true here, but keeping arg just in case
     if (success) {
+      game.loseMana(manaCost);
       game.skillUsed = true;
     }
   } else {

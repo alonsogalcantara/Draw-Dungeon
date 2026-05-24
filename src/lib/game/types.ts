@@ -42,7 +42,7 @@ export type RoomType =
 export type SkillType = 'exploration' | 'combat' | 'preparation' | 'passive';
 
 /** Potion types - offensive (combat only) and defensive (anytime) */
-export type PotionType = 'fire' | 'frost' | 'poison' | 'healing' | 'holy' | 'perception';
+export type PotionType = 'fire' | 'frost' | 'poison' | 'healing' | 'holy' | 'perception' | 'mana';
 
 /** Status effects that can afflict the player */
 export type EffectType =
@@ -115,6 +115,9 @@ export interface CharacterSkill {
   type: SkillType;
   description: string;
   icon: string;
+  roleAffinity?: 'Warrior' | 'Mage' | 'Rogue' | 'Cleric' | 'Wanderer';
+  manaCost?: number;
+  boostedEffect?: string;
 }
 
 /** Full character definition used for character selection */
@@ -130,6 +133,7 @@ export interface CharacterDef {
     gold: number;
     armor: number;
     xp: number;
+    mana: number;
   };
   skills: CharacterSkill[];
 }
@@ -394,10 +398,14 @@ export interface CombatState {
   turnCount: number;
   /** Whether the poison potion ongoing effect is active */
   poisonPotionActive: boolean;
+  /** Whether the frost potion or a stun is active for the turn */
+  frostPotionActive: boolean;
+  /** Number of turns the monster is stunned */
+  stunTurns?: number;
+  /** Number of free rerolls available from skills */
+  freeRerolls?: number;
   /** Current boss phase (1 or 2 for Og's Remains) */
   bossPhase: number;
-  /** Whether frost potion was used this turn (skip monster attack) */
-  frostPotionActive: boolean;
   /** Whether the player used their combat skill this turn */
   combatSkillUsedThisTurn: boolean;
   rolled?: boolean;

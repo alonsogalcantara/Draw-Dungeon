@@ -7,13 +7,12 @@
 	import type { CharacterDef, DifficultyMode, CampaignType } from '$lib/game/types';
 	import { getProfiles, getActiveProfileId } from '$lib/game/metaState';
 	
-	import WizardStepCharacter from './WizardStepCharacter.svelte';
 	import CustomChampionBuilder from './CustomChampionBuilder.svelte';
 	import WizardStepDifficulty from './WizardStepDifficulty.svelte';
 	import WizardStepCampaign from './WizardStepCampaign.svelte';
 	import WizardStepLayout from './WizardStepLayout.svelte';
 
-	let selectedChar = $state<CharacterDef | null>(null);
+	let selectedChar = $state<CharacterDef | null>(CHARACTERS[0]); // CUSTOM_CHAMPION is the only one now
 	let difficulty = $state<DifficultyMode>('normal');
 	let campaignType = $state<CampaignType>('dungeon');
 	let layoutSize = $state<number>(3);
@@ -34,6 +33,8 @@
 	let customFood = $state(0);
 	let customGold = $state(0);
 	let customArmor = $state(0);
+	let customMana = $state(0);
+	let customRole = $state<'Warrior' | 'Mage' | 'Rogue' | 'Cleric' | 'Wanderer' | null>(null);
 	let customActiveSkill = $state<string | null>(null);
 	let customPassiveSkill = $state<string | null>(null);
 	let isCustomValid = $state(false);
@@ -50,11 +51,13 @@
 				
 				charToStart = {
 					...selectedChar,
+					className: customRole || 'Wanderer',
 					startingStats: {
 						hp: customHp,
 						food: customFood,
 						gold: customGold,
 						armor: customArmor,
+						mana: customMana,
 						xp: 0
 					},
 					skills: [activeObj, passiveObj]
@@ -103,24 +106,18 @@
 	<div class="mb-8 h-px w-48 bg-gradient-to-r from-transparent via-amber-600/50 to-transparent"></div>
 
 	{#if step === 1}
-		<WizardStepCharacter 
-			bind:selectedChar 
-			bind:metaProgress 
-			onSelect={() => focusNextBtn(1)} 
+		<CustomChampionBuilder 
+			bind:metaProgress
+			bind:customHp
+			bind:customFood
+			bind:customGold
+			bind:customArmor
+			bind:customMana
+			bind:customRole
+			bind:customActiveSkill
+			bind:customPassiveSkill
+			bind:isCustomValid
 		/>
-		
-		{#if selectedChar?.id === 'custom_champion'}
-			<CustomChampionBuilder 
-				bind:metaProgress
-				bind:customHp
-				bind:customFood
-				bind:customGold
-				bind:customArmor
-				bind:customActiveSkill
-				bind:customPassiveSkill
-				bind:isCustomValid
-			/>
-		{/if}
 
 		<div class="mt-4">
 			<button

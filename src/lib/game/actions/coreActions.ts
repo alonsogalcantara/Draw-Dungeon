@@ -23,6 +23,8 @@ export function startNewGame(character: CharacterDef, difficulty: DifficultyMode
   game.gold = character.startingStats.gold + mod.gold + upg.gold;
   game.armor = character.startingStats.armor + upg.armor;
   game.xp = character.startingStats.xp;
+  game.mana = character.startingStats.mana || 0;
+  game.maxMana = 99;
   
   const progress = loadMetaProgress(character.id);
   if (progress) {

@@ -17,6 +17,7 @@
 
 	const hpPercent = $derived(Math.max(0, (game.hp / game.maxHp) * 100));
 	const xpPercent = $derived(Math.max(0, (game.xp / game.maxXp) * 100));
+	const manaPercent = $derived(Math.max(0, (game.mana / game.maxMana) * 100));
 
 	function handleUsePotion(index: number) {
 		const potion = game.potions[index];
@@ -88,6 +89,22 @@
 			<!-- Third markers for extra dice -->
 			<div class="absolute top-0 h-full w-px bg-stone-950" style="left: 33.33%"></div>
 			<div class="absolute top-0 h-full w-px bg-stone-950" style="left: 66.66%"></div>
+		</div>
+	</div>
+
+	<!-- Mana Bar -->
+	<div class="space-y-1 relative z-10">
+		<div class="flex justify-between text-xs items-baseline">
+			<span class="font-black tracking-wide text-blue-400">MANA</span>
+			<span class="text-stone-300 font-medium">{game.mana} <span class="text-stone-500 text-[10px]">/ {game.maxMana}</span></span>
+		</div>
+		<div class="stat-bar relative h-3 overflow-hidden rounded-full bg-stone-950 border border-stone-800 shadow-inner">
+			<div
+				class="h-full rounded-full bg-gradient-to-r from-blue-800 via-blue-500 to-blue-400 transition-all duration-500 relative"
+				style="width: {manaPercent}%"
+			>
+				<div class="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent"></div>
+			</div>
 		</div>
 	</div>
 

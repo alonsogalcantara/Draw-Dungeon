@@ -20,6 +20,8 @@ export function usePotion(slotIndex: number) {
     if (game.phase === 'skillCheck' && game.skillCheck) {
       game.skillCheck.success = true;
     }
+  } else if (potion === 'mana') {
+    game.gainMana(game.maxMana);
   } else if (potion === 'fire' && game.combat) {
     game.combat.enemyHp -= 7;
   } else if (potion === 'frost' && game.combat) {

@@ -23,9 +23,9 @@
 
 
 
-	function handleSpendVP(charId: string, stat: 'hp' | 'armor' | 'gold' | 'food', event: Event) {
+	function handleSpendVP(charId: string, stat: 'hp' | 'armor' | 'gold' | 'food', baseStat: number, event: Event) {
 		event.stopPropagation();
-		if (spendVictoryPoint(charId, stat)) {
+		if (spendVictoryPoint(charId, stat, baseStat)) {
 			metaProgress = loadAllMetaProgress(CHARACTERS.map(c => c.id).concat('custom_champion'));
 		}
 	}
@@ -106,10 +106,10 @@
 						⭐ {metaProgress[char.id].victories} VP available!
 					</div>
 					<div class="grid grid-cols-2 gap-1">
-						<button class="text-[10px] bg-red-900/40 hover:bg-red-800/60 border border-red-500/30 rounded py-1 px-1 text-red-200 transition-colors" onclick={(e) => handleSpendVP(char.id, 'hp', e)}>+1 HP</button>
-						<button class="text-[10px] bg-amber-900/40 hover:bg-amber-800/60 border border-amber-500/30 rounded py-1 px-1 text-amber-200 transition-colors" onclick={(e) => handleSpendVP(char.id, 'food', e)}>+1 Food</button>
-						<button class="text-[10px] bg-yellow-900/40 hover:bg-yellow-800/60 border border-yellow-500/30 rounded py-1 px-1 text-yellow-200 transition-colors" onclick={(e) => handleSpendVP(char.id, 'gold', e)}>+1 Gold</button>
-						<button class="text-[10px] bg-blue-900/40 hover:bg-blue-800/60 border border-blue-500/30 rounded py-1 px-1 text-blue-200 transition-colors" onclick={(e) => handleSpendVP(char.id, 'armor', e)}>+1 Armor</button>
+						<button class="text-[10px] bg-red-900/40 hover:bg-red-800/60 border border-red-500/30 rounded py-1 px-1 text-red-200 transition-colors" onclick={(e) => handleSpendVP(char.id, 'hp', char.startingStats.hp + ((metaProgress[char.id]?.level ?? 1) - 1) * 5, e)}>+1 HP</button>
+						<button class="text-[10px] bg-amber-900/40 hover:bg-amber-800/60 border border-amber-500/30 rounded py-1 px-1 text-amber-200 transition-colors" onclick={(e) => handleSpendVP(char.id, 'food', char.startingStats.food, e)}>+1 Food</button>
+						<button class="text-[10px] bg-yellow-900/40 hover:bg-yellow-800/60 border border-yellow-500/30 rounded py-1 px-1 text-yellow-200 transition-colors" onclick={(e) => handleSpendVP(char.id, 'gold', char.startingStats.gold, e)}>+1 Gold</button>
+						<button class="text-[10px] bg-blue-900/40 hover:bg-blue-800/60 border border-blue-500/30 rounded py-1 px-1 text-blue-200 transition-colors" onclick={(e) => handleSpendVP(char.id, 'armor', char.startingStats.armor, e)}>+1 Armor</button>
 					</div>
 				</div>
 			{/if}

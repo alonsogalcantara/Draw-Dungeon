@@ -272,11 +272,30 @@ export function delve() {
   }
   
   game.temporaryArmor = 0; // reset temp armor
-  if (game.selectedCharacter && game.selectedCharacter.skills.find(s => s.name === 'Tough')) {
-    game.temporaryArmor = 1; // Tough passive
-  }
-  if (game.selectedCharacter && game.selectedCharacter.skills.find(s => s.name === 'Blessed')) {
-    game.cursed = false; game.poisoned = false; game.blinded = false;
+  if (game.selectedCharacter) {
+    const toughSkill = game.selectedCharacter.skills.find(s => s.name === 'Tough');
+    if (toughSkill) {
+      if (game.selectedCharacter.className === toughSkill.roleAffinity) {
+        game.temporaryArmor = 2; // Boosted
+      } else if (Math.random() > 0.5) {
+        game.temporaryArmor = 1;
+        game.addLog("Mismatched Passive (Tough) activated successfully!", "info");
+      } else {
+        game.addLog("Mismatched Passive (Tough) failed to activate.", "system");
+      }
+    }
+    const blessedSkill = game.selectedCharacter.skills.find(s => s.name === 'Blessed');
+    if (blessedSkill) {
+      if (game.selectedCharacter.className === blessedSkill.roleAffinity) {
+        game.cursed = false; game.poisoned = false; game.blinded = false;
+        game.gainHp(1); // Boosted
+      } else if (Math.random() > 0.5) {
+        game.cursed = false; game.poisoned = false; game.blinded = false;
+        game.addLog("Mismatched Passive (Blessed) activated successfully!", "info");
+      } else {
+        game.addLog("Mismatched Passive (Blessed) failed to activate.", "system");
+      }
+    }
   }
   
   // Passive mission effects

@@ -19,6 +19,17 @@ export interface MetaProgress {
   };
 }
 
+export interface CustomChampionDef {
+  role: 'Warrior' | 'Mage' | 'Rogue' | 'Cleric' | 'Wanderer';
+  hp: number;
+  food: number;
+  gold: number;
+  armor: number;
+  mana: number;
+  activeSkill: string | null;
+  passiveSkill: string | null;
+}
+
 // --- Profiles Management ---
 
 export function getProfiles(): Profile[] {
@@ -134,25 +145,59 @@ export function clearMetaProgress(characterId: string) {
 /**
  * Increment the character's victories.
  */
-export function addVictory(characterId: string) {
+export function addVictory(characterId: string, amount: number = 1) {
   if (typeof window === 'undefined') return;
   const existing = loadMetaProgress(characterId) || { level: 1, xp: 0, victories: 0, statUpgrades: { hp: 0, armor: 0, gold: 0, food: 0 } };
-  existing.victories += 1;
+  existing.victories += amount;
   saveMetaProgress(characterId, existing);
 }
 
 /**
  * Spend a victory point on a stat upgrade.
  */
-export function spendVictoryPoint(characterId: string, stat: 'hp' | 'armor' | 'gold' | 'food') {
+export function spendVictoryPoint(characterId: string, stat: 'hp' | 'armor' | 'gold' | 'food', currentBaseStat: number) {
   if (typeof window === 'undefined') return false;
   const existing = loadMetaProgress(characterId);
   if (!existing || existing.victories < 1) return false;
   
+  if (stat !== 'gold') {
+    if (currentBaseStat + existing.statUpgrades[stat] >= 99) {
+      return false; // Reached max limit
+    }
+  }
+
   existing.victories -= 1;
   existing.statUpgrades[stat] += 1;
   saveMetaProgress(characterId, existing);
   return true;
+}
+
+/**
+ * Save custom champion configuration.
+ */
+export function saveCustomChampionDef(def: CustomChampionDef) {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(`${getMetaPrefix()}custom_def`, JSON.stringify(def));
+  } catch (error) {
+    console.error('Failed to save custom champion def:', error);
+  }
+}
+
+/**
+ * Load custom champion configuration.
+ */
+export function loadCustomChampionDef(): CustomChampionDef | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const dataStr = window.localStorage.getItem(`${getMetaPrefix()}custom_def`);
+    if (dataStr) {
+      return JSON.parse(dataStr);
+    }
+  } catch (error) {
+    console.error('Failed to load custom champion def:', error);
+  }
+  return null;
 }
 
 /**

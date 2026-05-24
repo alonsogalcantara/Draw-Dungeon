@@ -18,6 +18,7 @@ export const BRUENOR: CharacterDef = {
     gold: 2,
     armor: 2,
     xp: 0,
+    mana: 0,
   },
   skills: [
     {
@@ -25,12 +26,17 @@ export const BRUENOR: CharacterDef = {
       type: 'combat',
       description: 'Stun the monster, causing it to skip its attack this turn.',
       icon: '🛡️',
+      roleAffinity: 'Warrior',
+      manaCost: 2,
+      boostedEffect: 'Stun the monster for 2 turns instead of 1.',
     },
     {
       name: 'Tough',
       type: 'passive',
       description: 'Start each area with +1 temporary Armor.',
       icon: '💪',
+      roleAffinity: 'Warrior',
+      boostedEffect: 'Start each area with +2 temporary Armor.',
     },
   ],
 };
@@ -49,6 +55,7 @@ export const ELARA: CharacterDef = {
     gold: 5,
     armor: 1,
     xp: 0,
+    mana: 2,
   },
   skills: [
     {
@@ -56,12 +63,18 @@ export const ELARA: CharacterDef = {
       type: 'exploration',
       description: 'Look at a facedown room card before choosing which room to enter.',
       icon: '👁️',
+      roleAffinity: 'Rogue',
+      manaCost: 1,
+      boostedEffect: 'Look at up to 2 facedown room cards.',
     },
     {
       name: 'Backstab',
       type: 'combat',
       description: 'Reroll one character die for free (no XP or HP cost).',
       icon: '🗡️',
+      roleAffinity: 'Rogue',
+      manaCost: 0,
+      boostedEffect: 'Reroll up to two character dice for free.',
     },
   ],
 };
@@ -80,6 +93,7 @@ export const VARIS: CharacterDef = {
     gold: 3,
     armor: 0,
     xp: 3,
+    mana: 5,
   },
   skills: [
     {
@@ -87,12 +101,18 @@ export const VARIS: CharacterDef = {
       type: 'combat',
       description: 'Deal 4 damage (+2 per extra level) directly to the enemy, bypassing dice.',
       icon: '⚡',
+      roleAffinity: 'Mage',
+      manaCost: 3,
+      boostedEffect: 'Deal 6 damage (+3 per extra level) instead.',
     },
     {
       name: 'Foresight',
       type: 'preparation',
       description: 'Look at the top 3 room cards from the deck and rearrange them before laying the grid.',
       icon: '🔮',
+      roleAffinity: 'Mage',
+      manaCost: 2,
+      boostedEffect: 'Look at and rearrange the top 5 room cards instead of 3.',
     },
   ],
 };
@@ -111,6 +131,7 @@ export const SENNA: CharacterDef = {
     gold: 2,
     armor: 1,
     xp: 0,
+    mana: 3,
   },
   skills: [
     {
@@ -118,12 +139,17 @@ export const SENNA: CharacterDef = {
       type: 'combat',
       description: 'Reduce the next monster attack damage to 0.',
       icon: '✨',
+      roleAffinity: 'Cleric',
+      manaCost: 2,
+      boostedEffect: 'Also heal 2 HP when used.',
     },
     {
       name: 'Blessed',
       type: 'passive',
       description: 'After each rest (bonfire or delving), cure all negative effects (poison, curse, blindness).',
       icon: '🙏',
+      roleAffinity: 'Cleric',
+      boostedEffect: 'Also heal 1 HP after each rest.',
     },
   ],
 };
@@ -142,13 +168,14 @@ export const CUSTOM_CHAMPION: CharacterDef = {
     gold: 0,
     armor: 0,
     xp: 0,
+    mana: 0,
   },
   skills: [], // Assigned dynamically
 };
 
 // --- All Characters & Skills ---
 
-export const CHARACTERS: CharacterDef[] = [BRUENOR, ELARA, VARIS, SENNA, CUSTOM_CHAMPION];
+export const CHARACTERS: CharacterDef[] = [CUSTOM_CHAMPION];
 
 export const ALL_SKILLS = [
   ...BRUENOR.skills,
