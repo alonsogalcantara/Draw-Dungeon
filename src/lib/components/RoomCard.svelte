@@ -52,10 +52,10 @@
 				? 'card-selected scale-[1.02] rounded-xl shadow-[0_0_20px_rgba(245,158,11,0.6)] transition-all duration-300'
 				: 'transition-all duration-300',
 			isAvailable && !isCurrentPosition
-				? 'card-available scale-[1.05] cursor-pointer rounded-xl hover:shadow-[0_0_15px_rgba(16,185,129,0.4)]'
+				? 'cursor-pointer rounded-xl hover:shadow-[0_0_15px_rgba(245,158,11,0.4)]'
 				: '',
 			!isAvailable || isCurrentPosition ? 'cursor-default' : '',
-			!isCurrentPosition && !isAvailable ? 'opacity-70' : ''
+			!isCurrentPosition && !isAvailable && !instance?.resolved ? 'opacity-70' : ''
 		]
 			.filter(Boolean)
 			.join(' ')}
@@ -104,7 +104,11 @@
 			></div>
 		{:else if isAvailable}
 			<div
-				class="pointer-events-none absolute inset-0 z-10 rounded-xl border-4 border-emerald-500/80"
+				class="pointer-events-none absolute inset-0 z-10 rounded-xl border-4 border-amber-400 animate-[pulse_2s_ease-in-out_infinite]"
+			></div>
+		{:else if instance?.resolved}
+			<div
+				class="pointer-events-none absolute inset-0 z-10 rounded-xl border-4 border-stone-800 bg-black/60 backdrop-grayscale"
 			></div>
 		{:else}
 			<div
