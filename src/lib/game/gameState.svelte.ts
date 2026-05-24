@@ -130,11 +130,12 @@ class GameState {
       this.addLog(`Leveled up to ${this.level}! Max HP +5, Rolling ${newDieCount}D${newFaces}`, 'info');
     }
     
-    // If we are at max level, excess XP heals us
-    if (this.level >= POLYHEDRAL_DICE.length && this.xp > 0) {
-      this.gainHp(this.xp);
-      this.addLog(`Max Level! Converted ${this.xp} excess XP into HP.`, 'info');
-      this.xp = 0;
+    // If we are at max level, excess XP above maxXp heals us
+    if (this.level >= POLYHEDRAL_DICE.length && this.xp > this.maxXp) {
+      const excess = this.xp - this.maxXp;
+      this.gainHp(excess);
+      this.addLog(`Max Level! Converted ${excess} excess XP into HP.`, 'info');
+      this.xp = this.maxXp;
     }
     
     if (this.selectedCharacter) {
