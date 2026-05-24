@@ -49,15 +49,17 @@
 		<!-- Facedown Design -->
 		<img src="/images/card/cover_card.png" alt="Card Back" class="absolute inset-0 w-full h-full object-cover" />
 	{:else if card}
-		<!-- 1. Illustration Area (Z: 0, BEHIND the card frame to hide under edges) -->
-		<div class="absolute" style="left: 12px; top: 65px; width: 295px; height: 200px; z-index: 0;">
-			{#if card.image}
-				<img src={card.image} alt={card.name} class="w-full h-full object-cover" />
-			{:else}
-				<div class="w-full h-full flex items-center justify-center bg-black/40">
-					<span class="text-[80px] opacity-30 drop-shadow-[0_0_15px_rgba(0,0,0,0.8)] mix-blend-overlay">{roomIcons[card.type]}</span>
-				</div>
-			{/if}
+		<!-- 1. Illustration Area (Z: 15, ON TOP of the card frame but perfectly sized) -->
+		<div class="absolute" style="left: 18px; top: 70px; width: 284px; height: 190px; z-index: 15;">
+			<div class="w-full h-full overflow-hidden" style="border-radius: 2px;">
+				{#if card.image}
+					<img src={card.image} alt={card.name} class="w-full h-full object-cover" />
+				{:else}
+					<div class="w-full h-full flex items-center justify-center bg-black/40">
+						<span class="text-[80px] opacity-30 drop-shadow-[0_0_15px_rgba(0,0,0,0.8)] mix-blend-overlay">{roomIcons[card.type]}</span>
+					</div>
+				{/if}
+			</div>
 		</div>
 
 		<!-- 2. Front Card Frame Template (Z: 10, has transparent windows) -->
