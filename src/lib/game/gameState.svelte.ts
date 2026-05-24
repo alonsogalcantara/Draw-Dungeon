@@ -1,5 +1,5 @@
 import { type GamePhase, type CampaignType, type CharacterDef, type DifficultyMode, type PotionType, type ItemCard, type RoomCardInstance, type CombatState, type SkillCheckState, type EventState, type LogEntry, type ActiveMission } from './types';
-import { saveMetaProgress, loadMetaProgress } from './metaState';
+import { saveMetaProgress, loadMetaProgress, getActiveProfileId } from './metaState';
 import { MAX_HP, MAX_ARMOR, MAX_GOLD, MAX_FOOD, XP_REQUIREMENTS_PER_LEVEL, POLYHEDRAL_DICE } from '../data/constants';
 import type { RunSummary } from './gameStats';
 
@@ -121,6 +121,11 @@ class GameState {
   }
 
   // --- Persistence ---
+  private getSaveKey() {
+    const profileId = getActiveProfileId() || 'default';
+    return `mini_rogue_save_${profileId}`;
+  }
+
   saveState() {
     if (typeof localStorage === 'undefined') return;
     try {
@@ -162,7 +167,7 @@ class GameState {
         logCounter: this.logCounter,
         settings: $state.snapshot(this.settings) // clone the settings object
       };
-      localStorage.setItem('mini_rogue_save', JSON.stringify(stateToSave));
+      localStorage.setItem(this.getSaveKey(), JSON.stringify(stateToSave));
     } catch (e) {
       console.error('Failed to save game state', e);
     }
@@ -171,7 +176,7 @@ class GameState {
   loadState(): boolean {
     if (typeof localStorage === 'undefined') return false;
     try {
-      const saved = localStorage.getItem('mini_rogue_save');
+      const saved = localStorage.getItem(this.getSaveKey());
       if (!saved) return false;
       const parsed = JSON.parse(saved);
       
@@ -186,12 +191,12 @@ class GameState {
 
   clearState() {
     if (typeof localStorage === 'undefined') return;
-    localStorage.removeItem('mini_rogue_save');
+    localStorage.removeItem(this.getSaveKey());
   }
 
   hasSavedState(): boolean {
     if (typeof localStorage === 'undefined') return false;
-    return localStorage.getItem('mini_rogue_save') !== null;
+    return localStorage.getItem(this.getSaveKey()) !== null;
   }
 
   gainHp(amount: number) {

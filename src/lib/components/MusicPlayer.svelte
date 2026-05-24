@@ -3,7 +3,6 @@
 	import { game } from '$lib/game/gameState.svelte';
 
 	let audio: HTMLAudioElement;
-	let isPlaying = $state(false);
 	let hasInteracted = $state(false);
 
 	$effect(() => {
@@ -18,9 +17,7 @@
 			if (!hasInteracted && audio) {
 				hasInteracted = true;
 				audio.volume = game.settings.musicVolume;
-				audio.play().then(() => {
-					isPlaying = true;
-				}).catch(e => {
+				audio.play().catch(e => {
 					console.log("Audio autoplay prevented by browser:", e);
 				});
 				
@@ -38,19 +35,6 @@
 			document.removeEventListener('keydown', handleFirstInteraction);
 		};
 	});
-
-	function toggleMusic(e: Event) {
-		e.stopPropagation(); // Prevent triggering the document interaction handler if it hasn't fired yet
-		if (!audio) return;
-		
-		if (isPlaying) {
-			audio.pause();
-			isPlaying = false;
-		} else {
-			audio.play();
-			isPlaying = true;
-		}
-	}
 </script>
 
 <audio
@@ -59,16 +43,3 @@
 	loop
 	preload="auto"
 ></audio>
-
-<button
-	class="fixed bottom-4 right-4 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-stone-900/80 text-lg border border-stone-700 text-stone-300 shadow-lg backdrop-blur-sm transition-all hover:bg-stone-800 hover:scale-110 active:scale-95"
-	onclick={toggleMusic}
-	aria-label={isPlaying ? "Mute music" : "Play music"}
-	title={isPlaying ? "Mute music" : "Play music"}
->
-	{#if isPlaying}
-		🔊
-	{:else}
-		🔈
-	{/if}
-</button>
