@@ -21,11 +21,7 @@
 		passive: { label: 'Passive', color: 'bg-purple-800/60 text-purple-300' }
 	};
 
-	function handleResetProgress(charId: string, event: Event) {
-		event.stopPropagation();
-		clearMetaProgress(charId);
-		metaProgress = loadAllMetaProgress(CHARACTERS.map(c => c.id).concat('custom_champion'));
-	}
+
 
 	function handleSpendVP(charId: string, stat: 'hp' | 'armor' | 'gold' | 'food', event: Event) {
 		event.stopPropagation();
@@ -55,14 +51,6 @@
 					<h2 class="text-xl font-bold text-amber-100">{char.name}</h2>
 					<p class="text-sm tracking-wider text-amber-500/70 uppercase mt-1">{char.className}</p>
 				</div>
-				{#if metaProgress[char.id]}
-					<button 
-						class="text-[10px] uppercase font-bold tracking-wider text-red-400 hover:text-red-300 border border-red-900/50 hover:bg-red-900/30 rounded px-2 py-1 transition-colors"
-						onclick={(e) => handleResetProgress(char.id, e)}
-					>
-						Reset
-					</button>
-				{/if}
 			</div>
 
 			<!-- Stats -->

@@ -72,15 +72,6 @@
 		}
 	}
 
-	function handleWipeProgress() {
-		if (confirm('Are you sure you want to wipe all character progress? This cannot be undone.')) {
-			for (const char of CHARACTERS) {
-				clearMetaProgress(char.id);
-			}
-			metaProgress = loadAllMetaProgress(CHARACTERS.map(c => c.id).concat('custom_champion'));
-		}
-	}
-
 	function focusNextBtn(currentStep: number) {
 		setTimeout(() => {
 			document.getElementById(`next-btn-${currentStep}`)?.focus();
@@ -99,11 +90,6 @@
 				<p class="text-sm font-bold tracking-widest text-amber-500/80 uppercase">Profile: {activeProfileName}</p>
 			{/if}
 		</div>
-		{#if Object.keys(metaProgress).length > 0 && step === 1}
-			<button class="btn btn-secondary text-xs text-red-400 hover:bg-red-900/30 hover:text-red-300" onclick={handleWipeProgress}>
-				🗑️ Wipe Progress
-			</button>
-		{/if}
 	</div>
 
 	<!-- Title -->

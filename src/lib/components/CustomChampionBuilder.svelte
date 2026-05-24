@@ -47,11 +47,7 @@
 	const activeSkillsList = ALL_SKILLS.filter(s => s.type !== 'passive');
 	const passiveSkillsList = ALL_SKILLS.filter(s => s.type === 'passive');
 
-	function handleResetProgress(charId: string, event: Event) {
-		event.stopPropagation();
-		clearMetaProgress(charId);
-		metaProgress = loadAllMetaProgress(CHARACTERS.map(c => c.id).concat('custom_champion'));
-	}
+
 </script>
 
 <div class="mb-8 w-full max-w-4xl rounded-xl border-2 border-amber-500/50 bg-stone-900/80 p-6 shadow-xl backdrop-blur-sm">
@@ -63,14 +59,6 @@
 					<span class="ml-2 text-sm text-emerald-400 font-bold">(Lv. {metaProgress['custom_champion'].level})</span>
 				{/if}
 			</h3>
-			{#if metaProgress['custom_champion']}
-				<button 
-					class="text-[10px] uppercase font-bold tracking-wider text-red-400 hover:text-red-300 border border-red-900/50 hover:bg-red-900/30 rounded px-2 py-1 transition-colors"
-					onclick={(e) => handleResetProgress('custom_champion', e)}
-				>
-					Reset
-				</button>
-			{/if}
 		</div>
 		<div class="rounded-full bg-stone-950 px-4 py-2 font-mono text-lg font-bold border border-amber-900/50">
 			Points Available: 
