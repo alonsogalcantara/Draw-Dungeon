@@ -9,6 +9,7 @@ class GameState {
   difficulty = $state<DifficultyMode>('normal');
   campaign = $state<CampaignType>('dungeon');
   layoutSize = $state(3);
+  showSettings = $state(false);
   
   // Character
   selectedCharacter = $state<CharacterDef | null>(null);

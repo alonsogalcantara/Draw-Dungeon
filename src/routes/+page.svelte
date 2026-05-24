@@ -5,6 +5,8 @@
 	import CharacterSelect from '$lib/components/CharacterSelect.svelte';
 	import GameBoard from '$lib/components/GameBoard.svelte';
 	import GameOverScreen from '$lib/components/GameOverScreen.svelte';
+	import SettingsModal from '$lib/components/SettingsModal.svelte';
+	import KeyboardController from '$lib/components/KeyboardController.svelte';
 
 	let saveTimeout: ReturnType<typeof setTimeout>;
 
@@ -29,6 +31,8 @@
 	<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
 </svelte:head>
 
+<KeyboardController />
+
 <main class="min-h-screen bg-stone-950 text-stone-200" style="font-family: 'Inter', sans-serif;">
 	{#if game.phase === 'title'}
 		<TitleScreen />
@@ -36,7 +40,7 @@
 		<ProfileSelect />
 	{:else if game.phase === 'characterSelect'}
 		<CharacterSelect />
-	{:else if game.phase === 'playing' || game.phase === 'combat' || game.phase === 'skillCheck' || game.phase === 'event' || game.phase === 'delving'}
+	{:else if game.phase === 'playing' || game.phase === 'combat' || game.phase === 'skillCheck' || game.phase === 'event' || game.phase === 'delving' || game.phase === 'scouting'}
 		<GameBoard />
 	{:else if game.phase === 'gameOver'}
 		<GameOverScreen victory={false} />
@@ -46,3 +50,16 @@
 		<TitleScreen />
 	{/if}
 </main>
+
+<!-- Global Settings Menu -->
+<SettingsModal open={game.showSettings} onClose={() => game.showSettings = false} />
+
+<!-- Global Settings Button -->
+<button
+	class="fixed top-4 right-4 z-[60] flex h-10 w-10 items-center justify-center rounded-full bg-stone-900/80 text-lg border border-stone-700 text-stone-300 shadow-lg backdrop-blur-sm transition-all hover:bg-stone-800 hover:scale-110 active:scale-95"
+	onclick={() => game.showSettings = true}
+	aria-label="Settings"
+	title="Settings"
+>
+	⚙️
+</button>
