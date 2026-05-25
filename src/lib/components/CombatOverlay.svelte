@@ -274,10 +274,12 @@
 					{#if game.selectedCharacter && !game.skillUsed}
 						{#each game.selectedCharacter.skills.filter((s) => s.type === 'combat') as skill (skill.name)}
 							<button
-								class="btn btn-secondary border-emerald-700/50 px-4 py-2 text-sm text-emerald-100"
+								class="btn btn-secondary border-emerald-700/50 px-4 py-2 text-sm text-emerald-100 disabled:opacity-40"
 								onclick={() => useCharacterSkill(skill.name)}
+								disabled={game.mana < (skill.manaCost || 0) * game.level}
+								title={skill.description}
 							>
-								✨ {skill.name}
+								✨ {skill.name} {skill.manaCost ? `(-${skill.manaCost * game.level} MP)` : ''}
 							</button>
 						{/each}
 					{/if}

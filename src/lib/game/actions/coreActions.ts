@@ -23,14 +23,14 @@ export function startNewGame(
 	const meta = loadMetaProgress(character.id);
 	const upg = meta?.statUpgrades || { hp: 0, armor: 0, gold: 0, food: 0, mana: 0 };
 
-	game.hp = character.startingStats.hp + mod.hp + upg.hp;
+	game.hp = character.startingStats.hp + mod.hp;
 	game.maxHp = character.startingStats.hp + mod.hp + upg.hp; // Set base + upg as maxHp so it accepts 99 starting hp
 	game.food = character.startingStats.food + mod.food + upg.food;
 	game.gold = character.startingStats.gold + mod.gold + upg.gold;
 	game.armor = character.startingStats.armor + upg.armor;
 	game.xp = character.startingStats.xp;
-	game.mana = (character.startingStats.mana || 0) + (upg.mana || 0);
-	game.maxMana = 99;
+	game.mana = character.startingStats.mana || 0;
+	game.maxMana = (character.startingStats.mana || 0) + (upg.mana || 0);
 
 	const progress = loadMetaProgress(character.id);
 	if (progress) {
@@ -39,7 +39,6 @@ export function startNewGame(
 		if (progress.level > 1) {
 			const hpBonus = (progress.level - 1) * 5;
 			game.maxHp += hpBonus;
-			game.hp += hpBonus;
 		}
 	}
 

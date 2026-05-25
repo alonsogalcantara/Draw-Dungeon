@@ -504,7 +504,7 @@ export function useCharacterSkill(skillName: string) {
 	const skillDef = game.selectedCharacter?.skills.find((s) => s.name === skillName);
 	if (!skillDef) return;
 
-	const roleMatch = game.selectedCharacter?.className === skillDef.roleAffinity;
+	const roleMatch = game.selectedCharacter?.className === skillDef.roleAffinity || game.selectedCharacter?.className === 'Wanderer';
 
 	// If no role match, we warn and fail unless it's a passive? Wait, passives are not activated here.
 	// Actually, the user says if it doesn't match, it cannot be used or fails.
@@ -516,7 +516,7 @@ export function useCharacterSkill(skillName: string) {
 		return;
 	}
 
-	const manaCost = skillDef.manaCost || 0;
+	const manaCost = (skillDef.manaCost || 0) * game.level;
 	if (game.mana < manaCost) {
 		game.addLog(`Not enough Mana! Requires ${manaCost}.`, 'system');
 		return;

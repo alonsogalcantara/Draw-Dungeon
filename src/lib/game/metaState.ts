@@ -186,11 +186,7 @@ export function spendVictoryPoint(
 		return true;
 	}
 
-	if (stat !== 'gold') {
-		if (currentBaseStat + existing.statUpgrades[stat] >= 99) {
-			return false; // Reached max limit
-		}
-	}
+	// No stat limits for upgrades.
 
 	existing.victories -= 1;
 	existing.statUpgrades[stat] += 1;

@@ -22,7 +22,7 @@
 
 	const hpPercent = $derived(Math.max(0, (game.hp / game.maxHp) * 100));
 	const xpPercent = $derived(Math.max(0, (game.xp / game.maxXp) * 100));
-	const manaPercent = $derived(Math.max(0, (game.mana / game.maxMana) * 100));
+	const manaPercent = $derived(Math.max(0, (game.mana / (game.maxMana || 1)) * 100));
 
 	function handleUsePotion(index: number) {
 		const potion = game.potions[index];
@@ -279,14 +279,14 @@
 					<button
 						class={[
 							'group relative flex w-full items-center gap-3 overflow-hidden rounded-xl border p-2.5 text-left transition-all duration-300',
-							game.skillUsed && skill.type !== 'passive'
+							(game.skillUsed || game.mana < (skill.manaCost || 0) * game.level) && skill.type !== 'passive'
 								? 'cursor-not-allowed border-stone-800 bg-stone-900/50 opacity-60'
 								: 'cursor-pointer border-emerald-700/30 bg-gradient-to-r from-emerald-950/20 to-stone-900/60 shadow-sm hover:-translate-y-0.5 hover:border-emerald-500/50 hover:shadow-[0_0_15px_rgba(16,185,129,0.15)]'
 						].join(' ')}
 						onclick={() => {
 							if (skill.type !== 'passive') useCharacterSkill(skill.name);
 						}}
-						disabled={game.skillUsed || skill.type === 'passive'}
+						disabled={game.skillUsed || game.mana < (skill.manaCost || 0) * game.level || skill.type === 'passive'}
 						title={skill.description}
 					>
 						{#if !game.skillUsed && skill.type !== 'passive'}
@@ -316,8 +316,11 @@
 								>
 									{skill.name}
 								</div>
-								<div class="text-[9px] font-bold tracking-widest text-stone-500 uppercase">
-									{skill.type}
+								<div class="text-[9px] font-bold tracking-widest text-stone-500 uppercase flex items-center gap-1">
+									<span>{skill.type}</span>
+									{#if skill.manaCost}
+										<span class="text-blue-400 font-black px-1 rounded-sm bg-blue-900/30 border border-blue-800/50">{skill.manaCost * game.level} MP</span>
+									{/if}
 								</div>
 							</div>
 							<div

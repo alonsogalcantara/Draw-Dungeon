@@ -49,15 +49,15 @@
 			const upg = meta?.statUpgrades || { hp: 0, armor: 0, gold: 0, food: 0, mana: 0 };
 			const lvl = meta?.level || 1;
 			
-			const calcHp = customHp + upg.hp + (lvl - 1) * 5;
+			const calcMaxHp = customHp + upg.hp + (lvl - 1) * 5;
 			
-			game.hp = calcHp;
-			game.maxHp = calcHp;
+			game.hp = customHp;
+			game.maxHp = calcMaxHp;
 			game.food = customFood + upg.food;
 			game.gold = customGold + upg.gold;
 			game.armor = customArmor + upg.armor;
-			game.mana = customMana + upg.mana;
-			game.maxMana = 99;
+			game.mana = customMana;
+			game.maxMana = customMana + upg.mana;
 			game.level = lvl;
 			game.xp = meta?.xp || 0;
 			game.maxXp = XP_REQUIREMENTS_PER_LEVEL[lvl - 1] || 999;
