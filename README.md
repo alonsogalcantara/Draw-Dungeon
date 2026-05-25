@@ -40,6 +40,64 @@ El proyecto está construido utilizando tecnologías modernas para garantizar un
 - **[TailwindCSS](https://tailwindcss.com/)**: Motor de estilos para una UI moderna, responsiva y temática oscura/dorada.
 - **[TypeScript](https://www.typescriptlang.org/)**: Tipado estático estricto para las entidades del juego, cartas, eventos y fases de combate.
 
+  ```bash
+  bun run check
+  ```
+
+  _Ejecuta `svelte-check` y TypeScript para asegurar que no hay errores lógicos o de tipado en el código._
+
+## 🧩 Sistema de Expansiones y Creación de Cartas (DLCs)
+
+Mini Rogue incluye un sistema de expansiones o DLCs inyectables. Esto permite a los desarrolladores o modders añadir nuevos paquetes de cartas temáticas de forma modular, las cuales el usuario podrá encender o apagar en el menú de "Dungeon Configuration".
+
+### 1. Definir una nueva Expansión
+
+Para crear un nuevo paquete de DLC, abre el archivo `src/lib/data/expansions.ts` y añade la definición de tu expansión en el array `EXPANSIONS`:
+
+```typescript
+{
+	id: 'mi_nueva_expansion', // Identificador único
+	name: 'Nombre del DLC',
+	description: 'Añade monstruos y trampas terribles.',
+	icon: '🦇' // Emoji o ícono que aparecerá en el menú
+}
+```
+
+### 2. Crear las Cartas y asignarlas al DLC
+
+Todas las cartas del juego viven en el directorio `src/lib/data/cards/` (ej. `monsters.ts`, `traps.ts`, `treasures.ts`). Para agregar una nueva carta exclusiva de tu DLC, basta con crear la carta (respetando su interfaz base definida en `types.ts`) e inyectarle la propiedad `expansion`:
+
+```typescript
+{
+	id: 'monster_vampire_bat',
+	name: 'Murciélago Vampiro',
+	type: 'monster',
+	description: 'Una criatura alada que se alimenta de la sangre de los aventureros.',
+	expansion: 'mi_nueva_expansion', // <--- ENLACE AL DLC
+	image: getImageUrl({expansion}, {type}, {name}),
+	floor: 1, // Piso en el que empezará a aparecer (opcional)
+	hpPerFloor: [4, 6, 8, 10], // Vida base escalonada por piso
+	damage: 2,
+	effects: ['poison', 'weaken'], // Efectos que aplica al hacer daño
+	xpRewardPerFloor: [1, 2, 3, 4]
+}
+```
+
+Al incluir el flag `expansion: 'mi_nueva_expansion'`, el motor del juego automáticamente:
+
+1. Filtrará y ocultará esta carta de las partidas normales.
+2. La inyectará en el generador de pisos de la mazmorra solo si el jugador activó el DLC.
+3. La mostrará en la galería de visualización "View unique cards" en el menú principal.
+
+### Efectos Soportados
+
+Al crear o modificar cartas (especialmente monstruos y trampas), puedes agregar diversos efectos nocivos a la propiedad `effects`:
+
+- `'poison'`: Envenena al jugador (pierde HP con el tiempo).
+- `'weaken'`: Debilita al jugador (hace que falle ataques con más frecuencia).
+- `'curse'`: Maldice al jugador (el jugador no puede curarse).
+- `'ignoreArmor'`: El ataque ignora la armadura del campeón y va directo a los puntos de vida.
+
 ## 📁 Archivos Importantes
 
 Si deseas modificar la lógica, añadir más contenido o explorar cómo está programado, estos son los archivos clave:
