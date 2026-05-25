@@ -7,6 +7,7 @@
 	import GameOverScreen from '$lib/components/GameOverScreen.svelte';
 	import SettingsModal from '$lib/components/SettingsModal.svelte';
 	import KeyboardController from '$lib/components/KeyboardController.svelte';
+	import ShopModal from '$lib/components/ShopModal.svelte';
 
 	let saveTimeout: ReturnType<typeof setTimeout>;
 
@@ -59,6 +60,9 @@
 
 <!-- Global Settings Menu -->
 <SettingsModal open={game.showSettings} onClose={() => (game.showSettings = false)} />
+
+<!-- Global Shop Menu -->
+<ShopModal />
 
 <!-- Global Settings Button -->
 <button

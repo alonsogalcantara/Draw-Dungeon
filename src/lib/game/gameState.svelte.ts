@@ -32,6 +32,7 @@ class GameState {
 	layoutSize = $state(3);
 	baseLayoutSize = $state(3);
 	showSettings = $state(false);
+	showShop = $state(false);
 
 	// Character
 	selectedCharacter = $state<CharacterDef | null>(null);
@@ -149,6 +150,7 @@ class GameState {
 		this.event = null;
 		this.log = [];
 		this.logCounter = 0;
+		this.showShop = false;
 		// Note: settings are preserved across resets.
 	}
 

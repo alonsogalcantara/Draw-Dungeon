@@ -332,6 +332,19 @@
 		</div>
 	</div>
 
+	<!-- Shop Button -->
+	{#if game.phase === 'characterSelect'}
+		<div class="relative z-10 mt-3 border-t border-stone-700/30 pt-3">
+			<button
+				class="btn btn-primary flex w-full items-center justify-center gap-2 py-2.5 text-sm transition-all hover:bg-amber-700/80 hover:shadow-[0_0_15px_rgba(217,119,6,0.3)]"
+				onclick={() => (game.showShop = true)}
+			>
+				<span class="text-lg">🏪</span>
+				<span class="font-bold tracking-wider uppercase text-amber-100">Universal Shop</span>
+			</button>
+		</div>
+	{/if}
+
 	<!-- Active Missions -->
 	{#if game.missions && game.missions.length > 0}
 		<div class="relative z-10 mt-2 border-t border-stone-700/30 pt-3">

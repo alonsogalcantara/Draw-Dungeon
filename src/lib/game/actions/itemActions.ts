@@ -2,6 +2,7 @@ import { game } from '../gameState.svelte';
 import type { PotionType } from '../types';
 import { ITEM_DICTIONARY } from '../items';
 import { evadeCombat } from './combatActions';
+import type { ShopItem } from '../../data/shopItems';
 
 export function usePotion(slotIndex: number) {
 	const potion = game.potions[slotIndex];
@@ -74,4 +75,33 @@ export function useEquippedItem() {
 	} else {
 		game.addLog(`Item ${game.item.name} logic not implemented yet.`, 'system');
 	}
+}
+
+export function buyUniversalShopItem(item: ShopItem) {
+	if (game.gold < item.cost) {
+		game.addLog(`Not enough gold for ${item.name}`, 'system');
+		return false;
+	}
+
+	// Check if potion slots are full
+	if (item.category === 'potion' && game.potions[0] !== null && game.potions[1] !== null) {
+		game.addLog(`Potion slots full! Cannot buy ${item.name}`, 'system');
+		return false;
+	}
+
+	game.loseGold(item.cost);
+
+	item.effect.forEach((e) => {
+		if (e.stat === 'hp') game.gainHp(e.value);
+		if (e.stat === 'food') game.gainFood(e.value);
+		if (e.stat === 'xp') game.gainXp(e.value);
+		if (e.stat === 'armor') game.gainArmor(e.value);
+		if (e.stat.startsWith('potion_')) {
+			const potionType = e.stat.replace('potion_', '') as PotionType;
+			addPotion(potionType);
+		}
+	});
+
+	game.addLog(`Bought ${item.name}`, 'info');
+	return true;
 }
