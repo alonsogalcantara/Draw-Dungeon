@@ -7,7 +7,8 @@
 		loadAllMetaProgress,
 		saveCustomChampionDef,
 		loadCustomChampionDef,
-		spendVictoryPoint
+		spendVictoryPoint,
+		saveMetaProgress
 	} from '$lib/game/metaState';
 	import { CHARACTERS } from '$lib/data/characters';
 	import type { MetaProgress } from '$lib/game/metaState';
@@ -53,7 +54,7 @@
 			customMana * COST_MANA
 	);
 
-	const availablePoints = $derived(TOTAL_BUDGET - spentPoints);
+	const availablePoints = $derived(TOTAL_BUDGET + (metaProgress['custom_champion']?.victories ?? 0) - spentPoints);
 
 	$effect(() => {
 		isCustomValid =
@@ -91,21 +92,29 @@
 			customPassiveSkill = savedDef.passiveSkill;
 			isSaved = true;
 		}
+
+		// Refund any old statUpgrades back to victories
+		const meta = metaProgress['custom_champion'];
+		if (meta && meta.statUpgrades) {
+			let refund = 0;
+			refund += meta.statUpgrades.hp || 0;
+			refund += meta.statUpgrades.food || 0;
+			refund += meta.statUpgrades.gold || 0;
+			refund += meta.statUpgrades.armor || 0;
+			refund += meta.statUpgrades.mana || 0;
+			if (refund > 0) {
+				meta.victories += refund;
+				meta.statUpgrades = { hp: 0, armor: 0, gold: 0, food: 0, mana: 0 };
+				saveMetaProgress('custom_champion', meta);
+				metaProgress = loadAllMetaProgress(CHARACTERS.map((c) => c.id).concat('custom_champion'));
+			}
+		}
 	});
 
 	const activeSkillsList = ALL_SKILLS.filter((s) => s.type !== 'passive');
 	const passiveSkillsList = ALL_SKILLS.filter((s) => s.type === 'passive');
 
-	function handleSpendVP(
-		stat: 'level' | 'hp' | 'armor' | 'gold' | 'food' | 'mana',
-		baseStat: number,
-		event: Event
-	) {
-		event.stopPropagation();
-		if (spendVictoryPoint('custom_champion', stat, baseStat)) {
-			metaProgress = loadAllMetaProgress(CHARACTERS.map((c) => c.id).concat('custom_champion'));
-		}
-	}
+
 
 	function handleExplicitSave() {
 		if (isCustomValid && customRole) {
@@ -199,19 +208,17 @@
 						<span class="text-red-400">❤️</span> Health (Base 5)
 					</div>
 					<div class="flex items-center gap-3">
-						{#if !isSaved}<button
+						<button
 								class="btn btn-secondary h-8 w-8 !p-0"
 								onclick={() => customHp--}
-								disabled={customHp <= 5}>-</button
-							>{/if}
+								disabled={customHp <= 5}>-</button>
 						<div class="flex items-center justify-center px-4">
-							<span class="text-center font-bold text-lg">{customHp + (metaProgress['custom_champion']?.statUpgrades?.hp ?? 0) + ((metaProgress['custom_champion']?.level ?? 1) - 1) * 5}</span>
+							<span class="text-center font-bold text-lg">{customHp + ((metaProgress['custom_champion']?.level ?? 1) - 1) * 5}</span>
 						</div>
-						{#if !isSaved}<button
+						<button
 								class="btn btn-secondary h-8 w-8 !p-0"
 								onclick={() => customHp++}
-								disabled={availablePoints < COST_HP}>+</button
-							>{/if}
+								disabled={availablePoints < COST_HP}>+</button>
 					</div>
 				</div>
 				<div
@@ -221,19 +228,17 @@
 						<span class="text-amber-400">🍖</span> Food (Base 0)
 					</div>
 					<div class="flex items-center gap-3">
-						{#if !isSaved}<button
+						<button
 								class="btn btn-secondary h-8 w-8 !p-0"
 								onclick={() => customFood--}
-								disabled={customFood <= 0}>-</button
-							>{/if}
+								disabled={customFood <= 0}>-</button>
 						<div class="flex items-center justify-center px-4">
-							<span class="text-center font-bold text-lg">{customFood + (metaProgress['custom_champion']?.statUpgrades?.food ?? 0)}</span>
+							<span class="text-center font-bold text-lg">{customFood}</span>
 						</div>
-						{#if !isSaved}<button
+						<button
 								class="btn btn-secondary h-8 w-8 !p-0"
 								onclick={() => customFood++}
-								disabled={availablePoints < COST_FOOD}>+</button
-							>{/if}
+								disabled={availablePoints < COST_FOOD}>+</button>
 					</div>
 				</div>
 				<div
@@ -243,19 +248,17 @@
 						<span class="text-yellow-400">💰</span> Gold (Base 0)
 					</div>
 					<div class="flex items-center gap-3">
-						{#if !isSaved}<button
+						<button
 								class="btn btn-secondary h-8 w-8 !p-0"
 								onclick={() => customGold--}
-								disabled={customGold <= 0}>-</button
-							>{/if}
+								disabled={customGold <= 0}>-</button>
 						<div class="flex items-center justify-center px-4">
-							<span class="text-center font-bold text-lg">{customGold + (metaProgress['custom_champion']?.statUpgrades?.gold ?? 0)}</span>
+							<span class="text-center font-bold text-lg">{customGold}</span>
 						</div>
-						{#if !isSaved}<button
+						<button
 								class="btn btn-secondary h-8 w-8 !p-0"
 								onclick={() => customGold++}
-								disabled={availablePoints < COST_GOLD}>+</button
-							>{/if}
+								disabled={availablePoints < COST_GOLD}>+</button>
 					</div>
 				</div>
 				<div
@@ -266,19 +269,17 @@
 						{#if !isSaved}<span class="ml-1 text-[10px] text-amber-500/50">(Cost: 2)</span>{/if}
 					</div>
 					<div class="flex items-center gap-3">
-						{#if !isSaved}<button
+						<button
 								class="btn btn-secondary h-8 w-8 !p-0"
 								onclick={() => customArmor--}
-								disabled={customArmor <= 0}>-</button
-							>{/if}
+								disabled={customArmor <= 0}>-</button>
 						<div class="flex items-center justify-center px-4">
-							<span class="text-center font-bold text-lg">{customArmor + (metaProgress['custom_champion']?.statUpgrades?.armor ?? 0)}</span>
+							<span class="text-center font-bold text-lg">{customArmor}</span>
 						</div>
-						{#if !isSaved}<button
+						<button
 								class="btn btn-secondary h-8 w-8 !p-0"
 								onclick={() => customArmor++}
-								disabled={availablePoints < COST_ARMOR}>+</button
-							>{/if}
+								disabled={availablePoints < COST_ARMOR}>+</button>
 					</div>
 				</div>
 				<div
@@ -288,19 +289,17 @@
 						<span class="text-blue-300">🔵</span> Mana (Base 0)
 					</div>
 					<div class="flex items-center gap-3">
-						{#if !isSaved}<button
+						<button
 								class="btn btn-secondary h-8 w-8 !p-0"
 								onclick={() => customMana--}
-								disabled={customMana <= 0}>-</button
-							>{/if}
+								disabled={customMana <= 0}>-</button>
 						<div class="flex items-center justify-center px-4">
-							<span class="text-center font-bold text-lg">{customMana + (metaProgress['custom_champion']?.statUpgrades?.mana ?? 0)}</span>
+							<span class="text-center font-bold text-lg">{customMana}</span>
 						</div>
-						{#if !isSaved}<button
+						<button
 								class="btn btn-secondary h-8 w-8 !p-0"
 								onclick={() => customMana++}
-								disabled={availablePoints < COST_MANA}>+</button
-							>{/if}
+								disabled={availablePoints < COST_MANA}>+</button>
 					</div>
 				</div>
 			</div>
@@ -426,48 +425,12 @@
 			>
 				💾 Guardar Configuración
 			</button>
-		{:else}
+		{/if}
+		{#if isSaved}
 			<div
 				class="rounded-lg border border-emerald-500/30 bg-emerald-900/20 px-4 py-2 text-sm font-bold text-emerald-400"
 			>
 				✅ Campeón Listo para la Aventura
-			</div>
-		{/if}
-
-		{#if metaProgress['custom_champion'] && metaProgress['custom_champion'].victories > 0}
-			<div
-				class="w-full flex-1 rounded-xl border border-amber-900/50 bg-amber-950/20 p-3 text-right md:w-auto"
-			>
-				<div class="mb-2 text-xs font-bold text-amber-300">
-					⭐ {metaProgress['custom_champion'].victories} Puntos de Victoria Disponibles
-				</div>
-				<div class="flex flex-wrap justify-end gap-2">
-					<button
-						class="rounded border border-red-500/30 bg-red-900/40 px-2 py-1 text-xs text-red-200 transition-colors hover:bg-red-800/60 disabled:cursor-not-allowed disabled:grayscale disabled:opacity-30"
-						onclick={(e) =>
-							handleSpendVP(
-								'hp',
-								customHp + ((metaProgress['custom_champion']?.level ?? 1) - 1) * 5,
-								e
-							)}>+1 ❤️</button
-					>
-					<button
-						class="rounded border border-amber-500/30 bg-amber-900/40 px-2 py-1 text-xs text-amber-200 transition-colors hover:bg-amber-800/60 disabled:cursor-not-allowed disabled:grayscale disabled:opacity-30"
-						onclick={(e) => handleSpendVP('food', customFood, e)}>+1 🍖</button
-					>
-					<button
-						class="rounded border border-yellow-500/30 bg-yellow-900/40 px-2 py-1 text-xs text-yellow-200 transition-colors hover:bg-yellow-800/60"
-						onclick={(e) => handleSpendVP('gold', customGold, e)}>+1 💰</button
-					>
-					<button
-						class="rounded border border-blue-500/30 bg-blue-900/40 px-2 py-1 text-xs text-blue-200 transition-colors hover:bg-blue-800/60 disabled:cursor-not-allowed disabled:grayscale disabled:opacity-30"
-						onclick={(e) => handleSpendVP('armor', customArmor, e)}>+1 🛡️</button
-					>
-					<button
-						class="rounded border border-blue-400/30 bg-blue-900/40 px-2 py-1 text-xs text-blue-300 transition-colors hover:bg-blue-800/60 disabled:cursor-not-allowed disabled:grayscale disabled:opacity-30"
-						onclick={(e) => handleSpendVP('mana', customMana, e)}>+1 🔵</button
-					>
-				</div>
 			</div>
 		{/if}
 	</div>
