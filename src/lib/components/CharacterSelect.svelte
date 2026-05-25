@@ -8,10 +8,7 @@
 	import { getProfiles, getActiveProfileId, addVictory } from '$lib/game/metaState';
 
 	import CustomChampionBuilder from './CustomChampionBuilder.svelte';
-	import WizardStepDifficulty from './WizardStepDifficulty.svelte';
-	import WizardStepCampaign from './WizardStepCampaign.svelte';
-	import WizardStepExpansions from './WizardStepExpansions.svelte';
-	import WizardStepLayout from './WizardStepLayout.svelte';
+	import DungeonConfig from './DungeonConfig.svelte';
 	import CharacterHUD from './CharacterHUD.svelte';
 	import { XP_REQUIREMENTS_PER_LEVEL } from '$lib/data/constants';
 
@@ -149,10 +146,7 @@
 	<div class="mb-2 flex w-full max-w-6xl flex-col items-center justify-center text-center">
 		<h1 class="title-text text-4xl tracking-wider">
 			{#if step === 1}Campeón
-			{:else if step === 2}Choose Difficulty
-			{:else if step === 3}Choose Campaign
-			{:else if step === 4}Expansions & DLCs
-			{:else}Choose Dungeon Layout{/if}
+			{:else}Dungeon Configuration{/if}
 		</h1>
 	</div>
 	<div
@@ -187,51 +181,22 @@
 				onclick={() => (step = 2)}
 				disabled={!selectedChar || (selectedChar.id === 'custom_champion' && !isCustomValid)}
 			>
-				Next: Difficulty
+				Next: Dungeon Config
 			</button>
 		</div>
 	{/if}
 
 	{#if step === 2}
-		<WizardStepDifficulty bind:difficulty onSelect={() => focusNextBtn(2)} />
-		<div class="mt-8">
+		<DungeonConfig 
+			bind:difficulty 
+			bind:campaignType 
+			bind:layoutSize 
+		/>
+		
+		<div class="mt-12">
 			<button
 				id="next-btn-2"
-				class="btn btn-primary px-16 py-4 text-lg tracking-wider uppercase transition-all duration-300 hover:scale-105 disabled:opacity-40 disabled:hover:scale-100"
-				onclick={() => (step = 3)}
-			>
-				Next: Campaign
-			</button>
-		</div>
-	{/if}
-
-	{#if step === 3}
-		<WizardStepCampaign bind:campaignType onSelect={() => focusNextBtn(3)} />
-		<div class="mt-8">
-			<button
-				id="next-btn-3"
-				class="btn btn-primary px-16 py-4 text-lg tracking-wider uppercase transition-all duration-300 hover:scale-105 disabled:opacity-40 disabled:hover:scale-100"
-				onclick={() => (step = 4)}
-			>
-				Next: Expansions
-			</button>
-		</div>
-	{/if}
-
-	{#if step === 4}
-		<WizardStepExpansions 
-			onPrev={() => (step = 3)} 
-			onNext={() => (step = 5)} 
-		/>
-	{/if}
-
-	{#if step === 5}
-		<WizardStepLayout bind:layoutSize onSelect={() => focusNextBtn(5)} />
-		<!-- Begin button -->
-		<div class="mt-8">
-			<button
-				id="next-btn-5"
-				class="btn btn-primary px-16 py-4 text-lg tracking-wider uppercase transition-all duration-300 hover:scale-105 disabled:opacity-40 disabled:hover:scale-100"
+				class="btn btn-primary px-20 py-5 text-xl tracking-wider uppercase transition-all duration-300 hover:scale-105 disabled:opacity-40 disabled:hover:scale-100 shadow-[0_0_30px_rgba(217,119,6,0.2)] hover:shadow-[0_0_40px_rgba(217,119,6,0.4)] border border-amber-500"
 				onclick={handleBegin}
 				disabled={!selectedChar || (selectedChar.id === 'custom_champion' && !isCustomValid)}
 			>

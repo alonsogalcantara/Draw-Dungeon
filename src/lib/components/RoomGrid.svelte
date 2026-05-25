@@ -22,15 +22,23 @@
 	}
 
 	const gridClass = $derived(
-		game.layoutSize === 3
-			? 'grid-cols-3 grid-rows-3'
-			: game.layoutSize === 4
-				? 'grid-cols-4 grid-rows-4'
-				: 'grid-cols-5 grid-rows-5'
+		game.layoutSize === 2
+			? 'grid-cols-2 grid-rows-2'
+			: game.layoutSize === 3
+				? 'grid-cols-3 grid-rows-3'
+				: game.layoutSize === 4
+					? 'grid-cols-4 grid-rows-4'
+					: 'grid-cols-5 grid-rows-5'
 	);
 
 	const maxWidthClass = $derived(
-		game.layoutSize === 3 ? 'max-w-5xl' : game.layoutSize === 4 ? 'max-w-6xl' : 'max-w-7xl'
+		game.layoutSize === 2 
+			? 'max-w-3xl' 
+			: game.layoutSize === 3 
+				? 'max-w-5xl' 
+				: game.layoutSize === 4 
+					? 'max-w-6xl' 
+					: 'max-w-7xl'
 	);
 </script>
 
