@@ -128,6 +128,8 @@ export function setupArea() {
 	let deck = ROOM_CARDS.filter((c) => c.type !== 'boss');
 
 	deck = deck.filter((c) => {
+		if (c.expansion && !game.activeExpansions.includes(c.expansion)) return false;
+
 		if (c.type === 'monster') {
 			const mc = c as any;
 			if (mc.campaign && mc.campaign !== game.campaign) return false;

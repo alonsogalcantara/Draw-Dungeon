@@ -33,6 +33,7 @@ class GameState {
 	baseLayoutSize = $state(3);
 	showSettings = $state(false);
 	showShop = $state(false);
+	activeExpansions = $state<string[]>([]);
 
 	// Character
 	selectedCharacter = $state<CharacterDef | null>(null);
@@ -151,6 +152,7 @@ class GameState {
 		this.log = [];
 		this.logCounter = 0;
 		this.showShop = false;
+		// Do not reset activeExpansions on run reset so they persist.
 		// Note: settings are preserved across resets.
 	}
 
@@ -169,6 +171,7 @@ class GameState {
 				campaign: this.campaign,
 				layoutSize: this.layoutSize,
 				baseLayoutSize: this.baseLayoutSize,
+				activeExpansions: this.activeExpansions,
 				selectedCharacter: this.selectedCharacter,
 				hp: this.hp,
 				maxHp: this.maxHp,

@@ -165,6 +165,7 @@ export interface MonsterCard {
 	description: string;
 	image?: string;
 	campaign?: string;
+	expansion?: string;
 	floor?: number;
 	/** HP values indexed by floor (0-3 for floors 1-4) */
 	hpPerFloor: [number, number, number, number];
@@ -197,6 +198,7 @@ export interface BossCard {
 	description: string;
 	image?: string;
 	campaign?: string;
+	expansion?: string;
 	/** Total HP for the boss */
 	hp: number;
 	/** Base damage dealt per attack */
@@ -219,6 +221,7 @@ export interface TrapCard {
 	description: string;
 	image?: string;
 	campaign?: string;
+	expansion?: string;
 	/** Rewards on successful skill check, keyed by dungeon die result 1-6 */
 	successRewards: Record<number, Reward>;
 	/** Penalties on failed skill check, keyed by dungeon die result 1-6 */
@@ -233,6 +236,7 @@ export interface TreasureCard {
 	description: string;
 	image?: string;
 	campaign?: string;
+	expansion?: string;
 	/** Gold gained if no combat/traps encountered this area */
 	goldBase: number;
 	/** Gold gained if combat/traps were encountered this area */
@@ -251,6 +255,7 @@ export interface BonfireCard {
 	description: string;
 	image?: string;
 	campaign?: string;
+	expansion?: string;
 	/** Available rest actions (choose one) */
 	actions: BonfireAction[];
 }
@@ -270,6 +275,7 @@ export interface MerchantCard {
 	description: string;
 	image?: string;
 	campaign?: string;
+	expansion?: string;
 	/** Items available for purchase */
 	items: MerchantItem[];
 }
@@ -290,6 +296,7 @@ export interface ShrineCard {
 	description: string;
 	image?: string;
 	campaign?: string;
+	expansion?: string;
 	/** Outcomes keyed by dungeon die result 1-6 (can pay 1 gold for +1) */
 	outcomes: Record<number, Reward>;
 }
@@ -302,6 +309,7 @@ export interface TombCard {
 	description: string;
 	image?: string;
 	campaign?: string;
+	expansion?: string;
 	/** Outcomes keyed by dungeon die result 1-6 (success allows +/-1 modification) */
 	outcomes: Record<number, Reward>;
 }
@@ -314,6 +322,7 @@ export interface ItemCard {
 	description: string;
 	image?: string;
 	campaign?: string;
+	expansion?: string;
 	/** Cost to acquire the item (e.g., 1 food) */
 	cost?: StatModifier;
 	/** Penalty if you ignore/don't pay the cost */
@@ -334,6 +343,7 @@ export interface MissionCard {
 	description: string;
 	image?: string;
 	campaign?: string;
+	expansion?: string;
 	/** Targets where this mission can be handed in, and the reward */
 	deliveryTargets: {
 		roomType: RoomType;

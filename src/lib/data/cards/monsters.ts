@@ -169,5 +169,29 @@ export const MONSTER_CARDS: MonsterCard[] = [
 		damage: 2,
 		effects: ['curse'],
 		xpRewardPerFloor: [1, 1, 2, 2]
+	},
+	{
+		id: 'monster_toxic_spider',
+		name: 'Toxic Spider Queen',
+		type: 'monster',
+		description: 'A massive arachnid dripping with corrosive venom. Its web covers the entire room.',
+		expansion: 'poison_curses',
+		floor: 1,
+		hpPerFloor: [5, 7, 9, 12],
+		damage: 3,
+		effects: ['poison'],
+		xpRewardPerFloor: [2, 2, 3, 4]
+	},
+	{
+		id: 'monster_deep_terror',
+		name: 'Terror from the Deep',
+		type: 'monster',
+		description: 'An ancient leviathan form adapted for the dungeon depths. Just looking at it drains your sanity.',
+		expansion: 'deep_depths',
+		floor: 2,
+		hpPerFloor: [8, 11, 14, 18],
+		damage: 5,
+		effects: ['curse', 'weaken'],
+		xpRewardPerFloor: [3, 4, 5, 5]
 	}
 ];
