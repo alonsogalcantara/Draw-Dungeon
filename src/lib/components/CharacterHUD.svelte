@@ -6,13 +6,18 @@
 
 	let prevHp = $state(game.hp);
 	let shaking = $state(false);
+	let hpChange = $state({ amount: 0, id: 0 });
 
 	$effect(() => {
-		if (game.hp < prevHp) {
-			shaking = true;
-			setTimeout(() => (shaking = false), 500);
+		if (game.hp !== prevHp) {
+			const diff = game.hp - prevHp;
+			if (diff < 0) {
+				shaking = true;
+				setTimeout(() => (shaking = false), 500);
+			}
+			hpChange = { amount: diff, id: Date.now() };
+			prevHp = game.hp;
 		}
-		prevHp = game.hp;
 	});
 
 	const hpPercent = $derived(Math.max(0, (game.hp / game.maxHp) * 100));
@@ -68,8 +73,22 @@
 
 	<!-- HP Bar -->
 	<div class="relative z-10 space-y-1" class:animate-shake={shaking}>
-		<div class="flex items-baseline justify-between text-xs">
-			<span class="font-black tracking-wide text-red-400">HP</span>
+		<div class="flex items-baseline justify-between text-xs relative">
+			<div class="relative flex items-center">
+				<span class="font-black tracking-wide text-red-400">HP</span>
+				{#key hpChange.id}
+					{#if hpChange.amount !== 0}
+						<span
+							class={[
+								'pointer-events-none absolute left-6 bottom-0 z-50 text-base font-black drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]',
+								hpChange.amount > 0 ? 'animate-[floatUp_1s_ease-out_forwards] text-emerald-400' : 'animate-[floatUp_1s_ease-out_forwards] text-red-500'
+							].join(' ')}
+						>
+							{hpChange.amount > 0 ? '+' : ''}{hpChange.amount}
+						</span>
+					{/if}
+				{/key}
+			</div>
 			<span class="font-medium text-stone-300"
 				>{game.hp} <span class="text-[10px] text-stone-500">/ {game.maxHp}</span></span
 			>
@@ -407,6 +426,20 @@
 		}
 		80% {
 			transform: translateX(3px);
+		}
+	}
+	@keyframes floatUp {
+		0% {
+			transform: translateY(5px) scale(0.8);
+			opacity: 1;
+		}
+		20% {
+			transform: translateY(-2px) scale(1.2);
+			opacity: 1;
+		}
+		100% {
+			transform: translateY(-20px) scale(1);
+			opacity: 0;
 		}
 	}
 	@keyframes shimmer {

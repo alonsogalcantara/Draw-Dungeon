@@ -93,6 +93,20 @@
 			</div>
 
 			<div class="mt-8 flex flex-col gap-3 text-center">
+				{#if game.phase !== 'title'}
+					<button
+						class="btn border border-red-700/50 bg-red-900/30 px-8 py-2 text-red-400 hover:bg-red-800/80 hover:text-white transition-colors"
+						onclick={() => {
+							if (confirm('¿Estás seguro de que deseas abandonar la partida actual? Todo el progreso de esta run se perderá.')) {
+								game.clearState();
+								game.reset();
+								onClose();
+							}
+						}}
+					>
+						🚪 Abandonar Partida
+					</button>
+				{/if}
 				<button
 					class="btn border border-stone-700 bg-stone-800 px-8 py-2 text-stone-300 hover:bg-stone-700 hover:text-white"
 					onclick={() => (showTutorial = true)}

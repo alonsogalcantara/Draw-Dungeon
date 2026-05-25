@@ -97,7 +97,7 @@
 	const passiveSkillsList = ALL_SKILLS.filter((s) => s.type === 'passive');
 
 	function handleSpendVP(
-		stat: 'level' | 'hp' | 'armor' | 'gold' | 'food',
+		stat: 'level' | 'hp' | 'armor' | 'gold' | 'food' | 'mana',
 		baseStat: number,
 		event: Event
 	) {
@@ -204,11 +204,18 @@
 								onclick={() => customHp--}
 								disabled={customHp <= 5}>-</button
 							>{/if}
-						<span class="w-6 text-center font-bold">{customHp}</span>
+						<div class="flex flex-col items-center justify-center">
+							<span class="w-6 text-center font-bold">{customHp}</span>
+							{#if (metaProgress['custom_champion']?.statUpgrades?.hp ?? 0) > 0 || (metaProgress['custom_champion']?.level ?? 1) > 1}
+								<span class="text-[10px] font-bold text-emerald-400" title="Bonificación de Puntos de Victoria/Nivel">
+									+{ (metaProgress['custom_champion']?.statUpgrades?.hp ?? 0) + ((metaProgress['custom_champion']?.level ?? 1) - 1) * 5 }
+								</span>
+							{/if}
+						</div>
 						{#if !isSaved}<button
 								class="btn btn-secondary h-8 w-8 !p-0"
 								onclick={() => customHp++}
-								disabled={customHp >= MAX_HP || availablePoints < COST_HP}>+</button
+								disabled={customHp >= 99 || availablePoints < COST_HP}>+</button
 							>{/if}
 					</div>
 				</div>
@@ -224,11 +231,18 @@
 								onclick={() => customFood--}
 								disabled={customFood <= 0}>-</button
 							>{/if}
-						<span class="w-6 text-center font-bold">{customFood}</span>
+						<div class="flex flex-col items-center justify-center">
+							<span class="w-6 text-center font-bold">{customFood}</span>
+							{#if (metaProgress['custom_champion']?.statUpgrades?.food ?? 0) > 0}
+								<span class="text-[10px] font-bold text-emerald-400" title="Bonificación de VP">
+									+{ metaProgress['custom_champion']?.statUpgrades?.food }
+								</span>
+							{/if}
+						</div>
 						{#if !isSaved}<button
 								class="btn btn-secondary h-8 w-8 !p-0"
 								onclick={() => customFood++}
-								disabled={customFood >= MAX_FOOD || availablePoints < COST_FOOD}>+</button
+								disabled={customFood >= 99 || availablePoints < COST_FOOD}>+</button
 							>{/if}
 					</div>
 				</div>
@@ -244,11 +258,18 @@
 								onclick={() => customGold--}
 								disabled={customGold <= 0}>-</button
 							>{/if}
-						<span class="w-6 text-center font-bold">{customGold}</span>
+						<div class="flex flex-col items-center justify-center">
+							<span class="w-6 text-center font-bold">{customGold}</span>
+							{#if (metaProgress['custom_champion']?.statUpgrades?.gold ?? 0) > 0}
+								<span class="text-[10px] font-bold text-emerald-400" title="Bonificación de VP">
+									+{ metaProgress['custom_champion']?.statUpgrades?.gold }
+								</span>
+							{/if}
+						</div>
 						{#if !isSaved}<button
 								class="btn btn-secondary h-8 w-8 !p-0"
 								onclick={() => customGold++}
-								disabled={customGold >= MAX_GOLD || availablePoints < COST_GOLD}>+</button
+								disabled={availablePoints < COST_GOLD}>+</button
 							>{/if}
 					</div>
 				</div>
@@ -265,11 +286,18 @@
 								onclick={() => customArmor--}
 								disabled={customArmor <= 0}>-</button
 							>{/if}
-						<span class="w-6 text-center font-bold">{customArmor}</span>
+						<div class="flex flex-col items-center justify-center">
+							<span class="w-6 text-center font-bold">{customArmor}</span>
+							{#if (metaProgress['custom_champion']?.statUpgrades?.armor ?? 0) > 0}
+								<span class="text-[10px] font-bold text-emerald-400" title="Bonificación de VP">
+									+{ metaProgress['custom_champion']?.statUpgrades?.armor }
+								</span>
+							{/if}
+						</div>
 						{#if !isSaved}<button
 								class="btn btn-secondary h-8 w-8 !p-0"
 								onclick={() => customArmor++}
-								disabled={customArmor >= MAX_ARMOR || availablePoints < COST_ARMOR}>+</button
+								disabled={customArmor >= 99 || availablePoints < COST_ARMOR}>+</button
 							>{/if}
 					</div>
 				</div>
@@ -285,7 +313,14 @@
 								onclick={() => customMana--}
 								disabled={customMana <= 0}>-</button
 							>{/if}
-						<span class="w-6 text-center font-bold">{customMana}</span>
+						<div class="flex flex-col items-center justify-center">
+							<span class="w-6 text-center font-bold">{customMana}</span>
+							{#if (metaProgress['custom_champion']?.statUpgrades?.mana ?? 0) > 0}
+								<span class="text-[10px] font-bold text-emerald-400" title="Bonificación de VP">
+									+{ metaProgress['custom_champion']?.statUpgrades?.mana }
+								</span>
+							{/if}
+						</div>
 						{#if !isSaved}<button
 								class="btn btn-secondary h-8 w-8 !p-0"
 								onclick={() => customMana++}
@@ -433,11 +468,8 @@
 				</div>
 				<div class="flex flex-wrap justify-end gap-2">
 					<button
-						class="rounded border border-emerald-500/30 bg-emerald-900/40 px-2 py-1 text-xs text-emerald-200 transition-colors hover:bg-emerald-800/60"
-						onclick={(e) => handleSpendVP('level', metaProgress['custom_champion']?.level ?? 1, e)}>+1 Lv</button
-					>
-					<button
-						class="rounded border border-red-500/30 bg-red-900/40 px-2 py-1 text-xs text-red-200 transition-colors hover:bg-red-800/60"
+						class="rounded border border-red-500/30 bg-red-900/40 px-2 py-1 text-xs text-red-200 transition-colors hover:bg-red-800/60 disabled:cursor-not-allowed disabled:grayscale disabled:opacity-30"
+						disabled={customHp + ((metaProgress['custom_champion']?.level ?? 1) - 1) * 5 + (metaProgress['custom_champion']?.statUpgrades?.hp ?? 0) >= 99}
 						onclick={(e) =>
 							handleSpendVP(
 								'hp',
@@ -446,7 +478,8 @@
 							)}>+1 ❤️</button
 					>
 					<button
-						class="rounded border border-amber-500/30 bg-amber-900/40 px-2 py-1 text-xs text-amber-200 transition-colors hover:bg-amber-800/60"
+						class="rounded border border-amber-500/30 bg-amber-900/40 px-2 py-1 text-xs text-amber-200 transition-colors hover:bg-amber-800/60 disabled:cursor-not-allowed disabled:grayscale disabled:opacity-30"
+						disabled={customFood + (metaProgress['custom_champion']?.statUpgrades?.food ?? 0) >= 99}
 						onclick={(e) => handleSpendVP('food', customFood, e)}>+1 🍖</button
 					>
 					<button
@@ -454,8 +487,14 @@
 						onclick={(e) => handleSpendVP('gold', customGold, e)}>+1 💰</button
 					>
 					<button
-						class="rounded border border-blue-500/30 bg-blue-900/40 px-2 py-1 text-xs text-blue-200 transition-colors hover:bg-blue-800/60"
+						class="rounded border border-blue-500/30 bg-blue-900/40 px-2 py-1 text-xs text-blue-200 transition-colors hover:bg-blue-800/60 disabled:cursor-not-allowed disabled:grayscale disabled:opacity-30"
+						disabled={customArmor + (metaProgress['custom_champion']?.statUpgrades?.armor ?? 0) >= 99}
 						onclick={(e) => handleSpendVP('armor', customArmor, e)}>+1 🛡️</button
+					>
+					<button
+						class="rounded border border-blue-400/30 bg-blue-900/40 px-2 py-1 text-xs text-blue-300 transition-colors hover:bg-blue-800/60 disabled:cursor-not-allowed disabled:grayscale disabled:opacity-30"
+						disabled={customMana + (metaProgress['custom_champion']?.statUpgrades?.mana ?? 0) >= 99}
+						onclick={(e) => handleSpendVP('mana', customMana, e)}>+1 🔵</button
 					>
 				</div>
 			</div>

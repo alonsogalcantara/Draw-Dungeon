@@ -8,8 +8,11 @@
 		executeMonsterAttack,
 		finishMonsterAttack,
 		endCombat,
-		closeGenericEvent
+		closeGenericEvent,
+		usePotion,
+		performFeat
 	} from '$lib/game/gameActions';
+	import { addVictory } from '$lib/game/metaState';
 
 	function handleKeydown(e: KeyboardEvent) {
 		// Ignore if typing in an input (except range inputs for settings)

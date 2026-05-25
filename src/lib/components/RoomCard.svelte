@@ -70,10 +70,10 @@
 				? 'rotateY(180deg)'
 				: 'rotateY(0deg)'};"
 		>
-			<!-- FRONT (Facedown Design) -->
+		<!-- FRONT (Facedown Design) -->
 			<div
-				class="absolute inset-0 flex h-full w-full items-center justify-center"
-				style="backface-visibility: hidden;"
+				class="absolute inset-0 flex h-full w-full items-center justify-center rounded-xl overflow-hidden"
+				style="backface-visibility: hidden; -webkit-backface-visibility: hidden; z-index: 2; transform: rotateY(0deg);"
 			>
 				<div
 					class="pointer-events-none"
@@ -85,8 +85,8 @@
 
 			<!-- BACK (Revealed Design) -->
 			<div
-				class="absolute inset-0 flex h-full w-full items-center justify-center"
-				style="backface-visibility: hidden; transform: rotateY(180deg);"
+				class="absolute inset-0 flex h-full w-full items-center justify-center rounded-xl overflow-hidden"
+				style="backface-visibility: hidden; -webkit-backface-visibility: hidden; transform: rotateY(180deg);"
 			>
 				<div
 					class="pointer-events-none"

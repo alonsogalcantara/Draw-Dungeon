@@ -16,6 +16,7 @@ export interface MetaProgress {
 		armor: number;
 		gold: number;
 		food: number;
+		mana: number;
 	};
 }
 
@@ -130,7 +131,7 @@ export function loadMetaProgress(characterId: string): MetaProgress | null {
 				level: parsed.level ?? 1,
 				xp: parsed.xp ?? 0,
 				victories: parsed.victories ?? 0,
-				statUpgrades: parsed.statUpgrades ?? { hp: 0, armor: 0, gold: 0, food: 0 }
+				statUpgrades: parsed.statUpgrades ?? { hp: 0, armor: 0, gold: 0, food: 0, mana: 0 }
 			};
 		}
 	} catch (error) {
@@ -160,7 +161,7 @@ export function addVictory(characterId: string, amount: number = 1) {
 		level: 1,
 		xp: 0,
 		victories: 0,
-		statUpgrades: { hp: 0, armor: 0, gold: 0, food: 0 }
+		statUpgrades: { hp: 0, armor: 0, gold: 0, food: 0, mana: 0 }
 	};
 	existing.victories += amount;
 	saveMetaProgress(characterId, existing);
@@ -171,7 +172,7 @@ export function addVictory(characterId: string, amount: number = 1) {
  */
 export function spendVictoryPoint(
 	characterId: string,
-	stat: 'level' | 'hp' | 'armor' | 'gold' | 'food',
+	stat: 'level' | 'hp' | 'armor' | 'gold' | 'food' | 'mana',
 	currentBaseStat: number
 ) {
 	if (typeof window === 'undefined') return false;

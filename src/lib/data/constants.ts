@@ -22,10 +22,10 @@ export const TOTAL_AREAS = DUNGEON_FLOORS.reduce((sum, f) => sum + f.areas, 0);
 
 // --- Stat Limits ---
 
-export const MAX_HP = 20; // Starting max HP, can increase via leveling
-export const MAX_ARMOR = 5;
-export const MAX_GOLD = 15;
-export const MAX_FOOD = 6;
+export const MAX_HP = 99; // Starting max HP limit
+export const MAX_ARMOR = 99;
+export const MAX_GOLD = 99999;
+export const MAX_FOOD = 99;
 export const MAX_POTIONS = 2;
 export const MAX_ITEMS = 1;
 export const MAX_MANA = 99;

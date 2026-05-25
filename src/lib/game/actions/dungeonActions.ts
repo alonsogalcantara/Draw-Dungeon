@@ -159,6 +159,16 @@ export function setupArea() {
 	// Scale all cards dynamically according to character level and floor!
 	const scaledGridCards = gridCards.map((c) => scaleCardToLevel(c, game.level, game.currentFloor));
 
+	// Preload images to avoid pop-in rendering
+	if (typeof window !== 'undefined') {
+		scaledGridCards.forEach(c => {
+			if (c.image) {
+				const img = new Image();
+				img.src = c.image;
+			}
+		});
+	}
+
 	const newGrid: (RoomCardInstance | null)[][] = Array(game.layoutSize)
 		.fill(null)
 		.map(() => Array(game.layoutSize).fill(null));
@@ -357,6 +367,16 @@ export function expandDungeon(amount: number) {
 	const cardsNeeded = newSize * newSize - oldSize * oldSize;
 	const gridCards: RoomCard[] = deck.slice(0, cardsNeeded);
 	const scaledGridCards = gridCards.map((c) => scaleCardToLevel(c, game.level, game.currentFloor));
+
+	// Preload images to avoid pop-in rendering
+	if (typeof window !== 'undefined') {
+		scaledGridCards.forEach(c => {
+			if (c.image) {
+				const img = new Image();
+				img.src = c.image;
+			}
+		});
+	}
 
 	const oldGrid = game.roomGrid;
 	const newGrid: (RoomCardInstance | null)[][] = Array(newSize)

@@ -62,13 +62,15 @@
 			src="/images/card/cover_card.png"
 			alt="Card Back"
 			class="absolute inset-0 h-full w-full object-cover"
+			loading="eager"
+			decoding="sync"
 		/>
 	{:else if card}
 		<!-- 1. Illustration Area (Z: 15, ON TOP of the card frame but perfectly sized) -->
-		<div class="absolute" style="left: 18px; top: 70px; width: 284px; height: 190px; z-index: 15;">
-			<div class="h-full w-full overflow-hidden" style="border-radius: 2px;">
+		<div class="absolute" style="left: 18px; top: 70px; width: 284px; height: 190px; z-index: 15; transform: translateZ(0); -webkit-backface-visibility: hidden; backface-visibility: hidden;">
+			<div class="h-full w-full overflow-hidden" style="border-radius: 2px; transform: translateZ(0); -webkit-backface-visibility: hidden; backface-visibility: hidden;">
 				{#if card.image}
-					<img src={card.image} alt={card.name} class="h-full w-full object-cover" />
+					<img src={card.image} alt={card.name} class="h-full w-full object-cover" loading="eager" decoding="sync" />
 				{:else}
 					<div class="flex h-full w-full items-center justify-center bg-black/40">
 						<span
@@ -86,6 +88,8 @@
 			alt="Card Front"
 			class="pointer-events-none absolute inset-0 h-full w-full object-cover"
 			style="z-index: 10;"
+			loading="eager"
+			decoding="sync"
 		/>
 
 		<!-- 3. Text and Icons Overlay (Z: 20, ABOVE the card frame) -->
