@@ -238,8 +238,10 @@
 				{:else}
 					<div class="flex flex-wrap items-start justify-center gap-6">
 						{#each cards as card}
-							<div class="w-64">
-								<RoomCardDetail {card} />
+							<div class="flex shrink-0 items-center justify-center">
+								<div style="transform: scale(0.8); transform-origin: top center; width: 256px; height: 370px;">
+									<RoomCardDetail {card} />
+								</div>
 							</div>
 						{/each}
 					</div>

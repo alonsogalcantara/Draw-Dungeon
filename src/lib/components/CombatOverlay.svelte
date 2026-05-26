@@ -108,7 +108,7 @@
 			</div>
 
 			<!-- Split layout: Player vs Enemy -->
-			<div class="mb-6 grid grid-cols-3 gap-6">
+			<div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-6">
 				<!-- Player side (HUD + Attacks) -->
 				<div class="flex flex-col gap-3">
 					<div class="flex-1 overflow-hidden pointer-events-auto">

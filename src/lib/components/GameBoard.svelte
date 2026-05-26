@@ -27,7 +27,7 @@
 </script>
 
 <div
-	class="grid min-h-screen grid-cols-1 bg-gradient-to-b from-stone-950 via-stone-900 to-stone-950 lg:grid-cols-[280px_1fr_280px]"
+	class="grid min-h-screen grid-cols-1 bg-gradient-to-b from-stone-950 via-stone-900 to-stone-950 lg:grid-cols-[240px_1fr_240px] xl:grid-cols-[280px_1fr_280px]"
 	class:animate-damage-shake={isShaking}
 >
 	<!-- Mobile Top Bar -->
