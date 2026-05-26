@@ -14,10 +14,33 @@
 	} from '$lib/game/gameActions';
 	import { addVictory } from '$lib/game/metaState';
 
+	function handleBeforeUnload(e: BeforeUnloadEvent) {
+		const inGamePhases = ['playing', 'combat', 'skillCheck', 'event', 'delving', 'scouting'];
+		if (inGamePhases.includes(game.phase)) {
+			e.preventDefault();
+			e.returnValue = '';
+		}
+	}
+
 	function handleKeydown(e: KeyboardEvent) {
 		// Ignore if typing in an input (except range inputs for settings)
 		if (e.target instanceof HTMLInputElement && e.target.type !== 'range') return;
 		if (e.target instanceof HTMLTextAreaElement) return;
+
+		const inGamePhases = ['playing', 'combat', 'skillCheck', 'event', 'delving', 'scouting'];
+		const isPlaying = inGamePhases.includes(game.phase);
+
+		// Prevent unwanted browser shortcuts during gameplay
+		if (isPlaying) {
+			const isAltF4 = e.altKey && e.key === 'F4';
+			if (!isAltF4) {
+				// Block Ctrl, Meta, Alt combos and F1-F12 keys to prevent accidental reloads/exits
+				if (e.ctrlKey || e.metaKey || e.altKey || e.key.match(/^F\d{1,2}$/)) {
+					e.preventDefault();
+					return;
+				}
+			}
+		}
 
 		// 1. Toggle Settings with ESC
 		if (e.key === 'Escape') {
@@ -186,4 +209,4 @@
 	}
 </script>
 
-<svelte:window onkeydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} onbeforeunload={handleBeforeUnload} />
