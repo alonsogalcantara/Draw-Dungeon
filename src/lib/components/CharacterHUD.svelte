@@ -3,8 +3,18 @@
 	import { usePotion, useCharacterSkill, useEquippedItem } from '$lib/game/gameActions';
 	import { POTIONS } from '$lib/data/potions';
 	import { MAX_HP } from '$lib/data/constants';
+	import { getActiveProfileId, getProfiles } from '$lib/game/metaState';
 
 	let { isCombat = false }: { isCombat?: boolean } = $props();
+
+	const activeProfileId = getActiveProfileId();
+	const activeProfileName = getProfiles().find((p) => p.id === activeProfileId)?.name || 'Hero';
+
+	const characterName = $derived(
+		game.selectedCharacter?.id === 'custom_champion'
+			? activeProfileName
+			: game.selectedCharacter?.name ?? 'Adventurer'
+	);
 
 	let prevHp = $state(game.hp);
 	let shaking = $state(false);
@@ -53,18 +63,19 @@
 	></div>
 
 	<!-- Character header -->
-	<div class="relative z-10 flex items-start justify-between border-b border-stone-700/50 pb-3">
-		<div>
+	<div class="relative z-10 flex items-start justify-between border-b border-stone-700/50 pb-3 gap-2">
+		<div class="min-w-0 flex-1">
 			<h2
-				class="bg-gradient-to-br from-amber-100 to-amber-400 bg-clip-text text-xl font-black text-transparent"
+				class="bg-gradient-to-br from-amber-100 to-amber-400 bg-clip-text text-xl font-black text-transparent truncate"
+				title={characterName}
 			>
-				{game.selectedCharacter?.name ?? 'Adventurer'}
+				{characterName}
 			</h2>
-			<p class="text-xs font-bold tracking-widest text-amber-500/70 uppercase">
+			<p class="text-xs font-bold tracking-widest text-amber-500/70 uppercase truncate">
 				{game.selectedCharacter?.className ?? 'Unknown'}
 			</p>
 		</div>
-		<div class="flex flex-col items-end gap-1">
+		<div class="flex shrink-0 flex-col items-end gap-1">
 			<span
 			class="rounded-full border border-amber-700/50 bg-amber-900/40 px-3 py-1 text-xs font-bold text-amber-300 shadow-inner"
 		>

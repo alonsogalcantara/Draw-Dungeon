@@ -14,6 +14,13 @@
 	import type { MetaProgress } from '$lib/game/metaState';
 
 	let isSaved = $state(false);
+	let isCreated = $state(false);
+
+	let baseHp = $state(5);
+	let baseFood = $state(0);
+	let baseGold = $state(0);
+	let baseArmor = $state(0);
+	let baseEnergy = $state(0);
 
 	let {
 		metaProgress = $bindable(),
@@ -85,13 +92,14 @@
 		const savedDef = loadCustomChampionDef();
 		if (savedDef) {
 			customRole = savedDef.role || 'Warrior';
-			customHp = savedDef.hp;
-			customFood = savedDef.food;
-			customGold = savedDef.gold;
-			customArmor = savedDef.armor;
-			customEnergy = savedDef.energy || savedDef.mana || 0;
+			baseHp = customHp = savedDef.hp;
+			baseFood = customFood = savedDef.food;
+			baseGold = customGold = savedDef.gold;
+			baseArmor = customArmor = savedDef.armor;
+			baseEnergy = customEnergy = savedDef.energy || savedDef.mana || 0;
 			customActiveSkill = savedDef.activeSkill;
 			customPassiveSkill = savedDef.passiveSkill;
+			isCreated = true;
 		}
 
 		// Refund any old statUpgrades back to victories
@@ -170,14 +178,14 @@
 		<h4 class="mb-3 text-sm font-semibold tracking-wider text-amber-500/70 uppercase">
 			1. Select Class Role
 		</h4>
-		{#if isSaved}
+		{#if isCreated}
 			<div
-				class="inline-block rounded bg-amber-600 px-4 py-2 text-sm font-bold text-white shadow-inner"
+				class="inline-block rounded border border-amber-500/30 bg-amber-900/50 px-6 py-2 text-sm font-bold text-amber-200 shadow-inner"
 			>
-				{customRole}
+				{customRole} <span class="text-xs text-amber-500/50 ml-2">(Locked)</span>
 			</div>
-			<p class="mt-2 text-xs text-stone-400">
-				Class role is locked. To change it, you must clear your profile.
+			<p class="mt-2 text-[10px] text-stone-500">
+				Class role is permanently locked for this champion.
 			</p>
 		{:else}
 			<div class="flex flex-wrap gap-3">
@@ -205,16 +213,19 @@
 				<div
 					class="flex items-center justify-between rounded-lg border border-stone-700/50 bg-stone-800/50 p-3"
 				>
-					<div class="flex items-center gap-2">
-						<span class="text-red-400">❤️</span> Health (Base 5)
+					<div class="flex flex-col">
+						<div class="flex items-center gap-2">
+							<span class="text-red-400">❤️</span> Health
+						</div>
+						<div class="text-[10px] text-stone-500">Min: {baseHp}</div>
 					</div>
 					<div class="flex items-center gap-3">
 						<button
 								class="btn btn-secondary h-8 w-8 !p-0"
 								onclick={() => customHp--}
-								disabled={customHp <= 5}>-</button>
+								disabled={customHp <= baseHp}>-</button>
 						<div class="flex items-center justify-center px-4">
-							<span class="text-center font-bold text-lg">{customHp + ((metaProgress['custom_champion']?.level ?? 1) - 1) * 5}</span>
+							<span class="text-center font-bold text-lg">{customHp}</span>
 						</div>
 						<button
 								class="btn btn-secondary h-8 w-8 !p-0"
@@ -225,14 +236,17 @@
 				<div
 					class="flex items-center justify-between rounded-lg border border-stone-700/50 bg-stone-800/50 p-3"
 				>
-					<div class="flex items-center gap-2">
-						<span class="text-amber-400">🍖</span> Food (Base 0)
+					<div class="flex flex-col">
+						<div class="flex items-center gap-2">
+							<span class="text-amber-400">🍖</span> Food
+						</div>
+						<div class="text-[10px] text-stone-500">Min: {baseFood}</div>
 					</div>
 					<div class="flex items-center gap-3">
 						<button
 								class="btn btn-secondary h-8 w-8 !p-0"
 								onclick={() => customFood--}
-								disabled={customFood <= 0}>-</button>
+								disabled={customFood <= baseFood}>-</button>
 						<div class="flex items-center justify-center px-4">
 							<span class="text-center font-bold text-lg">{customFood}</span>
 						</div>
@@ -245,14 +259,17 @@
 				<div
 					class="flex items-center justify-between rounded-lg border border-stone-700/50 bg-stone-800/50 p-3"
 				>
-					<div class="flex items-center gap-2">
-						<span class="text-yellow-400">💰</span> Gold (Base 0)
+					<div class="flex flex-col">
+						<div class="flex items-center gap-2">
+							<span class="text-yellow-400">💰</span> Gold
+						</div>
+						<div class="text-[10px] text-stone-500">Min: {baseGold}</div>
 					</div>
 					<div class="flex items-center gap-3">
 						<button
 								class="btn btn-secondary h-8 w-8 !p-0"
 								onclick={() => customGold--}
-								disabled={customGold <= 0}>-</button>
+								disabled={customGold <= baseGold}>-</button>
 						<div class="flex items-center justify-center px-4">
 							<span class="text-center font-bold text-lg">{customGold}</span>
 						</div>
@@ -265,15 +282,17 @@
 				<div
 					class="flex items-center justify-between rounded-lg border border-stone-700/50 bg-stone-800/50 p-3"
 				>
-					<div class="flex items-center gap-2">
-						<span class="text-blue-400">🛡️</span> Armor (Base 0)
-						{#if !isSaved}<span class="ml-1 text-[10px] text-amber-500/50">(Cost: 2)</span>{/if}
+					<div class="flex flex-col">
+						<div class="flex items-center gap-2">
+							<span class="text-blue-400">🛡️</span> Armor <span class="text-[10px] text-amber-500/50 ml-1">(Cost: 2)</span>
+						</div>
+						<div class="text-[10px] text-stone-500">Min: {baseArmor}</div>
 					</div>
 					<div class="flex items-center gap-3">
 						<button
 								class="btn btn-secondary h-8 w-8 !p-0"
 								onclick={() => customArmor--}
-								disabled={customArmor <= 0}>-</button>
+								disabled={customArmor <= baseArmor}>-</button>
 						<div class="flex items-center justify-center px-4">
 							<span class="text-center font-bold text-lg">{customArmor}</span>
 						</div>
@@ -286,14 +305,17 @@
 				<div
 					class="flex items-center justify-between rounded-lg border border-stone-700/50 bg-stone-800/50 p-3"
 				>
-					<div class="flex items-center gap-2">
-						<span class="text-blue-300">⚡</span> Energía (Base 0)
+					<div class="flex flex-col">
+						<div class="flex items-center gap-2">
+							<span class="text-amber-500">⚡</span> Energía
+						</div>
+						<div class="text-[10px] text-stone-500">Min: {baseEnergy}</div>
 					</div>
 					<div class="flex items-center gap-3">
 						<button
 								class="btn btn-secondary h-8 w-8 !p-0"
 								onclick={() => customEnergy--}
-								disabled={customEnergy <= 0}>-</button>
+								disabled={customEnergy <= baseEnergy}>-</button>
 						<div class="flex items-center justify-center px-4">
 							<span class="text-center font-bold text-lg">{customEnergy}</span>
 						</div>

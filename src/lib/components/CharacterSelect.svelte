@@ -156,8 +156,8 @@
 	></div>
 
 	{#if step === 1}
-		<div class="flex w-full max-w-6xl flex-col gap-6 xl:flex-row items-start justify-center">
-			<div class="flex-1 flex justify-center xl:justify-end">
+		<div class="grid w-full max-w-6xl grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start mx-auto">
+			<div class="w-full flex justify-center lg:block">
 				<CustomChampionBuilder
 					bind:metaProgress
 					bind:customHp
@@ -171,7 +171,7 @@
 					bind:isCustomValid
 				/>
 			</div>
-			<div class="w-full xl:w-80 shrink-0 sticky top-8">
+			<div class="w-full max-w-4xl mx-auto lg:max-w-none shrink-0 lg:sticky lg:top-8">
 				<CharacterHUD />
 			</div>
 		</div>
