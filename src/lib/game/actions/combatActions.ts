@@ -191,14 +191,18 @@ export function applyPlayerDamage() {
 	);
 	game.combat.diceResults = updatedDice;
 
-	let finalDamage = damage + game.damageBonus;
+	// Paso 3 (Validación de Diseño): El daño final nunca puede ser menor a 1 + damageBonus
+	// To achieve this, the base 'damage' portion must be at least 1.
+	const validatedDamage = Math.max(1, damage);
+	let finalDamage = validatedDamage + game.damageBonus;
+	
 	if (game.combat.poisonPotionActive) {
 		finalDamage += 4;
 	}
 
 	game.combat.enemyHp -= finalDamage;
 	game.combat.totalDamage = finalDamage;
-	game.addLog(`Dealt ${finalDamage} damage (${damage} roll + ${game.damageBonus} bonus) to ${game.combat.enemy.name}`, 'combat');
+	game.addLog(`Dealt ${finalDamage} damage (${validatedDamage} roll + ${game.damageBonus} bonus) to ${game.combat.enemy.name}`, 'combat');
 
 	const endState = checkCombatEnd(
 		game.hp,

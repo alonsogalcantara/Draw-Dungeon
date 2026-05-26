@@ -1,0 +1,85 @@
+INSTRUCCIONES DE SISTEMA: MECÁNICA DE COMBATE Y PROGRESIÓN DE DADOS
+
+[CONTEXTO DEL JUEGO]
+
+Eres el motor lógico de un juego tipo Roguelike de cartas construido en Svelte. El combate se resuelve lanzando dados virtuales. Debes implementar un sistema de escalado de poder llamado "Die Stepping" (Escalado de Dados).
+
+[VARIABLES DEL ESTADO DEL JUGADOR]
+
+El objeto principal del jugador (player) debe rastrear estas variables clave para el combate:
+
+xp: (Entero) Experiencia acumulada al derrotar monstruos.
+
+powerLevel: (Entero) Nivel actual del jugador (Min: 1, Max: 5).
+
+diceFaces: (Entero) La cantidad de caras del dado que el jugador lanza actualmente.
+
+damageBonus: (Entero) Daño extra asegurado que se suma al resultado del dado.
+
+[REGLA PRINCIPAL: TABLA DE ESCALADO]
+
+El sistema no debe añadir más cantidad de dados cuando el jugador sube de nivel. En su lugar, debe modificar el tamaño del dado (diceFaces) y el bono de daño (damageBonus) estrictamente bajo la siguiente lógica condicional:
+
+SI powerLevel == 1 (Estado Inicial):
+
+Asignar diceFaces = 6 (Lanza un D6)
+
+Asignar damageBonus = 0
+
+Rango de daño resultante: 1 a 6.
+
+SI powerLevel == 2:
+
+Asignar diceFaces = 8 (Lanza un D8)
+
+Asignar damageBonus = 1
+
+Rango de daño resultante: 2 a 9.
+
+SI powerLevel == 3:
+
+Asignar diceFaces = 10 (Lanza un D10)
+
+Asignar damageBonus = 1
+
+Rango de daño resultante: 2 a 11.
+
+SI powerLevel == 4:
+
+Asignar diceFaces = 12 (Lanza un D12)
+
+Asignar damageBonus = 2
+
+Rango de daño resultante: 3 a 14.
+
+SI powerLevel == 5 (Nivel Máximo):
+
+Asignar diceFaces = 20 (Lanza un D20)
+
+Asignar damageBonus = 2
+
+Rango de daño resultante: 3 a 22.
+
+[LÓGICA DE RESOLUCIÓN DE ATAQUE LIGERO (Ejecución)]
+
+Cuando el usuario presiona el botón "Atacar" (Ataque Ligero base), el sistema debe ejecutar la siguiente función secuencial:
+
+Paso 1 (RNG): Generar un número entero aleatorio entre 1 y el valor actual de player.diceFaces.
+
+Paso 2 (Cálculo): Sumar el resultado del Paso 1 con el valor actual de player.damageBonus.
+
+Paso 3 (Validación de Diseño): El daño final nunca puede ser menor a 1 + damageBonus. (Esto asegura que un jugador de nivel alto nunca sienta que su ataque fue inútil).
+
+Paso 4 (Impacto): Restar el resultado final de la variable hp del enemigo objetivo.
+
+[EVENTO: SUBIR DE NIVEL (Level Up)]
+
+Implementar un "Listener" o función reactiva ($:  en Svelte).
+
+Cada vez que la variable player.xp alcance un límite predefinido (Ej. 100, 250, 500, 1000):
+
+Incrementar player.powerLevel en +1.
+
+Actualizar inmediatamente diceFaces y damageBonus basándose en la Tabla de Escalado.
+
+Mostrar notificación visual en la UI: "¡El tamaño de tu dado ha aumentado!"

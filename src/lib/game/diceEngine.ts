@@ -16,37 +16,8 @@ function randomInt(min: number, max: number): number {
 // --- Character Die ---
 
 export function rollCharacterDie(faces: number = 6): DieResult {
-	// If it's the standard D6, we use the original mapping to preserve the exact Mini Rogue probabilities:
-	// [Miss(0), 1, 2, 3, 5, 6] (notice there is no 4)
-	if (faces === 6) {
-		const faceIndex = randomInt(0, 5);
-		const value = CHARACTER_DIE_FACES[faceIndex];
-
-		return {
-			type: 'character' as DieType,
-			value,
-			isStar: value >= 5,
-			isCritical: value === 6,
-			isMiss: value === 0,
-			setAside: false,
-			rerolled: false,
-			faces: 6
-		};
-	}
-
-	// For polyhedral dice (D8, D10, D12, D16, D18, D20), we use linear 1-N mapping
 	const roll = randomInt(1, faces);
-
-	let value = roll;
-	let isMiss = false;
-
-	// Rule: 1 is always a miss (0 value)
-	if (roll === 1) {
-		value = 0;
-		isMiss = true;
-	}
-
-	// Rule: Success (Star) is the top 2 values for D8-D12, top 4 values for D16-D20
+	
 	let isStar = false;
 	if (faces <= 12) {
 		isStar = roll >= faces - 1;
@@ -54,15 +25,12 @@ export function rollCharacterDie(faces: number = 6): DieResult {
 		isStar = roll >= faces - 3;
 	}
 
-	// Rule: Critical is always the max value
-	const isCritical = roll === faces;
-
 	return {
 		type: 'character' as DieType,
-		value,
+		value: roll,
 		isStar,
-		isCritical,
-		isMiss,
+		isCritical: roll === faces,
+		isMiss: false, // The new design guarantees at least 1 damage, so no misses.
 		setAside: false,
 		rerolled: false,
 		faces

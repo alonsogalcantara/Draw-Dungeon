@@ -74,12 +74,7 @@ class GameState {
 		POWER_DAMAGE_BONUS[Math.min(this.powerLevel - 1, POWER_DAMAGE_BONUS.length - 1)]
 	);
 
-	characterDiceCount = $derived.by(() => {
-		const ratio = this.xp / this.maxXp;
-		if (ratio >= 0.666) return 3;
-		if (ratio >= 0.333) return 2;
-		return 1;
-	});
+	characterDiceCount = $derived(1);
 	isDead = $derived(this.hp <= 0);
 
 	// Dungeon
@@ -283,13 +278,9 @@ class GameState {
 			this.maxHp += 5;
 			this.gainHp(5);
 
-			const newDieCount = Math.min(3, this.level);
 			const newFaces = POLYHEDRAL_DICE[Math.min(this.level - 1, POLYHEDRAL_DICE.length - 1)];
 			const newBonus = POWER_DAMAGE_BONUS[Math.min(this.level - 1, POWER_DAMAGE_BONUS.length - 1)];
-			this.addLog(
-				`¡Poder ${this.powerLevel}! Max HP +5, Dado D${newFaces} +${newBonus} daño base`,
-				'info'
-			);
+			this.addLog('¡El tamaño de tu dado ha aumentado!', 'info');
 		}
 
 		// If we are at max level, excess XP above maxXp heals us
