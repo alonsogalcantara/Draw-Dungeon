@@ -21,25 +21,6 @@
 		return targetRoom !== null && targetRoom !== undefined;
 	}
 
-	const gridClass = $derived(
-		game.layoutSize === 2
-			? 'grid-cols-2 grid-rows-2'
-			: game.layoutSize === 3
-				? 'grid-cols-3 grid-rows-3'
-				: game.layoutSize === 4
-					? 'grid-cols-4 grid-rows-4'
-					: 'grid-cols-5 grid-rows-5'
-	);
-
-	const maxWidthClass = $derived(
-		game.layoutSize === 2 
-			? 'max-w-3xl' 
-			: game.layoutSize === 3 
-				? 'max-w-5xl' 
-				: game.layoutSize === 4 
-					? 'max-w-6xl' 
-					: 'max-w-7xl'
-	);
 </script>
 
 <div class="flex flex-col gap-4">
@@ -65,8 +46,14 @@
 			{#each game.gridHistory as historyItem, index (index)}
 				{@const isActive = index === game.gridHistory.length - 1}
 				<div class="flex w-full shrink-0 flex-col items-center">
-					<div class="dungeon-map flex w-full justify-center px-2 sm:px-8 {maxWidthClass} mx-auto">
-						<div class="grid {gridClass} w-full justify-items-center gap-4 sm:gap-6">
+					<div 
+						class="dungeon-map flex w-full justify-center px-2 sm:px-8 mx-auto"
+						style="max-width: {game.layoutSize === 2 ? '48rem' : game.layoutSize === 3 ? '64rem' : game.layoutSize === 4 ? '72rem' : '80rem'};"
+					>
+						<div 
+							class="grid w-full justify-items-center gap-4 sm:gap-6"
+							style="grid-template-columns: repeat({game.layoutSize}, minmax(0, 1fr)); grid-template-rows: repeat({game.layoutSize}, auto);"
+						>
 							{#each { length: game.layoutSize } as _, row (row)}
 								{#each { length: game.layoutSize } as _, col (col)}
 									{@const instance = isActive
