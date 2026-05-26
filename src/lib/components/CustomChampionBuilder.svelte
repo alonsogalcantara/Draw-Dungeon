@@ -58,14 +58,13 @@
 
 	$effect(() => {
 		isCustomValid =
-			isSaved ||
-			(availablePoints === 0 &&
-				customActiveSkill !== null &&
-				customPassiveSkill !== null &&
-				customRole !== null);
+			availablePoints === 0 &&
+			customActiveSkill !== null &&
+			customPassiveSkill !== null &&
+			customRole !== null;
 
 		// Auto-save logic if valid
-		if (!isSaved && isCustomValid && customRole) {
+		if (isCustomValid && customRole) {
 			saveCustomChampionDef({
 				role: customRole,
 				hp: customHp,
@@ -76,6 +75,9 @@
 				activeSkill: customActiveSkill,
 				passiveSkill: customPassiveSkill
 			});
+			isSaved = true;
+		} else {
+			isSaved = false;
 		}
 	});
 
@@ -90,7 +92,6 @@
 			customEnergy = savedDef.energy || savedDef.mana || 0;
 			customActiveSkill = savedDef.activeSkill;
 			customPassiveSkill = savedDef.passiveSkill;
-			isSaved = true;
 		}
 
 		// Refund any old statUpgrades back to victories

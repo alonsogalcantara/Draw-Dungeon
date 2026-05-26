@@ -4,6 +4,8 @@
 	import { POTIONS } from '$lib/data/potions';
 	import { MAX_HP } from '$lib/data/constants';
 
+	let { isCombat = false }: { isCombat?: boolean } = $props();
+
 	let prevHp = $state(game.hp);
 	let shaking = $state(false);
 	let hpChange = $state({ amount: 0, id: 0 });
@@ -112,27 +114,29 @@
 	</div>
 
 	<!-- XP Bar -->
-	<div class="relative z-10 space-y-1">
-		<div class="flex items-baseline justify-between text-xs">
-			<span class="font-black tracking-wide text-purple-400">XP</span>
-			<span class="font-medium text-stone-300"
-				>{game.xp} <span class="text-[10px] text-stone-500">/ {game.maxXp}</span></span
-			>
-		</div>
-		<div
-			class="stat-bar relative h-3 overflow-hidden rounded-full border border-stone-800 bg-stone-950 shadow-inner"
-		>
-			<div
-				class="relative h-full rounded-full bg-gradient-to-r from-purple-800 via-purple-500 to-purple-400 transition-all duration-500"
-				style="width: {xpPercent}%"
-			>
-				<div class="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent"></div>
+	{#if !isCombat}
+		<div class="relative z-10 space-y-1">
+			<div class="flex items-baseline justify-between text-xs">
+				<span class="font-black tracking-wide text-purple-400">XP</span>
+				<span class="font-medium text-stone-300"
+					>{game.xp} <span class="text-[10px] text-stone-500">/ {game.maxXp}</span></span
+				>
 			</div>
-			<!-- Third markers for extra dice -->
-			<div class="absolute top-0 h-full w-px bg-stone-950" style="left: 33.33%"></div>
-			<div class="absolute top-0 h-full w-px bg-stone-950" style="left: 66.66%"></div>
+			<div
+				class="stat-bar relative h-3 overflow-hidden rounded-full border border-stone-800 bg-stone-950 shadow-inner"
+			>
+				<div
+					class="relative h-full rounded-full bg-gradient-to-r from-purple-800 via-purple-500 to-purple-400 transition-all duration-500"
+					style="width: {xpPercent}%"
+				>
+					<div class="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent"></div>
+				</div>
+				<!-- Third markers for extra dice -->
+				<div class="absolute top-0 h-full w-px bg-stone-950" style="left: 33.33%"></div>
+				<div class="absolute top-0 h-full w-px bg-stone-950" style="left: 66.66%"></div>
+			</div>
 		</div>
-	</div>
+	{/if}
 
 	<!-- Energy Bar (dynamic: Maná / Estamina / Fe) -->
 	<div class="relative z-10 space-y-1">
@@ -155,7 +159,7 @@
 	</div>
 
 	<!-- Stats grid -->
-	<div class="relative z-10 mt-1 grid grid-cols-3 gap-2">
+	<div class="relative z-10 mt-1 grid gap-2" style="grid-template-columns: {isCombat ? '1fr' : 'repeat(3, minmax(0, 1fr))'}">
 		<div
 			class="rounded-xl border border-stone-700/50 bg-gradient-to-b from-stone-800/40 to-stone-900/60 p-2 text-center shadow-sm"
 		>
@@ -165,20 +169,22 @@
 			</div>
 			<div class="text-[9px] font-bold tracking-wider text-stone-500 uppercase">Armor</div>
 		</div>
-		<div
-			class="rounded-xl border border-stone-700/50 bg-gradient-to-b from-stone-800/40 to-stone-900/60 p-2 text-center shadow-sm"
-		>
-			<div class="text-lg drop-shadow-md">💰</div>
-			<div class="text-sm font-black text-yellow-300">{game.gold}</div>
-			<div class="text-[9px] font-bold tracking-wider text-stone-500 uppercase">Gold</div>
-		</div>
-		<div
-			class="rounded-xl border border-stone-700/50 bg-gradient-to-b from-stone-800/40 to-stone-900/60 p-2 text-center shadow-sm"
-		>
-			<div class="text-lg drop-shadow-md">🍖</div>
-			<div class="text-sm font-black text-amber-300">{game.food}</div>
-			<div class="text-[9px] font-bold tracking-wider text-stone-500 uppercase">Food</div>
-		</div>
+		{#if !isCombat}
+			<div
+				class="rounded-xl border border-stone-700/50 bg-gradient-to-b from-stone-800/40 to-stone-900/60 p-2 text-center shadow-sm"
+			>
+				<div class="text-lg drop-shadow-md">💰</div>
+				<div class="text-sm font-black text-yellow-300">{game.gold}</div>
+				<div class="text-[9px] font-bold tracking-wider text-stone-500 uppercase">Gold</div>
+			</div>
+			<div
+				class="rounded-xl border border-stone-700/50 bg-gradient-to-b from-stone-800/40 to-stone-900/60 p-2 text-center shadow-sm"
+			>
+				<div class="text-lg drop-shadow-md">🍖</div>
+				<div class="text-sm font-black text-amber-300">{game.food}</div>
+				<div class="text-[9px] font-bold tracking-wider text-stone-500 uppercase">Food</div>
+			</div>
+		{/if}
 	</div>
 
 	<!-- Divider -->
@@ -280,7 +286,7 @@
 		</h3>
 		<div class="flex flex-col gap-2">
 			{#if game.selectedCharacter}
-				{#each game.selectedCharacter.skills as skill (skill.name)}
+				{#each game.selectedCharacter.skills.filter(s => !isCombat || s.type === 'combat') as skill (skill.name)}
 					<button
 						class={[
 							'group relative flex w-full items-center gap-3 overflow-hidden rounded-xl border p-2.5 text-left transition-all duration-300',
@@ -354,7 +360,7 @@
 	{/if}
 
 	<!-- Active Missions -->
-	{#if game.missions && game.missions.length > 0}
+	{#if game.missions && game.missions.length > 0 && !isCombat}
 		<div class="relative z-10 mt-2 border-t border-stone-700/30 pt-3">
 			<h3 class="mb-2 text-[10px] font-bold tracking-wider text-blue-500/70 uppercase">
 				Misiones Activas
