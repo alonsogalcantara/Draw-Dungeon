@@ -1,0 +1,87 @@
+1. Estructura del Archivo .zip (El Estándar)
+  Para que el cargador sea rápido, el ZIP debe tener una estructura predecible:
+
+   1 mi-expansion.zip
+   2 ├── manifest.json          # Metadatos (Nombre, autor, versión)
+   3 ├── cards.json             # El array de objetos RoomCard
+   4 └── assets/
+   5     ├── back.png           # Opcional: El reverso de todas las cartas del DLC
+   6     ├── monster_goblin.png # Imagen vinculada por ID en cards.json
+   7     └── trap_pit.png
+
+  ¿Solo front o ambos?
+   * Recomendación: El Front es obligatorio. El Back (reverso) debe ser opcional por DLC. Si el ZIP incluye un assets/back.png, el juego lo usa; si no, usa el cover_card.png por defecto del juego. Esto da flexibilidad temática.
+
+  ---
+
+  2. Arquitectura Técnica (Frontend)
+
+  El flujo de carga debe ser: ZIP -> JSZip (Lectura) -> IndexedDB (Persistencia) -> Game State (Inyección).
+
+  A. Librerías Necesarias
+   * jszip: Para descomprimir en memoria.
+   * idb: Una librería ligera para usar IndexedDB (el "SQL" del navegador), ya que LocalStorage es demasiado pequeño para imágenes.
+
+  B. El Proceso de Importación (Lógica)
+
+    1 import JSZip from 'jszip';
+    2 import { openDB } from 'idb';
+    3
+    4 async function importDLC(file: File) {
+    5   const zip = await JSZip.loadAsync(file);
+    6
+    7   // 1. Leer Manifest y Cards
+    8   const manifest = JSON.parse(await zip.file("manifest.json").async("string"));
+    9   const cardsData = JSON.parse(await zip.file("cards.json").async("string"));
+   10
+   11   // 2. Procesar Imágenes y convertirlas en Blobs/URLs
+   12   const db = await openDB('MiniRogueDLCs', 1, {
+   13     upgrade(db) { db.createObjectStore('assets'); db.createObjectStore('manifests'); }
+   14   });
+   15
+   16   for (const card of cardsData) {
+   17     const imgFile = zip.file(`assets/${card.id}.png`);
+   18     if (imgFile) {
+   19       const blob = await imgFile.async("blob");
+   20       // Guardar el binario en IndexedDB para que persista entre recargas
+   21       await db.put('assets', blob, `${manifest.id}_${card.id}`);
+   22
+   23       // Crear una URL temporal para el motor de Svelte
+   24       card.image = URL.createObjectURL(blob);
+   25     }
+   26     card.expansion = manifest.id; // Vincular al ID del DLC
+   27   }
+   28
+   29   // 3. Inyectar en el estado global
+   30   game.externalCards = [...game.externalCards, ...cardsData];
+   31   game.activeExpansions = [...game.activeExpansions, manifest.id];
+   32 }
+
+  ---
+
+  3. ¿Por qué esta arquitectura es rápida?
+
+   1. Zero-Latency Images: Al usar URL.createObjectURL(blob), el navegador no tiene que descargar nada de internet ni decodificar Base64 pesado. La imagen se lee directamente de la memoria/disco local.
+   2. Persistencia con IndexedDB: A diferencia de otros juegos web donde tienes que resubir el mod cada vez que refrescas, al guardar los Blobs en IndexedDB, podemos recargar todos los DLCs instalados automáticamente al iniciar el juego:
+
+   1     // En el onMount del juego
+   2     const savedBlobs = await db.getAll('assets');
+   3     // Re-generar URLs para Svelte
+   3. Modularidad: El motor de cartas actual ya filtra por expansion. Solo necesitas que el generator de la mazmorra mire tanto en ROOM_CARDS (nativas) como en game.externalCards (DLCs).
+
+  ---
+
+  4. Mejoras de UX para los DLCs
+
+   * Validador de JSON: Al cargar el ZIP, el juego debe verificar que el cards.json tenga los campos obligatorios (hp, damage, type). Si falta algo, mostrar un error amigable: "Error en 'Goblin': falta el campo hp".
+   * Sandbox de Imágenes: Para evitar que imágenes gigantes rompan el rendimiento, puedes pasar los Blobs por un OffscreenCanvas para redimensionarlos automáticamente a 320x460px antes de guardarlos.
+   * Gestor de Mods: Una pequeña pantalla dentro de "Settings" que diga:
+       * 📦 Expansión de Sombras (Activado) [Borrar]
+       * 📦 Cartas de Comunidad (Desactivado) [Activar]
+
+  ---
+
+  5. Seguridad
+  Al permitir archivos externos, nunca uses eval() ni insertes HTML crudo de los JSON. Svelte 5 protege contra XSS por defecto, así que mientras solo uses los datos del JSON para variables de estado (game.hp += dlcCard.hp), el sistema será seguro.
+
+  ¿Te gustaría que implementara un prototipo de este cargador de .zips en una rama o componente nuevo? Sería un salto enorme para la escalabilidad del proyecto.
