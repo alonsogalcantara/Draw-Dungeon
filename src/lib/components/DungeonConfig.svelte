@@ -4,6 +4,7 @@
 	import { ROOM_CARDS } from '$lib/data/roomCards';
 	import { game } from '$lib/game/gameState.svelte';
 	import RoomCardDetail from './RoomCardDetail.svelte';
+	import { importDLCFile, deleteDLC } from '$lib/game/dlcLoader';
 	import { fade, scale } from 'svelte/transition';
 
 	let {
@@ -32,6 +33,10 @@
 	});
 
 	let viewingExpansion = $state<string | null>(null);
+	let importError = $state<string | null>(null);
+	let importSuccess = $state<string | null>(null);
+
+	const allExpansions = $derived([...EXPANSIONS, ...game.externalExpansions]);
 
 	function toggleExpansion(id: string) {
 		if (game.activeExpansions.includes(id)) {
@@ -42,7 +47,37 @@
 	}
 
 	function getCardsForExpansion(id: string): RoomCard[] {
-		return ROOM_CARDS.filter((c) => c.expansion === id);
+		return [...ROOM_CARDS, ...game.externalCards].filter((c) => c.expansion === id);
+	}
+
+	async function handleImportDLC(event: Event) {
+		importError = null;
+		importSuccess = null;
+		
+		const input = event.target as HTMLInputElement;
+		if (!input.files || input.files.length === 0) return;
+		
+		const file = input.files[0];
+		const result = await importDLCFile(file);
+		
+		if (result.success) {
+			importSuccess = result.manifest.name;
+			input.value = ''; // Reset file input
+		} else {
+			importError = result.error || "Falló la importación del DLC.";
+		}
+	}
+
+	async function handleDeleteDLC(id: string) {
+		if (confirm("¿Estás seguro de que quieres eliminar esta expansión y todas sus cartas?")) {
+			const success = await deleteDLC(id);
+			if (success) {
+				importSuccess = null;
+				importError = null;
+			} else {
+				importError = "Falló la eliminación de la expansión.";
+			}
+		}
 	}
 
 	function closeViewer() {
@@ -149,7 +184,7 @@
 		</div>
 
 		<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-			{#each EXPANSIONS as exp}
+			{#each allExpansions as exp}
 				{@const isActive = game.activeExpansions.includes(exp.id)}
 				<div
 					class={[
@@ -199,13 +234,78 @@
 				</div>
 			{/each}
 		</div>
+
+		<!-- Custom DLC Manager -->
+		<div class="mt-6 rounded-xl border border-dashed border-stone-700 bg-stone-900/20 p-6">
+			<div class="flex flex-col items-center justify-between gap-4 md:flex-row">
+				<div>
+					<h3 class="text-sm font-bold text-amber-400 uppercase tracking-wider">📦 Custom DLCs & Mods Manager</h3>
+					<p class="text-xs text-stone-500 mt-1">Import and manage community-made expansions in `.zip` format.</p>
+				</div>
+				<div>
+					<label
+						class="btn btn-secondary border-amber-700/50 hover:bg-amber-900/30 flex items-center gap-2 cursor-pointer transition-all duration-300 hover:scale-[1.02]"
+					>
+						<span>➕ Import DLC (.zip)</span>
+						<input
+							type="file"
+							accept=".zip"
+							class="hidden"
+							onchange={handleImportDLC}
+						/>
+					</label>
+				</div>
+			</div>
+
+			<!-- Import Errors / Feedback -->
+			{#if importError}
+				<div class="mt-4 rounded-lg bg-red-950/40 border border-red-800/40 p-3 text-xs text-red-200" transition:fade>
+					⚠️ {importError}
+				</div>
+			{/if}
+
+			{#if importSuccess}
+				<div class="mt-4 rounded-lg bg-emerald-950/40 border border-emerald-800/40 p-3 text-xs text-emerald-200" transition:fade>
+					✅ DLC "{importSuccess}" importado correctamente.
+				</div>
+			{/if}
+
+			<!-- Custom Expansions List -->
+			{#if game.externalExpansions.length > 0}
+				<div class="mt-6 border-t border-stone-800 pt-4">
+					<h4 class="text-xs font-bold text-stone-400 uppercase tracking-wider mb-3">Installed Mods</h4>
+					<div class="grid gap-3 sm:grid-cols-2">
+						{#each game.externalExpansions as extExp}
+							<div class="flex items-center justify-between rounded-lg border border-stone-800 bg-stone-950/60 p-3">
+								<div class="flex items-center gap-3 min-w-0">
+									<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded border border-stone-700 bg-stone-900 text-xl shadow-inner">
+										{extExp.icon}
+									</div>
+									<div class="min-w-0">
+										<div class="text-xs font-bold text-stone-300 truncate">{extExp.name}</div>
+										<div class="text-[10px] text-stone-500 truncate">{extExp.description || 'No description'}</div>
+									</div>
+								</div>
+								<button
+									class="ml-2 rounded p-2 text-xs text-stone-500 hover:bg-red-900/50 hover:text-red-400 transition-colors"
+									onclick={() => handleDeleteDLC(extExp.id)}
+									title="Remove DLC"
+								>
+									🗑️
+								</button>
+							</div>
+						{/each}
+					</div>
+				</div>
+			{/if}
+		</div>
 	</div>
 </div>
 
 <!-- Cards Viewer Modal (Ported from WizardStepExpansions) -->
 {#if viewingExpansion}
 	{@const cards = getCardsForExpansion(viewingExpansion)}
-	{@const expInfo = EXPANSIONS.find(e => e.id === viewingExpansion)}
+	{@const expInfo = allExpansions.find(e => e.id === viewingExpansion)}
 	
 	<div
 		class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"

@@ -6,6 +6,7 @@
 	import { loadAllMetaProgress, clearMetaProgress, type MetaProgress } from '$lib/game/metaState';
 	import type { CharacterDef, DifficultyMode, CampaignType } from '$lib/game/types';
 	import { getProfiles, getActiveProfileId, addVictory } from '$lib/game/metaState';
+	import { loadInstalledDLCs } from '$lib/game/dlcLoader';
 
 	import CustomChampionBuilder from './CustomChampionBuilder.svelte';
 	import DungeonConfig from './DungeonConfig.svelte';
@@ -21,8 +22,11 @@
 
 	let activeProfileName = $state('');
 
-	onMount(() => {
+	onMount(async () => {
 		metaProgress = loadAllMetaProgress(CHARACTERS.map((c) => c.id).concat('custom_champion'));
+		
+		// Load external mods/DLCs into game state
+		await loadInstalledDLCs();
 		const activeId = getActiveProfileId();
 		const profile = getProfiles().find((p) => p.id === activeId);
 		if (profile) activeProfileName = profile.name;

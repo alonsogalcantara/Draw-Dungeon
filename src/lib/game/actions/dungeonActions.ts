@@ -125,7 +125,7 @@ export function scaleCardToLevel(card: RoomCard, level: number, floor: number): 
 }
 
 export function setupArea() {
-	let deck = ROOM_CARDS.filter((c) => c.type !== 'boss');
+	let deck = [...ROOM_CARDS, ...game.externalCards].filter((c) => c.type !== 'boss');
 
 	deck = deck.filter((c) => {
 		if (c.expansion && !game.activeExpansions.includes(c.expansion)) return false;
@@ -146,7 +146,7 @@ export function setupArea() {
 	const isBossArea = game.currentAreaInFloor === bossArea;
 
 	if (isBossArea) {
-		const bosses = BOSS_CARDS;
+		const bosses = [...BOSS_CARDS, ...game.externalCards.filter(c => c.type === 'boss') as BossCard[]];
 		const finalBossId = game.campaign === 'tower' ? 'boss_ogs_blood' : 'boss_ogs_remains';
 		const finalBoss = bosses.find((b) => b.id === finalBossId);
 		const regularBosses = shuffle(bosses.filter((b) => !b.isFinal));
@@ -355,7 +355,7 @@ export function expandDungeon(amount: number) {
 	const newSize = Math.min(oldSize + amount, 8); // Max grid size of 8
 	if (newSize === oldSize) return;
 
-	let deck = ROOM_CARDS.filter((c) => c.type !== 'boss');
+	let deck = [...ROOM_CARDS, ...game.externalCards].filter((c) => c.type !== 'boss');
 	deck = deck.filter((c) => {
 		if (c.type === 'monster') {
 			const mc = c as any;

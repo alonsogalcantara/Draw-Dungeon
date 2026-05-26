@@ -10,9 +10,11 @@ import {
 	type SkillCheckState,
 	type EventState,
 	type LogEntry,
-	type ActiveMission
+	type ActiveMission,
+	type RoomCard
 } from './types';
 import { saveMetaProgress, loadMetaProgress, getActiveProfileId } from './metaState';
+import type { ExpansionDef } from '$lib/data/expansions';
 import {
 	MAX_HP,
 	MAX_ARMOR,
@@ -35,6 +37,8 @@ class GameState {
 	showSettings = $state(false);
 	showShop = $state(false);
 	activeExpansions = $state<string[]>([]);
+	externalCards = $state<RoomCard[]>([]);
+	externalExpansions = $state<ExpansionDef[]>([]);
 
 	// Character
 	selectedCharacter = $state<CharacterDef | null>(null);
@@ -156,7 +160,7 @@ class GameState {
 		this.log = [];
 		this.logCounter = 0;
 		this.showShop = false;
-		// Do not reset activeExpansions on run reset so they persist.
+		// Do not reset activeExpansions, externalExpansions, and externalCards so they persist.
 		// Note: settings are preserved across resets.
 	}
 
@@ -176,6 +180,8 @@ class GameState {
 				layoutSize: this.layoutSize,
 				baseLayoutSize: this.baseLayoutSize,
 				activeExpansions: this.activeExpansions,
+				externalExpansions: this.externalExpansions,
+				externalCards: this.externalCards,
 				selectedCharacter: this.selectedCharacter,
 				hp: this.hp,
 				maxHp: this.maxHp,
