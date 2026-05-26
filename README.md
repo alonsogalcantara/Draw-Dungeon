@@ -61,6 +61,7 @@ El proyecto está construido utilizando tecnologías modernas para garantizar un
 - **[SvelteKit](https://kit.svelte.dev/)**: Framework para estructurar la aplicación y gestionar las rutas y el adaptador estático (para exportar como `.exe` con Tauri en el futuro).
 - **[TailwindCSS](https://tailwindcss.com/)**: Motor de estilos para una UI moderna, responsiva y temática oscura/dorada.
 - **[TypeScript](https://www.typescriptlang.org/)**: Tipado estático estricto para las entidades del juego, cartas, eventos y fases de combate.
+- **[JSZip](https://stuk.github.io/jszip/) y [idb](https://github.com/jakearchibald/idb)**: Para la carga, descompresión y persistencia local ultra rápida de expansiones y mods empaquetados en archivos `.zip` mediante IndexedDB.
 
   ```bash
   bun run check
@@ -86,11 +87,80 @@ La interfaz de juego ha sido rediseñada para ofrecer una experiencia altamente 
 
 ## 🧩 Sistema de Expansiones y Creación de Cartas (DLCs)
 
-Mini Rogue incluye un sistema de expansiones o DLCs inyectables. Esto permite a los desarrolladores o modders añadir nuevos paquetes de cartas temáticas de forma modular, las cuales el usuario podrá encender o apagar en el menú de "Dungeon Configuration".
+Mini Rogue incluye un potente sistema de expansiones modular. Puedes definir DLCs de forma estática en el código o **importar mods de la comunidad directamente empaquetados en archivos `.zip`** a través de la interfaz del juego.
 
-### 1. Definir una nueva Expansión
+### ⚡ Importación Dinámica mediante Archivos `.zip` (Recomendado)
+
+El juego cuenta con un **Custom DLCs & Mods Manager** integrado en el menú de **Configuración de la Mazmorra (Dungeon Configuration)**. Este sistema permite a los jugadores arrastrar o seleccionar un archivo `.zip` con cartas personalizadas y cargarlo instantáneamente sin tocar una sola línea de código.
+
+#### ⚙️ Cómo Funciona el Importador:
+
+1. **Gestor de Contenido (`dlcLoader.ts`):** Utiliza la librería `jszip` para descomprimir el archivo directamente en el cliente.
+2. **Validación Estricta:** Comprueba la existencia y estructura de los archivos `manifest.json` y `cards.json`. Valida que las cartas cuenten con todos los parámetros lógicos obligatorios (por ejemplo, que los monstruos tengan un campo `damage` numérico, `hpPerFloor` válido, etc.).
+3. **Alertas en Tiempo Real:** El juego muestra notificaciones detalladas en la UI. Si el `.zip` tiene algún error, verás un recuadro rojo especificando exactamente el problema de formato (ej. _"La carta 'goblin' no tiene un campo 'damage' numérico"_ o _"El archivo no contiene un 'manifest.json' válido"_). Si todo es correcto, una alerta verde te confirmará el éxito.
+4. **Re-escalado y Optimización de Imágenes:** Para evitar distorsiones en la interfaz y ahorrar almacenamiento, las imágenes incluidas en el `.zip` pasan por un proceso de renderizado con `OffscreenCanvas`. Cualquier arte subido se escala automáticamente a las dimensiones estándar de las cartas del juego (`320x460px`) y se guarda en formato altamente optimizado `webp`.
+5. **Persistencia Local con IndexedDB:** Con la librería `idb`, las expansiones validadas se guardan en la base de datos IndexedDB local del navegador (`MiniRogueDLCs`), garantizando que sigan disponibles la próxima vez que abras el juego.
+6. **Carga en el Ciclo de Vida:** Al iniciar o recargar el juego (en el `onMount` de la pantalla de selección de personaje), el cargador recupera silenciosamente los binarios guardados, genera URLs virtuales eficientes y los inyecta en el estado reactivo (`gameState.svelte.ts`).
+7. **Barajado e Inyección Dinámica:** Cuando el DLC importado está activo, el generador de mazmorras (`dungeonActions.ts`) baraja e inyecta dinámicamente monstruos, eventos, trampas y jefes (bosses) en la baraja de juego activa de forma aleatoria.
+
+---
+
+### 📦 Estructura del Archivo `.zip` de Expansión
+
+Para crear tu propio archivo `.zip` importable, tu paquete debe tener la siguiente estructura interna:
+
+```text
+mi-expansion.zip
+├── manifest.json         # Información general de la expansión
+├── cards.json            # Definición de las cartas (monstruos, trampas, etc.)
+└── assets/               # Carpeta con las imágenes de las cartas
+    ├── monstruo1.png
+    └── trampa1.jpg
+```
+
+#### 1. `manifest.json`
+Contiene la metadata básica del DLC:
+```json
+{
+  "id": "mi_expansion_comunidad",
+  "name": "Retornos Oscuros",
+  "description": "Una expansión creada por la comunidad que añade desafíos extremos.",
+  "icon": "💀"
+}
+```
+
+#### 2. `cards.json`
+Contiene una lista de objetos de carta compatibles con el formato de Mini Rogue. Ejemplo:
+```json
+[
+  {
+    "id": "shadow_assassin",
+    "name": "Asesino de las Sombras",
+    "type": "monster",
+    "description": "Se mueve en el silencio absoluto. Su primer golpe es letal.",
+    "floor": 1,
+    "hpPerFloor": [4, 6, 8, 12],
+    "damage": 3,
+    "effects": ["poison", "ignoreArmor"],
+    "xpRewardPerFloor": [1, 2, 2, 3],
+    "image": "assets/monstruo1.png"
+  }
+]
+```
+> [!IMPORTANT]
+> - La propiedad `image` debe hacer referencia al archivo exacto dentro de la carpeta `assets/` del `.zip`.
+> - Todas las imágenes se re-escalarán a `320x460px` y se almacenarán de forma local como `webp`.
+
+---
+
+### 🛠️ Definición Estática de DLCs en Código (Alternativa para Desarrolladores)
+
+Si eres desarrollador del juego y deseas añadir un DLC que venga preinstalado directamente en el código base, sigue estos pasos:
+
+#### 1. Definir una nueva Expansión Estática
 
 Para crear un nuevo paquete de DLC, abre el archivo `src/lib/data/expansions.ts` y añade la definición de tu expansión en el array `EXPANSIONS`:
+
 
 ```typescript
 {
