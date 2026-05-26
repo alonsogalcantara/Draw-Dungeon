@@ -194,23 +194,23 @@
 			</div>
 
 			<!-- Action buttons -->
-			<div class="flex flex-wrap items-center justify-center gap-3">
+			<div class="flex flex-wrap items-stretch justify-center gap-3">
 				{#if phase === 'playerAttack' || phase === 'rolling' || phase === 'resolvingAttack'}
 					{#if !combat.rolled}
 						<button
-							class="btn btn-primary px-6 py-2"
+							class="btn btn-primary flex flex-col items-center justify-center px-6 py-2 min-h-[4.5rem]"
 							onclick={() => rollCombatDice()}
 							disabled={rolling}
 						>
-							🎲 Roll Attack
+							<span class="text-lg">🎲 ROLL ATTACK</span>
 						</button>
 					{:else}
 						<button
-							class="btn btn-action px-6 py-2"
+							class="btn btn-action flex flex-col items-center justify-center px-6 py-2 min-h-[4.5rem]"
 							onclick={() => applyPlayerDamage()}
 							disabled={rolling}
 						>
-							⚔️ Apply Damage
+							<span class="text-lg">⚔️ APPLY DAMAGE</span>
 						</button>
 
 						{#if game.freeFeatActive}
@@ -221,27 +221,27 @@
 
 						{#if game.xp > 0 && !game.freeFeatActive}
 							<button
-								class="btn btn-secondary px-4 py-2 text-sm"
+								class="btn btn-secondary flex flex-col items-center justify-center px-4 py-2 text-sm min-h-[4.5rem]"
 								onclick={() => performFeat(0, 'xp')}
 							>
-								⚡ Feat (-1 XP)
+								<span class="font-bold text-amber-500 uppercase tracking-wider">⚡ Feat (-1 XP)</span>
 							</button>
 						{/if}
 						{#if game.hp > 2}
-							<button class="btn btn-danger px-4 py-2 text-sm" onclick={() => performFeat(0, 'hp')}>
-								⚡ Feat (-2 HP)
+							<button class="btn btn-danger flex flex-col items-center justify-center px-4 py-2 text-sm min-h-[4.5rem]" onclick={() => performFeat(0, 'hp')}>
+								<span class="font-bold text-red-200 uppercase tracking-wider">⚡ Feat (-2 HP)</span>
 							</button>
 						{/if}
 					{/if}
 
 					<!-- Potion button -->
 					{#if availablePotions.length > 0}
-						<div class="relative">
+						<div class="relative flex">
 							<button
-								class="btn btn-secondary px-4 py-2 text-sm"
+								class="btn btn-secondary flex flex-col items-center justify-center px-4 py-2 text-sm min-h-[4.5rem]"
 								onclick={() => (showPotionMenu = !showPotionMenu)}
 							>
-								🧪 Use Potion
+								<span class="font-bold text-amber-200 uppercase tracking-wider">🧪 Use Potion</span>
 							</button>
 							{#if showPotionMenu}
 								<div
@@ -264,22 +264,34 @@
 					<!-- Combat Skill & Item Buttons -->
 					{#if game.item && game.itemUsesLeft > 0 && game.item.skillType === 'combat'}
 						<button
-							class="btn btn-secondary border-amber-700/50 px-4 py-2 text-sm"
+							class="btn btn-secondary border-amber-700/50 flex flex-col items-center justify-center px-4 py-2 text-sm min-h-[4.5rem]"
 							onclick={() => useEquippedItem()}
 						>
-							🔧 {game.item.name} ({game.itemUsesLeft})
+							<span class="font-bold text-amber-200 uppercase tracking-wider">🔧 {game.item.name} ({game.itemUsesLeft})</span>
 						</button>
 					{/if}
 
-					{#if game.selectedCharacter && !game.skillUsed}
+					{#if game.selectedCharacter}
 						{#each game.selectedCharacter.skills.filter((s) => s.type === 'combat') as skill (skill.name)}
 							<button
-								class="btn btn-secondary border-emerald-700/50 px-4 py-2 text-sm text-emerald-100 disabled:opacity-40"
-								onclick={() => useCharacterSkill(skill.name)}
-								disabled={game.mana < (skill.manaCost || 0) * game.level}
+								class={[
+									'btn btn-secondary border-emerald-700/50 px-4 py-2 text-sm text-emerald-100 flex flex-col items-center justify-center gap-1 min-h-[4.5rem]',
+									game.skillUsed || game.mana < (skill.manaCost || 0) * game.level ? 'opacity-50 grayscale cursor-not-allowed' : 'hover:-translate-y-0.5'
+								].join(' ')}
+								onclick={() => { if (!game.skillUsed) useCharacterSkill(skill.name); }}
+								disabled={game.skillUsed || game.mana < (skill.manaCost || 0) * game.level}
 								title={skill.description}
 							>
-								✨ {skill.name} {skill.manaCost ? `(-${skill.manaCost * game.level} MP)` : ''}
+								<span>✨ {skill.name}</span>
+								<span class="text-[10px] text-stone-400 font-medium">
+									{#if game.skillUsed}
+										(Agotada - 1 uso por Área)
+									{:else if game.mana < (skill.manaCost || 0) * game.level}
+										(Sin Maná: Req. {(skill.manaCost || 0) * game.level} MP)
+									{:else}
+										(-{(skill.manaCost || 0) * game.level} MP / Solo en Turno de Ataque)
+									{/if}
+								</span>
 							</button>
 						{/each}
 					{/if}

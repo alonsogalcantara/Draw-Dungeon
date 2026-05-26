@@ -293,7 +293,7 @@ class GameState {
 				level: 1,
 				xp: 0,
 				victories: 0,
-				statUpgrades: { hp: 0, armor: 0, gold: 0, food: 0 }
+				statUpgrades: { hp: 0, armor: 0, gold: 0, food: 0, mana: 0 }
 			};
 			existing.level = this.level;
 			existing.xp = this.xp;
@@ -308,7 +308,7 @@ class GameState {
 				level: 1,
 				xp: 0,
 				victories: 0,
-				statUpgrades: { hp: 0, armor: 0, gold: 0, food: 0 }
+				statUpgrades: { hp: 0, armor: 0, gold: 0, food: 0, mana: 0 }
 			};
 			existing.level = this.level;
 			existing.xp = this.xp;

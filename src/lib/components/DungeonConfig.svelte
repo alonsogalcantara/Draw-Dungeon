@@ -178,6 +178,7 @@
 						</div>
 						
 						<button
+							aria-label="Toggle expansion {exp.name}"
 							class={[
 								'relative h-5 w-10 shrink-0 rounded-full transition-colors duration-300',
 								isActive ? 'bg-emerald-600' : 'bg-stone-800'
@@ -238,7 +239,7 @@
 					<div class="flex flex-wrap items-start justify-center gap-6">
 						{#each cards as card}
 							<div class="w-64">
-								<RoomCardDetail {card} revealed={true} />
+								<RoomCardDetail {card} />
 							</div>
 						{/each}
 					</div>
