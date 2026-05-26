@@ -269,3 +269,11 @@ Una vez que tengas Rust instalado, puedes usar los siguientes comandos:
   bunx tauri build
   ```
   _Esto primero ejecutará el build estático de Svelte y luego usará Rust para empaquetarlo. El ejecutable resultante se guardará en la carpeta `src-tauri/target/release/bundle/`._
+
+---
+
+## ⚖️ Descargo de Responsabilidad (Disclaimer)
+
+> [!NOTE]
+> Este proyecto es una adaptación digital no oficial y sin fines de lucro del juego de mesa 'Mini Rogue', diseñado por Paolo Di Stefano y Gabriel Gendron. Todos los derechos de los nombres, mecánicas originales y conceptos pertenecen a sus respectivos autores y a Nuts! Publishing. Este software se publica bajo la licencia MIT con fines educativos y de entretenimiento para fans.
+
