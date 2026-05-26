@@ -27,9 +27,31 @@ Tu elección de rol es vital para la **Sinergia de Habilidades**. Las habilidade
 - **Efectos Potenciados (Sinergia):** Si seleccionas una habilidad afín a tu rol (Ej. _Shield Bash_ en un Guerrero), la habilidad se potencia enormemente (aturdiendo más, curando más, o infligiendo más daño base).
 - **Mismatches (Penalización):** Si escoges una Habilidad Activa de otro rol, te será inútil en combate. Si es una Habilidad Pasiva, solo tendrá un 50% de probabilidad de activarse.
 
+### 🔨 Creador de Campeones Personalizados (Custom Champion)
+
+Si prefieres una experiencia única, puedes forjar tu propio héroe personalizado utilizando victorias acumuladas de partidas previas para mejorar sus estadísticas iniciales:
+- **Límites de Estadísticas Mínimas:** El sistema registra los valores base iniciales de tu campeón personalizado al crearlo. Esto evita que puedas reducir sus estadísticas (HP, Comida, Oro, Armadura, Energía) por debajo de sus mínimos históricos al reconfigurarlo o redistribuir puntos.
+- **Bloqueo de Rol:** Una vez que creas y guardas a tu campeón, su rol de clase queda permanentemente bloqueado para mantener la integridad del personaje y su progresión estética.
+- **Layout de Selección Integrado:** La pantalla de selección presenta el panel de edición del creador y el HUD completo del personaje (`CharacterHUD`) en paralelo para resoluciones grandes, permitiendo ver el impacto en tiempo real de cada mejora.
+
 ### 🔵 El Maná
 
 Para usar tus habilidades activas dependerás del **Maná**. Es un recurso crucial que puedes incrementar al crear a tu campeón (hasta 99). Ganarás Maná al derrotar monstruos o mediante **Pociones de Maná** azules escondidas en la mazmorra. ¡Administra tu Maná y tus afinidades para sobrevivir!
+
+### 🎲 Sistema de Progresión de Dados ("Die Stepping")
+
+A diferencia del sistema tradicional donde el jugador acumula múltiples dados al subir de nivel, **Mini Rogue** implementa una mecánica de **Die Stepping** (Escalado de Dados). El jugador posee **un único dado** cuyo tamaño (cantidad de caras) y bono de daño aumentan estrictamente según su `powerLevel` (Nivel de Poder del 1 al 5):
+
+| Nivel de Poder | Tipo de Dado | Bono de Daño Base | Rango de Daño Resultante |
+| :--- | :--- | :--- | :--- |
+| **Nivel 1** (Estado Inicial) | **D6** (Lanza un D6) | `+0` | 1 a 6 |
+| **Nivel 2** | **D8** (Lanza un D8) | `+1` | 2 a 9 |
+| **Nivel 3** | **D10** (Lanza un D10) | `+1` | 2 a 11 |
+| **Nivel 4** | **D12** (Lanza un D12) | `+2` | 3 a 14 |
+| **Nivel 5** (Nivel Máximo) | **D20** (Lanza un D20) | `+2` | 3 a 22 |
+
+- **Daño Mínimo Garantizado:** Los dados ya no tienen caras de "Fallo" (Miss) o valor `0`. Además, la lógica de combate valida que la tirada base siempre sea como mínimo `1`, garantizando que el daño total final nunca sea inferior a `1 + damageBonus`. ¡Un campeón de nivel alto siempre se sentirá poderoso!
+- **Reactividad de Nivel (Level Up):** Cada vez que la variable de experiencia (`xp`) del jugador alcanza un límite predefinido (100, 250, 500, 1000), el nivel de poder se incrementa en `+1`, actualizando inmediatamente la cantidad de caras del dado y el bono de daño. Una notificación visual clara en la UI avisa: _"¡El tamaño de tu dado ha aumentado!"_.
 
 ## 💻 Arquitectura y Tecnologías
 
@@ -45,6 +67,22 @@ El proyecto está construido utilizando tecnologías modernas para garantizar un
   ```
 
   _Ejecuta `svelte-check` y TypeScript para asegurar que no hay errores lógicos o de tipado en el código._
+
+## ⚔️ Diseño de Combate y Experiencia de Usuario
+
+La interfaz de juego ha sido rediseñada para ofrecer una experiencia altamente interactiva y de nivel premium:
+
+### 1. Pantalla de Combate Inteligente
+- **Integración de HUD Completo:** Se ha integrado el componente unificado `CharacterHUD` directamente en el panel lateral del jugador dentro de la pantalla de combate (`CombatOverlay`), reemplazando las barras de vida genéricas previas y centralizando toda la información vital del héroe (HP, Comida, Oro, Armadura, Energía/Maná).
+- **Controles de Ataque Contextuales:** Los botones de ataque (Ataque Ligero y Ataque Pesado) ahora se ubican contextualmente directamente debajo de tu personaje, lo que agiliza el flujo de la pelea. Los ataques pesados que consumen Energía (`E`) cuentan con un diseño visual rojo/oscuro distintivo.
+- **Acciones de Soporte Organizadas:** Las opciones secundarias de combate (resolución del daño, dados de defensa, uso de pociones de combate o uso de habilidades activas) están organizadas en el pie de la interfaz para evitar saturación visual.
+
+### 2. Tablero Dinámico de la Mazmorra (`RoomGrid`)
+- El motor de renderizado del mapa de salas utiliza estilos en línea dinámicos basados en la variable `game.layoutSize`. Esto permite dibujar tableros flexibles de cualquier tamaño de cuadrícula (2x2, 3x3, 4x4, 5x5) de forma responsiva y fluida, recalculando el ancho máximo y las columnas CSS sin depender de clases fijas del framework.
+
+### 3. Seguridad de Sesión y Controles de Teclado
+- **Prevención de Cierre Accidental:** Durante una partida activa (explorando salas, combatiendo o resolviendo eventos), el juego activa un listener `BeforeUnload` que avisará con una ventana emergente si intentas cerrar o actualizar la página accidentalmente, evitando la pérdida de tu progreso.
+- **Bloqueo de Atajos del Navegador:** Para evitar reloads involuntarios o salidas accidentales del modo de pantalla completa durante el juego intenso por teclado, el controlador previene combinaciones del sistema (como `F5`, `Ctrl+R`, `F11`, `F12`, etc. o combos con Alt/Meta), exceptuando el cierre de aplicación con `Alt+F4`.
 
 ## 🧩 Sistema de Expansiones y Creación de Cartas (DLCs)
 
@@ -106,7 +144,7 @@ Si deseas modificar la lógica, añadir más contenido o explorar cómo está pr
 - **`src/lib/data/characters.ts`**: Define los campeones elegibles (Mago, Cruzado, Mercenario, etc.), sus estadísticas base y sus habilidades.
 - **`src/lib/game/gameState.svelte.ts`**: El controlador maestro del estado. Usa clases con `$state` para guardar el progreso, la vida del jugador, el inventario, el registro de turnos y la fase actual del juego (`title`, `playing`, `combat`, etc.).
 - **`src/lib/game/gameActions.ts`**: Contiene la lógica del motor de juego: resolución de combates, lanzar dados, movimiento en la matriz de la sala, aplicación de daño, y lógica de resolución de cartas individuales.
-- **`src/lib/components/KeyboardController.svelte`**: Un componente invisible global que mapea todas las interacciones de teclado (WASD, Flechas, Enter, Espacio) permitiendo navegar los menús y moverse por la mazmorra sin ratón.
+- **`src/lib/components/KeyboardController.svelte`**: Un componente invisible global que mapea todas las interacciones de teclado (WASD, Flechas, Enter, Espacio) permitiendo navegar los menús y moverse por la mazmorra sin ratón. También se encarga de interceptar y bloquear atajos del navegador perjudiciales en juego y alertar al usuario antes de recargas accidentales.
 
 ## 🚀 Comandos del Proyecto
 
