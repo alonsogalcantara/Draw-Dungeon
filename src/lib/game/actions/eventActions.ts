@@ -516,9 +516,9 @@ export function useCharacterSkill(skillName: string) {
 		return;
 	}
 
-	const manaCost = (skillDef.manaCost || 0) * game.level;
-	if (game.mana < manaCost) {
-		game.addLog(`Not enough Mana! Requires ${manaCost}.`, 'system');
+	const energyCost = (skillDef.energyCost || 0) * game.level;
+	if (game.energy < energyCost) {
+		game.addLog(`Not enough Energy! Requires ${energyCost}.`, 'system');
 		return;
 	}
 
@@ -526,7 +526,7 @@ export function useCharacterSkill(skillName: string) {
 	if (logic) {
 		const success = logic(roleMatch); // Always true here, but keeping arg just in case
 		if (success) {
-			game.loseMana(manaCost);
+			game.loseEnergy(energyCost);
 			game.skillUsed = true;
 		}
 	} else {

@@ -33,7 +33,7 @@
 	let customFood = $state(0);
 	let customGold = $state(0);
 	let customArmor = $state(0);
-	let customMana = $state(0);
+	let customEnergy = $state(0);
 	let customRole = $state<'Warrior' | 'Mage' | 'Rogue' | 'Cleric' | 'Wanderer' | null>(null);
 	let customActiveSkill = $state<string | null>(null);
 	let customPassiveSkill = $state<string | null>(null);
@@ -46,7 +46,7 @@
 	$effect(() => {
 		if (step === 1 && selectedChar && selectedChar.id === 'custom_champion') {
 			const meta = metaProgress['custom_champion'];
-			const upg = meta?.statUpgrades || { hp: 0, armor: 0, gold: 0, food: 0, mana: 0 };
+			const upg = meta?.statUpgrades || { hp: 0, armor: 0, gold: 0, food: 0, energy: 0 };
 			const lvl = meta?.level || 1;
 			
 			const calcMaxHp = customHp + upg.hp + (lvl - 1) * 5;
@@ -56,8 +56,8 @@
 			game.food = customFood + upg.food;
 			game.gold = customGold + upg.gold;
 			game.armor = customArmor + upg.armor;
-			game.mana = customMana;
-			game.maxMana = customMana + upg.mana;
+			game.energy = customEnergy;
+			game.maxEnergy = customEnergy + (upg.energy || 0);
 			game.level = lvl;
 			game.xp = meta?.xp || 0;
 			game.maxXp = XP_REQUIREMENTS_PER_LEVEL[lvl - 1] || 999;
@@ -91,8 +91,10 @@
 						food: customFood,
 						gold: customGold,
 						armor: customArmor,
-						mana: customMana,
-						xp: 0
+						energy: customEnergy,
+						xp: 0,
+						maxItems: 2,
+						powerLevel: 1
 					},
 					skills: [activeObj, passiveObj]
 				};
@@ -162,7 +164,7 @@
 					bind:customFood
 					bind:customGold
 					bind:customArmor
-					bind:customMana
+					bind:customEnergy
 					bind:customRole
 					bind:customActiveSkill
 					bind:customPassiveSkill

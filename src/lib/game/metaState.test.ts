@@ -43,7 +43,7 @@ describe('metaState Profile and Progress System', () => {
 			level: 2,
 			xp: 100,
 			victories: 1,
-			statUpgrades: { hp: 0, armor: 0, gold: 0, food: 0, mana: 0 }
+			statUpgrades: { hp: 0, armor: 0, gold: 0, food: 0, energy: 0 }
 		});
 		addVictory('char1');
 		spendVictoryPoint('char1', 'hp', 5);
@@ -61,7 +61,7 @@ describe('metaState Profile and Progress System', () => {
 			level: 1,
 			xp: 50,
 			victories: 0,
-			statUpgrades: { hp: 0, armor: 0, gold: 0, food: 0, mana: 0 }
+			statUpgrades: { hp: 0, armor: 0, gold: 0, food: 0, energy: 0 }
 		});
 
 		const p2Stats = loadMetaProgress('char1');

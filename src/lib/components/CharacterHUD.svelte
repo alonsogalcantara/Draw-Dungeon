@@ -22,7 +22,12 @@
 
 	const hpPercent = $derived(Math.max(0, (game.hp / game.maxHp) * 100));
 	const xpPercent = $derived(Math.max(0, (game.xp / game.maxXp) * 100));
-	const manaPercent = $derived(Math.max(0, (game.mana / (game.maxMana || 1)) * 100));
+	const energyPercent = $derived(Math.max(0, (game.energy / (game.maxEnergy || 1)) * 100));
+
+	// Dynamic energy display based on class
+	const energyLabel = $derived(game.selectedCharacter?.energyLabel ?? 'Energía');
+	const energyIcon = $derived(game.selectedCharacter?.energyIcon ?? '⚡');
+	const isMage = $derived(game.selectedCharacter?.className === 'Mage');
 
 	function handleUsePotion(index: number) {
 		const potion = game.potions[index];
@@ -59,15 +64,15 @@
 		</div>
 		<div class="flex flex-col items-end gap-1">
 			<span
-				class="rounded-full border border-amber-700/50 bg-amber-900/40 px-3 py-1 text-xs font-bold text-amber-300 shadow-inner"
-			>
-				Lv. {game.level}
-			</span>
-			<span
-				class="rounded-full border border-stone-700/30 bg-stone-800/50 px-2 py-0.5 text-[10px] font-medium text-stone-400"
-			>
-				{game.characterDiceCount} 🎲 D{game.characterDieFaces}
-			</span>
+			class="rounded-full border border-amber-700/50 bg-amber-900/40 px-3 py-1 text-xs font-bold text-amber-300 shadow-inner"
+		>
+			Poder {game.powerLevel}
+		</span>
+		<span
+			class="rounded-full border border-stone-700/30 bg-stone-800/50 px-2 py-0.5 text-[10px] font-medium text-stone-400"
+		>
+			{game.characterDiceCount} 🎲 D{game.characterDieFaces} +{game.damageBonus}
+		</span>
 		</div>
 	</div>
 
@@ -129,20 +134,20 @@
 		</div>
 	</div>
 
-	<!-- Mana Bar -->
+	<!-- Energy Bar (dynamic: Maná / Estamina / Fe) -->
 	<div class="relative z-10 space-y-1">
 		<div class="flex items-baseline justify-between text-xs">
-			<span class="font-black tracking-wide text-blue-400">MANA</span>
+			<span class={['font-black tracking-wide', isMage ? 'text-blue-400' : 'text-amber-400'].join(' ')}>{energyLabel.toUpperCase()}</span>
 			<span class="font-medium text-stone-300"
-				>{game.mana} <span class="text-[10px] text-stone-500">/ {game.maxMana}</span></span
+				>{game.energy} <span class="text-[10px] text-stone-500">/ {game.maxEnergy}</span></span
 			>
 		</div>
 		<div
 			class="stat-bar relative h-3 overflow-hidden rounded-full border border-stone-800 bg-stone-950 shadow-inner"
 		>
 			<div
-				class="relative h-full rounded-full bg-gradient-to-r from-blue-800 via-blue-500 to-blue-400 transition-all duration-500"
-				style="width: {manaPercent}%"
+				class={['relative h-full rounded-full transition-all duration-500', isMage ? 'bg-gradient-to-r from-blue-800 via-blue-500 to-blue-400' : 'bg-gradient-to-r from-amber-800 via-amber-500 to-amber-400'].join(' ')}
+				style="width: {energyPercent}%"
 			>
 				<div class="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent"></div>
 			</div>
@@ -279,14 +284,14 @@
 					<button
 						class={[
 							'group relative flex w-full items-center gap-3 overflow-hidden rounded-xl border p-2.5 text-left transition-all duration-300',
-							(game.skillUsed || game.mana < (skill.manaCost || 0) * game.level) && skill.type !== 'passive'
+							(game.skillUsed || game.energy < (skill.energyCost || 0) * game.level) && skill.type !== 'passive'
 								? 'cursor-not-allowed border-stone-800 bg-stone-900/50 opacity-60'
 								: 'cursor-pointer border-emerald-700/30 bg-gradient-to-r from-emerald-950/20 to-stone-900/60 shadow-sm hover:-translate-y-0.5 hover:border-emerald-500/50 hover:shadow-[0_0_15px_rgba(16,185,129,0.15)]'
 						].join(' ')}
 						onclick={() => {
 							if (skill.type !== 'passive') useCharacterSkill(skill.name);
 						}}
-						disabled={game.skillUsed || game.mana < (skill.manaCost || 0) * game.level || skill.type === 'passive'}
+						disabled={game.skillUsed || game.energy < (skill.energyCost || 0) * game.level || skill.type === 'passive'}
 						title={skill.description}
 					>
 						{#if !game.skillUsed && skill.type !== 'passive'}
@@ -318,8 +323,8 @@
 								</div>
 								<div class="text-[9px] font-bold tracking-widest text-stone-500 uppercase flex items-center gap-1">
 									<span>{skill.type}</span>
-									{#if skill.manaCost}
-										<span class="text-blue-400 font-black px-1 rounded-sm bg-blue-900/30 border border-blue-800/50">{skill.manaCost * game.level} MP</span>
+									{#if skill.energyCost}
+										<span class={['font-black px-1 rounded-sm border', isMage ? 'text-blue-400 bg-blue-900/30 border-blue-800/50' : 'text-amber-400 bg-amber-900/30 border-amber-800/50'].join(' ')}>{skill.energyCost * game.level} {energyLabel}</span>
 									{/if}
 								</div>
 							</div>

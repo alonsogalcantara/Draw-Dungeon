@@ -125,8 +125,24 @@ export interface CharacterSkill {
 	description: string;
 	icon: string;
 	roleAffinity?: 'Warrior' | 'Mage' | 'Rogue' | 'Cleric' | 'Wanderer';
-	manaCost?: number;
+	energyCost?: number;
 	boostedEffect?: string;
+}
+
+/** Type of attack: light (free) or heavy (costs energy) */
+export type AttackCategory = 'light' | 'heavy';
+
+/** Definition of a character's attack (Light or Heavy) */
+export interface AttackDef {
+	name: string;
+	category: AttackCategory;
+	description: string;
+	icon: string;
+	energyCost: number;
+	/** Special mechanic: 'advantage' = roll twice take best, 'fixed' = fixed damage, 'critical_double' = double on max roll, 'burn' = extra damage on roll > 4 */
+	mechanic?: 'advantage' | 'fixed' | 'critical_double' | 'burn';
+	/** For 'fixed' mechanic: formula description */
+	mechanicDescription?: string;
 }
 
 /** Full character definition used for character selection */
@@ -142,9 +158,16 @@ export interface CharacterDef {
 		gold: number;
 		armor: number;
 		xp: number;
-		mana: number;
+		energy: number;
+		maxItems: number;
+		powerLevel: number;
 	};
 	skills: CharacterSkill[];
+	attacks: AttackDef[];
+	/** Label for energy resource display: 'Maná' for Mage, 'Estamina' for Warrior/Rogue */
+	energyLabel?: string;
+	/** Icon for energy resource: '🔵' for Mage mana, '⚡' for Warrior/Rogue stamina */
+	energyIcon?: string;
 }
 
 // --- Stat Modification ---
@@ -446,6 +469,8 @@ export interface CombatState {
 	bossPhase: number;
 	/** Whether the player used their combat skill this turn */
 	combatSkillUsedThisTurn: boolean;
+	/** The selected attack type for this turn */
+	selectedAttack?: AttackDef | null;
 	rolled?: boolean;
 	dice?: DieResult[];
 	dungeonDie?: number | null;

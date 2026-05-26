@@ -18,9 +18,10 @@ import {
 	MAX_ARMOR,
 	MAX_GOLD,
 	MAX_FOOD,
-	MAX_MANA,
+	MAX_ENERGY,
 	XP_REQUIREMENTS_PER_LEVEL,
-	POLYHEDRAL_DICE
+	POLYHEDRAL_DICE,
+	POWER_DAMAGE_BONUS
 } from '../data/constants';
 import type { RunSummary } from './gameStats';
 
@@ -45,8 +46,9 @@ class GameState {
 	armor = $state(0);
 	gold = $state(0);
 	food = $state(0);
-	mana = $state(0);
-	maxMana = $state(0);
+	energy = $state(0);
+	maxEnergy = $state(0);
+	powerLevel = $state(1);
 	potions = $state<(PotionType | null)[]>([null, null]);
 	item = $state<ItemCard | null>(null);
 	itemUsesLeft = $state(0);
@@ -60,12 +62,18 @@ class GameState {
 
 	// Derived
 	maxXp = $derived(
-		XP_REQUIREMENTS_PER_LEVEL[Math.min(this.level - 1, XP_REQUIREMENTS_PER_LEVEL.length - 1)] || 120
+		XP_REQUIREMENTS_PER_LEVEL[Math.min(this.level - 1, XP_REQUIREMENTS_PER_LEVEL.length - 1)] || 99
 	);
 
 	characterDieFaces = $derived(
-		POLYHEDRAL_DICE[Math.min(this.level - 1, POLYHEDRAL_DICE.length - 1)]
+		POLYHEDRAL_DICE[Math.min(this.powerLevel - 1, POLYHEDRAL_DICE.length - 1)]
 	);
+
+	/** Guaranteed minimum damage bonus based on power level */
+	damageBonus = $derived(
+		POWER_DAMAGE_BONUS[Math.min(this.powerLevel - 1, POWER_DAMAGE_BONUS.length - 1)]
+	);
+
 	characterDiceCount = $derived.by(() => {
 		const ratio = this.xp / this.maxXp;
 		if (ratio >= 0.666) return 3;
@@ -126,8 +134,9 @@ class GameState {
 		this.armor = 0;
 		this.gold = 0;
 		this.food = 0;
-		this.mana = 0;
-		this.maxMana = 0;
+		this.energy = 0;
+		this.maxEnergy = 0;
+		this.powerLevel = 1;
 		this.potions = [null, null];
 		this.item = null;
 		this.itemUsesLeft = 0;
@@ -180,8 +189,9 @@ class GameState {
 				armor: this.armor,
 				gold: this.gold,
 				food: this.food,
-				mana: this.mana,
-				maxMana: this.maxMana,
+				energy: this.energy,
+				maxEnergy: this.maxEnergy,
+				powerLevel: this.powerLevel,
 				potions: this.potions,
 				item: this.item,
 				itemUsesLeft: this.itemUsesLeft,
@@ -268,14 +278,16 @@ class GameState {
 		while (this.xp >= this.maxXp && this.level < POLYHEDRAL_DICE.length) {
 			this.xp -= this.maxXp;
 			this.level += 1;
+			this.powerLevel = this.level;
 
 			this.maxHp += 5;
 			this.gainHp(5);
 
 			const newDieCount = Math.min(3, this.level);
 			const newFaces = POLYHEDRAL_DICE[Math.min(this.level - 1, POLYHEDRAL_DICE.length - 1)];
+			const newBonus = POWER_DAMAGE_BONUS[Math.min(this.level - 1, POWER_DAMAGE_BONUS.length - 1)];
 			this.addLog(
-				`Leveled up to ${this.level}! Max HP +5, Rolling ${newDieCount}D${newFaces}`,
+				`¡Poder ${this.powerLevel}! Max HP +5, Dado D${newFaces} +${newBonus} daño base`,
 				'info'
 			);
 		}
@@ -293,7 +305,7 @@ class GameState {
 				level: 1,
 				xp: 0,
 				victories: 0,
-				statUpgrades: { hp: 0, armor: 0, gold: 0, food: 0, mana: 0 }
+				statUpgrades: { hp: 0, armor: 0, gold: 0, food: 0, energy: 0 }
 			};
 			existing.level = this.level;
 			existing.xp = this.xp;
@@ -308,7 +320,7 @@ class GameState {
 				level: 1,
 				xp: 0,
 				victories: 0,
-				statUpgrades: { hp: 0, armor: 0, gold: 0, food: 0, mana: 0 }
+				statUpgrades: { hp: 0, armor: 0, gold: 0, food: 0, energy: 0 }
 			};
 			existing.level = this.level;
 			existing.xp = this.xp;
@@ -358,12 +370,12 @@ class GameState {
 		}
 	}
 
-	gainMana(amount: number) {
-		this.mana = Math.min(this.mana + amount, this.maxMana);
+	gainEnergy(amount: number) {
+		this.energy = Math.min(this.energy + amount, this.maxEnergy);
 	}
 
-	loseMana(amount: number) {
-		this.mana = Math.max(0, this.mana - amount);
+	loseEnergy(amount: number) {
+		this.energy = Math.max(0, this.energy - amount);
 	}
 }
 

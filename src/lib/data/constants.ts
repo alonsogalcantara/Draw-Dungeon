@@ -27,21 +27,50 @@ export const MAX_ARMOR = 99;
 export const MAX_GOLD = 99999;
 export const MAX_FOOD = 99;
 export const MAX_POTIONS = 2;
-export const MAX_ITEMS = 1;
-export const MAX_MANA = 99;
+export const MAX_ITEMS = 3;
+export const MAX_ENERGY = 99;
 
 // --- XP & Leveling ---
-// Level 1: XP 0-5  (1 character die)
-// Level 2: XP 6-11 (2 character dice)
-// Level 3: XP 12+  (3 character dice)
+// Power Level 1: D6, +0 bonus
+// Power Level 2: D8, +1 bonus
+// Power Level 3: D10, +1 bonus
+// Power Level 4: D12, +2 bonus
+// Power Level 5: D20, +2 bonus (max)
 
-// XP needed to reach the NEXT level
-export const XP_REQUIREMENTS_PER_LEVEL = [20, 30, 45, 65, 90, 120] as const;
+// XP needed to reach the NEXT power level
+export const XP_REQUIREMENTS_PER_LEVEL = [20, 35, 55, 80, 99] as const;
 
-export const MAX_LEVEL = 7;
+export const MAX_LEVEL = 5;
 
-/** Die faces available per level */
-export const POLYHEDRAL_DICE = [6, 8, 10, 12, 16, 18, 20] as const;
+/** Die faces available per power level (Die Stepping) */
+export const POLYHEDRAL_DICE = [6, 8, 10, 12, 20] as const;
+
+/** Guaranteed minimum damage bonus per power level */
+export const POWER_DAMAGE_BONUS = [0, 1, 1, 2, 2] as const;
+
+/**
+ * Power Level Progression Table:
+ * Level 1: D6,  +0 bonus → Damage 1-6   (rusty weapons, start of dungeon)
+ * Level 2: D8,  +1 bonus → Damage 2-9   (minimum 2 damage guaranteed)
+ * Level 3: D10, +1 bonus → Damage 2-11  (mid-tower level)
+ * Level 4: D12, +2 bonus → Damage 3-14  (powerful and lethal)
+ * Level 5: D20, +2 bonus → Damage 3-22  (legendary, ready for final boss)
+ */
+export interface PowerLevel {
+	level: number;
+	dieFaces: number;
+	damageBonus: number;
+	minDamage: number;
+	maxDamage: number;
+}
+
+export const POWER_LEVELS: PowerLevel[] = POLYHEDRAL_DICE.map((faces, i) => ({
+	level: i + 1,
+	dieFaces: faces,
+	damageBonus: POWER_DAMAGE_BONUS[i],
+	minDamage: 1 + POWER_DAMAGE_BONUS[i],
+	maxDamage: faces + POWER_DAMAGE_BONUS[i]
+}));
 
 // --- Dice ---
 

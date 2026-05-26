@@ -9,7 +9,8 @@
 		endCombat,
 		usePotion,
 		useEquippedItem,
-		useCharacterSkill
+		useCharacterSkill,
+		executePlayerAttack
 	} from '$lib/game/gameActions';
 	import { POTIONS } from '$lib/data/potions';
 	import DiceRoller from './DiceRoller.svelte';
@@ -197,13 +198,33 @@
 			<div class="flex flex-wrap items-stretch justify-center gap-3">
 				{#if phase === 'playerAttack' || phase === 'rolling' || phase === 'resolvingAttack'}
 					{#if !combat.rolled}
-						<button
-							class="btn btn-primary flex flex-col items-center justify-center px-6 py-2 min-h-[4.5rem]"
-							onclick={() => rollCombatDice()}
-							disabled={rolling}
-						>
-							<span class="text-lg">🎲 ROLL ATTACK</span>
-						</button>
+						{#if game.selectedCharacter}
+							<div class="flex w-full gap-3 justify-center">
+								{#each game.selectedCharacter.attacks as attack (attack.name)}
+									<button
+										class={[
+											'btn flex-1 flex flex-col items-center justify-center px-3 py-2 min-h-[4rem] gap-1',
+											attack.category === 'heavy' ? 'bg-red-950/80 hover:bg-red-900/80 border border-red-800/50 text-red-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]' : 'btn-primary',
+											game.energy < attack.energyCost ? 'opacity-50 grayscale cursor-not-allowed' : 'hover:-translate-y-0.5 transition-transform'
+										].join(' ')}
+										onclick={() => executePlayerAttack(attack)}
+										disabled={rolling || game.energy < attack.energyCost}
+										title={attack.mechanicDescription || attack.description}
+									>
+										<div class="flex items-center gap-2 text-sm font-bold">
+											<span>{attack.icon}</span>
+											<span>{attack.name}</span>
+										</div>
+										<div class={[
+											'text-[10px] font-black tracking-wider uppercase',
+											attack.category === 'heavy' ? 'text-red-300' : 'text-stone-900/70'
+										].join(' ')}>
+											{attack.energyCost === 0 ? 'Free' : `-${attack.energyCost} Energía`}
+										</div>
+									</button>
+								{/each}
+							</div>
+						{/if}
 					{:else}
 						<button
 							class="btn btn-action flex flex-col items-center justify-center px-6 py-2 min-h-[4.5rem]"
@@ -276,20 +297,20 @@
 							<button
 								class={[
 									'btn btn-secondary border-emerald-700/50 px-4 py-2 text-sm text-emerald-100 flex flex-col items-center justify-center gap-1 min-h-[4.5rem]',
-									game.skillUsed || game.mana < (skill.manaCost || 0) * game.level ? 'opacity-50 grayscale cursor-not-allowed' : 'hover:-translate-y-0.5'
+									game.skillUsed || game.energy < (skill.energyCost || 0) * game.level ? 'opacity-50 grayscale cursor-not-allowed' : 'hover:-translate-y-0.5'
 								].join(' ')}
 								onclick={() => { if (!game.skillUsed) useCharacterSkill(skill.name); }}
-								disabled={game.skillUsed || game.mana < (skill.manaCost || 0) * game.level}
+								disabled={game.skillUsed || game.energy < (skill.energyCost || 0) * game.level}
 								title={skill.description}
 							>
 								<span>✨ {skill.name}</span>
 								<span class="text-[10px] text-stone-400 font-medium">
 									{#if game.skillUsed}
 										(Agotada - 1 uso por Área)
-									{:else if game.mana < (skill.manaCost || 0) * game.level}
-										(Sin Maná: Req. {(skill.manaCost || 0) * game.level} MP)
+									{:else if game.energy < (skill.energyCost || 0) * game.level}
+										(Sin Energía: Req. {(skill.energyCost || 0) * game.level})
 									{:else}
-										(-{(skill.manaCost || 0) * game.level} MP / Solo en Turno de Ataque)
+										(-{(skill.energyCost || 0) * game.level} Energía / Solo en Turno de Ataque)
 									{/if}
 								</span>
 							</button>

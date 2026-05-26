@@ -62,7 +62,8 @@ export function rollCombatDice() {
 			game.characterDiceCount,
 			game.characterDieFaces,
 			game.poisoned,
-			game.cursed
+			game.cursed,
+			game.combat.selectedAttack?.mechanic === 'advantage'
 		);
 		let dice = rollResult.characterDice;
 
@@ -149,19 +150,55 @@ export function dealDirectDamageToEnemy(damage: number) {
 	// If not victory or nextPhase, the combat just continues from whatever phase it was in.
 }
 
+export function executePlayerAttack(attack: import('../types').AttackDef) {
+	if (!game.combat) return;
+	if (game.energy < attack.energyCost) {
+		game.addLog(`Not enough Energy for ${attack.name}!`, 'system');
+		return;
+	}
+
+	game.loseEnergy(attack.energyCost);
+	game.combat.selectedAttack = attack;
+	game.addLog(`Used ${attack.name}!`, 'combat');
+
+	if (attack.mechanic === 'fixed') {
+		// Skip rolling completely and go to resolving
+		game.combat.diceResults = Array(game.characterDiceCount).fill({
+			type: 'character',
+			value: Math.floor(game.characterDieFaces / 2),
+			isStar: false,
+			isCritical: false,
+			isMiss: false,
+			setAside: false,
+			rerolled: false,
+			faces: game.characterDieFaces
+		});
+		game.combat.rolled = true;
+		game.combat.rolling = false;
+		game.combat.phase = 'resolvingAttack';
+		// We could auto apply damage or let the user click it
+	} else {
+		rollCombatDice();
+	}
+}
+
 export function applyPlayerDamage() {
 	if (!game.combat) return;
-	const { damage, updatedDice } = processAttackPhase(game.combat, game.combat.diceResults);
+	const { damage, updatedDice } = processAttackPhase(
+		game.combat,
+		game.combat.diceResults,
+		game.characterDieFaces
+	);
 	game.combat.diceResults = updatedDice;
 
-	let finalDamage = damage;
+	let finalDamage = damage + game.damageBonus;
 	if (game.combat.poisonPotionActive) {
 		finalDamage += 4;
 	}
 
 	game.combat.enemyHp -= finalDamage;
 	game.combat.totalDamage = finalDamage;
-	game.addLog(`Dealt ${finalDamage} damage to ${game.combat.enemy.name}`, 'combat');
+	game.addLog(`Dealt ${finalDamage} damage (${damage} roll + ${game.damageBonus} bonus) to ${game.combat.enemy.name}`, 'combat');
 
 	const endState = checkCombatEnd(
 		game.hp,
@@ -271,8 +308,8 @@ export function endCombat() {
 	if (enemy.type === 'monster') {
 		const xpReward = enemy.xpRewardPerFloor[game.currentFloor - 1];
 		game.gainXp(xpReward);
-		game.gainMana(1);
-		game.addLog(`Defeated ${enemy.name}! Gained ${xpReward} XP and 1 Mana.`, 'loot');
+		game.gainEnergy(1);
+		game.addLog(`Defeated ${enemy.name}! Gained ${xpReward} XP and 1 Energy.`, 'loot');
 	} else if (enemy.type === 'boss') {
 		if ((enemy as BossCard).isFinal) {
 			game.runSummary = generateRunSummary(game.log);

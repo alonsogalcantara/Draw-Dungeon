@@ -21,7 +21,7 @@
 		customFood = $bindable(),
 		customGold = $bindable(),
 		customArmor = $bindable(),
-		customMana = $bindable(),
+		customEnergy = $bindable(),
 		customRole = $bindable(),
 		customActiveSkill = $bindable(),
 		customPassiveSkill = $bindable(),
@@ -32,7 +32,7 @@
 		customFood: number;
 		customGold: number;
 		customArmor: number;
-		customMana: number;
+		customEnergy: number;
 		customRole: 'Warrior' | 'Mage' | 'Rogue' | 'Cleric' | 'Wanderer' | null;
 		customActiveSkill: string | null;
 		customPassiveSkill: string | null;
@@ -44,14 +44,14 @@
 	const COST_FOOD = 1;
 	const COST_GOLD = 1;
 	const COST_ARMOR = 2;
-	const COST_MANA = 1;
+	const COST_ENERGY = 1;
 
 	const spentPoints = $derived(
 		(customHp - 5) * COST_HP +
 			customFood * COST_FOOD +
 			customGold * COST_GOLD +
 			customArmor * COST_ARMOR +
-			customMana * COST_MANA
+			customEnergy * COST_ENERGY
 	);
 
 	const availablePoints = $derived(TOTAL_BUDGET + (metaProgress['custom_champion']?.victories ?? 0) - spentPoints);
@@ -72,7 +72,7 @@
 				food: customFood,
 				gold: customGold,
 				armor: customArmor,
-				mana: customMana,
+				energy: customEnergy,
 				activeSkill: customActiveSkill,
 				passiveSkill: customPassiveSkill
 			});
@@ -87,7 +87,7 @@
 			customFood = savedDef.food;
 			customGold = savedDef.gold;
 			customArmor = savedDef.armor;
-			customMana = savedDef.mana || 0;
+			customEnergy = savedDef.energy || savedDef.mana || 0;
 			customActiveSkill = savedDef.activeSkill;
 			customPassiveSkill = savedDef.passiveSkill;
 			isSaved = true;
@@ -101,10 +101,10 @@
 			refund += meta.statUpgrades.food || 0;
 			refund += meta.statUpgrades.gold || 0;
 			refund += meta.statUpgrades.armor || 0;
-			refund += meta.statUpgrades.mana || 0;
+			refund += meta.statUpgrades.energy || meta.statUpgrades.mana || 0;
 			if (refund > 0) {
 				meta.victories += refund;
-				meta.statUpgrades = { hp: 0, armor: 0, gold: 0, food: 0, mana: 0 };
+				meta.statUpgrades = { hp: 0, armor: 0, gold: 0, food: 0, energy: 0 };
 				saveMetaProgress('custom_champion', meta);
 				metaProgress = loadAllMetaProgress(CHARACTERS.map((c) => c.id).concat('custom_champion'));
 			}
@@ -124,7 +124,7 @@
 				food: customFood,
 				gold: customGold,
 				armor: customArmor,
-				mana: customMana,
+				energy: customEnergy,
 				activeSkill: customActiveSkill,
 				passiveSkill: customPassiveSkill
 			});
@@ -286,20 +286,20 @@
 					class="flex items-center justify-between rounded-lg border border-stone-700/50 bg-stone-800/50 p-3"
 				>
 					<div class="flex items-center gap-2">
-						<span class="text-blue-300">🔵</span> Mana (Base 0)
+						<span class="text-blue-300">⚡</span> Energía (Base 0)
 					</div>
 					<div class="flex items-center gap-3">
 						<button
 								class="btn btn-secondary h-8 w-8 !p-0"
-								onclick={() => customMana--}
-								disabled={customMana <= 0}>-</button>
+								onclick={() => customEnergy--}
+								disabled={customEnergy <= 0}>-</button>
 						<div class="flex items-center justify-center px-4">
-							<span class="text-center font-bold text-lg">{customMana}</span>
+							<span class="text-center font-bold text-lg">{customEnergy}</span>
 						</div>
 						<button
 								class="btn btn-secondary h-8 w-8 !p-0"
-								onclick={() => customMana++}
-								disabled={availablePoints < COST_MANA}>+</button>
+								onclick={() => customEnergy++}
+								disabled={availablePoints < COST_ENERGY}>+</button>
 					</div>
 				</div>
 			</div>
@@ -353,9 +353,9 @@
 								⚠️ Mismatch: Cannot be used effectively by a {customRole || 'Wanderer'}!
 							</p>
 						{/if}
-						{#if selectedActive?.manaCost}
+					{#if selectedActive?.energyCost}
 							<p class="mt-1 text-[11px] text-blue-300">
-								🔵 Mana Cost: {selectedActive.manaCost}
+								⚡ Energy Cost: {selectedActive.energyCost}
 							</p>
 						{/if}
 					{/if}

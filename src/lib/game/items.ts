@@ -73,8 +73,8 @@ export const ITEM_DICTIONARY: Record<string, ItemLogic> = {
 	},
 
 	item_mana_elixir: () => {
-		game.gainMana(10);
-		game.addLog('You drink the Mana Elixir and recover 10 Mana.', 'info');
+		game.gainEnergy(10);
+		game.addLog('You drink the Mana Elixir and recover 10 Energy.', 'info');
 		return true;
 	},
 

@@ -23,7 +23,7 @@ export function usePotion(slotIndex: number) {
 			game.skillCheck.success = true;
 		}
 	} else if (potion === 'mana') {
-		game.gainMana(game.maxMana);
+		game.gainEnergy(game.maxEnergy);
 	} else if (potion === 'fire' && game.combat) {
 		game.combat.enemyHp -= 7;
 	} else if (potion === 'frost' && game.combat) {

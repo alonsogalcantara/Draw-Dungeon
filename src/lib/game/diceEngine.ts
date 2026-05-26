@@ -157,11 +157,18 @@ export function rollAllDice(
 	characterDiceCount: number,
 	characterDieFaces: number,
 	hasPoisonDie: boolean,
-	hasCurseDie: boolean
+	hasCurseDie: boolean,
+	advantage: boolean = false
 ): DiceRollResult {
 	const characterDice: DieResult[] = [];
 	for (let i = 0; i < characterDiceCount; i++) {
-		characterDice.push(rollCharacterDie(characterDieFaces));
+		const roll1 = rollCharacterDie(characterDieFaces);
+		if (advantage) {
+			const roll2 = rollCharacterDie(characterDieFaces);
+			characterDice.push(roll1.value >= roll2.value ? roll1 : roll2);
+		} else {
+			characterDice.push(roll1);
+		}
 	}
 
 	const dungeonDie = rollDungeonDie();

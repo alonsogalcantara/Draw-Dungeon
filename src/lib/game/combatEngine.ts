@@ -35,10 +35,32 @@ export function initCombat(
 
 export function processAttackPhase(
 	state: CombatState,
-	diceResults: DieResult[]
+	diceResults: DieResult[],
+	characterDieFaces: number = 6
 ): { damage: number; updatedDice: DieResult[] } {
 	const updatedDice = setAsideMisses(diceResults);
-	const damage = calculateDamage(updatedDice);
+	let damage = calculateDamage(updatedDice);
+
+	const attack = state.selectedAttack;
+	if (attack) {
+		if (attack.mechanic === 'fixed') {
+			// Fixed damage = half of current power die faces * number of dice
+			// Actually the description says "igual a la mitad de los lados de su Dado de Poder actual"
+			// Wait, if rolling 2 dice, does it do this twice? Yes, usually spells scale with character dice.
+			damage = Math.floor(characterDieFaces / 2) * Math.max(1, diceResults.length);
+		} else if (attack.mechanic === 'critical_double') {
+			// Si sale el valor máximo del dado (isCritical), hace el doble de daño (al total)
+			if (updatedDice.some(d => d.isCritical && !d.setAside)) {
+				damage *= 2;
+			}
+		} else if (attack.mechanic === 'burn') {
+			// Si el resultado es mayor a 4, hace daño adicional
+			if (updatedDice.some(d => d.value > 4 && !d.setAside)) {
+				damage += 5; // Fixed 5 damage for burn
+			}
+		}
+	}
+
 	return { damage, updatedDice };
 }
 
